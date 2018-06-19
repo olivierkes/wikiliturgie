@@ -39,8 +39,19 @@
              flat
              dense>
     <v-toolbar-side-icon @click.stop="leftDrawer = !leftDrawer"></v-toolbar-side-icon>
-    <v-toolbar-title v-text="title"></v-toolbar-title>
+    <v-toolbar-title>
+      <router-link to="/"
+                   tag="span"
+                   style="cursor: pointer">{{ title }}</router-link>
+    </v-toolbar-title>
     <v-spacer></v-spacer>
+    <v-toolbar-items>
+      <v-btn flat
+             v-for="(item, i) in menuItems"
+             :key="i"
+             :to="item.link">
+        <v-icon left>{{ item.icon }}</v-icon>{{ item.title }}</v-btn>
+    </v-toolbar-items>
     <v-btn icon
            @click.stop="rightDrawer = !rightDrawer">
       <v-icon>menu</v-icon>
@@ -61,7 +72,9 @@
         </v-flex>
         <v-flex xs12
                 md6>
-          <SearchBar/> </v-flex>
+          <!-- <SearchBar/> -->
+          <router-view></router-view>
+        </v-flex>
         <v-flex xs12
                 md3
                 v-if="$vuetify.breakpoint.mdAndUp">
@@ -93,6 +106,15 @@ export default {
         icon: 'filters',
         title: 'Filters'
       }],
+      menuItems: [{
+        icon: "person",
+        title: "Connexion",
+        link: "/signin"
+      }, {
+        icon: "person",
+        title: "Profile",
+        link: "/profile"
+      }, ],
       rightDrawer: false,
       title: 'WikiLiturgie'
     }

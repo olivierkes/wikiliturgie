@@ -52,12 +52,11 @@ export default {
     }
   },
   methods: {
-    focusText (){
-      if (this.searchText){
+    focusText() {
+      if (this.searchText) {
         // document.getElementById("mytext").focus();
         this.$refs.searchTop.focus()
-      }
-      else {
+      } else {
         this.$refs.searchCenter.focus()
       }
     }
