@@ -51,6 +51,11 @@
              :key="i"
              :to="item.link">
         <v-icon left>{{ item.icon }}</v-icon>{{ item.title }}</v-btn>
+      <v-btn flat
+             to="/profile"
+             v-if="userIsAuthenticated">
+        <v-avatar size="36px"><img :src="avatarUrl" /></v-avatar>
+      </v-btn>
     </v-toolbar-items>
     <v-btn icon
            @click.stop="rightDrawer = !rightDrawer">
@@ -114,6 +119,9 @@ export default {
     userIsAuthenticated() {
       return this.$store.getters.user !== null && this.$store.getters.user !== undefined
     },
+    avatarUrl() {
+      return this.$store.getters.user["providerData"][0]["photoURL"]
+    },
     menuItems() {
       if (!this.userIsAuthenticated) {
         return [{
@@ -122,11 +130,7 @@ export default {
           link: "/signin"
         }]
       } else {
-        return [{
-          icon: "person",
-          title: "Profile",
-          link: "/profile"
-        }]
+        return []
       }
     }
   }
