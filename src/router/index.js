@@ -7,21 +7,21 @@ import Signin from "@/components/User/Signin"
 Vue.use(Router)
 
 export default new Router({
-  routes: [{
-    path: "/",
-    name: "SearchBar",
-    component: SearchBar
+ routes: [{
+   path: "/",
+   name: "SearchBar",
+   component: SearchBar
   },
   {
-    path: "/profile",
-    name: "Profile",
-    component: Profile
+   path: "/profile",
+   name: "Profile",
+   component: Profile
   },
   {
-    path: "/signin",
-    name: "Signin",
-    component: Signin
+   path: "/signin",
+   name: "Signin",
+   component: Signin
   }
-  ],
-  mode: "history"
+ ],
+ mode: "history"
 })

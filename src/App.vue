@@ -106,17 +106,28 @@ export default {
         icon: 'filters',
         title: 'Filters'
       }],
-      menuItems: [{
-        icon: "person",
-        title: "Connexion",
-        link: "/signin"
-      }, {
-        icon: "person",
-        title: "Profile",
-        link: "/profile"
-      }, ],
       rightDrawer: false,
       title: 'WikiLiturgie'
+    }
+  },
+  computed: {
+    userIsAuthenticated() {
+      return this.$store.getters.user !== null && this.$store.getters.user !== undefined
+    },
+    menuItems() {
+      if (!this.userIsAuthenticated) {
+        return [{
+          icon: "person",
+          title: "Connexion",
+          link: "/signin"
+        }]
+      } else {
+        return [{
+          icon: "person",
+          title: "Profile",
+          link: "/profile"
+        }]
+      }
     }
   }
 }
