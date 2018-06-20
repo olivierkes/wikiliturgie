@@ -26,6 +26,11 @@ const settings = { timestampsInSnapshots: true }
 db.settings(settings)
 ///////// Vuefire
 
+///// filters
+import MarkdownFilter from "./filters/markdown"
+Vue.filter("md", MarkdownFilter)
+//////
+
 new Vue({
   store,
   router,

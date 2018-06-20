@@ -2,6 +2,14 @@
 <v-container grid-list-md>
   <v-layout row
             wrap>
+            <v-btn fixed
+                   dark
+                   fab
+                   bottom
+                   right
+                   color="red">
+              <v-icon>add</v-icon>
+            </v-btn>
     <v-flex xs12>
       <v-toolbar dense>
         <v-text-field prepend-icon="search"
@@ -26,8 +34,9 @@
             :key="key">
       <v-card>
         <v-card-text>
-          <h4 v-if="text.title">{{text.title}}</h4>
-          <p> {{text.content}} </p>
+          <h4 v-if="text.title"
+              class="primary--text">{{text.title}}</h4>
+          <p v-html="$options.filters.md(text.content)"></p>
         </v-card-text>
       </v-card>
     </v-flex>
