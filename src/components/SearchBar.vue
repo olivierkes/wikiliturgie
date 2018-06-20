@@ -1,5 +1,42 @@
 <template>
 <div style="height: 100%;">
+  <h1>Locations</h1>
+  <v-layout row>
+    <v-flex v-for="(location, idx) in locations"
+            :key="idx"
+            xs4>
+      <v-card>
+        <v-card-media :src="location.image"
+                      height="200"></v-card-media>
+        <v-card-title primary-title>
+          <h3>{{ location.name }}</h3></v-card-title>
+        <v-card-actions>
+          <v-btn flat
+                 color="red"
+                 @click="deleteLocation(location.id)">Remove</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-flex>
+    <v-flex xs4>
+      <v-card>
+        <v-card-media :src="image"
+                      :height="image? 200 : 0"></v-card-media>
+        <v-card-title>
+          <h3>New location</h3>
+          <v-form>
+            <v-text-field v-model="name"
+                          placeholder="Location Name"></v-text-field>
+            <v-text-field v-model="image"
+                          placeholder="Location Image URL"></v-text-field>
+          </v-form>
+        </v-card-title>
+        <v-card-actions>
+          <v-btn flat
+                 @click="addLocation(name, image)">Add New Location</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-flex>
+  </v-layout>
   <v-layout column>
     <v-flex xs12
             v-show="searchText">
@@ -38,8 +75,10 @@
   </v-layout>
 </div>
 </template>
-      <!-- <v-card > -->      <!-- <v-card > -->      <!-- <v-card > -->      <!-- <v-card > -->
+
+
 <script>
+import { db } from '../main'
 export default {
   name: 'SearchBar',
   props: {
@@ -48,7 +87,10 @@ export default {
   data() {
     return {
       nItems: 24982,
-      searchText: null
+      searchText: null,
+      locations: [],
+      name: "",
+      image: ""
     }
   },
   methods: {
@@ -59,6 +101,21 @@ export default {
       } else {
         this.$refs.searchCenter.focus()
       }
+    },
+    addLocation(name, image) { // <-- and here
+      const createdAt = new Date()
+      db.collection('locations').add({ name, image, createdAt })
+      console.log("Adds location" + name)
+      this.name = ""
+      this.image = ""
+    },
+    deleteLocation(id) {
+      db.collection('locations').doc(id).delete()
+    }
+  },
+  firestore() {
+    return {
+      locations: db.collection('locations').orderBy('createdAt')
     }
   }
 }
