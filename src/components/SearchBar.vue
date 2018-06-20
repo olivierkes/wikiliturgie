@@ -1,34 +1,38 @@
 <template>
-<v-layout row
-          wrap>
-  <v-flex xs12>
-    <v-toolbar dense>
-      <v-text-field prepend-icon="search"
-                    full-width
-                    hide-details
-                    single-line
-                    v-model="searchText"></v-text-field>
-      <v-toolbar-items>
-        <v-btn flat
-               small>
-          <v-icon>filter</v-icon>
-        </v-btn>
-      </v-toolbar-items>
-    </v-toolbar>
-  </v-flex>
+<v-container grid-list-md>
   <v-layout row
-            wrap
-            v-show="searchText || !searchText">
+            wrap>
+    <v-flex xs12>
+      <v-toolbar dense>
+        <v-text-field prepend-icon="search"
+                      full-width
+                      hide-details
+                      single-line
+                      v-model="searchText"></v-text-field>
+        <v-toolbar-items>
+          <v-btn flat
+                 small>
+            <v-icon>filter</v-icon>
+          </v-btn>
+        </v-toolbar-items>
+      </v-toolbar>
+    </v-flex>
+  </v-layout>
+  <v-layout row
+            wrap>
     <v-flex xs6
             sm4
-            v-for="(text, key) in texts"
+            v-for="(text, key) in searchedTexts"
             :key="key">
       <v-card>
-        <v-card-text> {{text.content}} </v-card-text>
+        <v-card-text>
+          <h4 v-if="text.title">{{text.title}}</h4>
+          <p> {{text.content}} </p>
+        </v-card-text>
       </v-card>
     </v-flex>
   </v-layout>
-</v-layout>
+</v-container>
 </template>
 
 
@@ -42,12 +46,21 @@ export default {
   data() {
     return {
       searchText: null,
-      image: ""
+      image: "",
+      texts: []
+    }
+  },
+  computed: {
+    searchedTexts() {
+      if (this.searchText) {
+        return this.texts.filter(txt => txt.content.toLowerCase().indexOf(this.searchText.toLowerCase()) != -1)
+      } else {
+        return this.texts
+      }
     }
   },
   firestore() {
     return {
-      locations: db.collection('locations').orderBy('createdAt'),
       texts: db.collection("texts")
     }
   }

@@ -63,7 +63,32 @@
     </v-btn>
   </v-toolbar>
   <v-content>
-    <router-view></router-view>
+    <v-container fluid
+                 fill-height
+                 grid-list-md>
+      <v-layout row
+                wrap>
+        <v-flex xs12
+                md3
+                v-if="$vuetify.breakpoint.mdAndUp">
+          <v-card v-if="leftDrawer">
+            <v-card-title>Comme ça</v-card-title>
+          </v-card>
+        </v-flex>
+        <v-flex xs12
+                md6>
+          <!-- <SearchBar/> -->
+          <router-view></router-view>
+        </v-flex>
+        <v-flex xs12
+                md3
+                v-if="$vuetify.breakpoint.mdAndUp">
+          <v-card v-if="rightDrawer">
+            <v-card-title>Comme ça</v-card-title>
+          </v-card>
+        </v-flex>
+      </v-layout>
+    </v-container>
   </v-content>
   <v-footer :fixed="fixed"
             app> <span>&copy; 2017</span> </v-footer>
@@ -79,6 +104,7 @@ export default {
   },
   data() {
     return {
+      clipped: false,
       leftDrawer: false,
       fixed: false,
       items: [{
