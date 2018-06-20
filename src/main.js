@@ -29,5 +29,12 @@ db.settings(settings)
 new Vue({
   store,
   router,
-  render: h => h(App)
+  render: h => h(App),
+  created() {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.$store.dispatch("autoSignIn", user)
+      }
+    })
+  }
 }).$mount("#app")

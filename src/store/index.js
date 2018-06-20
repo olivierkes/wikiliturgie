@@ -53,6 +53,9 @@ export const store = new Vuex.Store({
         console.log("Error in signing out.")
         console.log(error)
       })
+    },
+    autoSignIn({ commit }, payload) {
+      commit("setUser", payload)
     }
   },
   getters: {
