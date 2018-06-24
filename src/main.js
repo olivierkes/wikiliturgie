@@ -21,9 +21,27 @@ var config = {
   storageBucket: "wikiliturgie.appspot.com"
 }
 firebase.initializeApp(config) //var firebaseApp =
-export const db = firebase.firestore()
 const settings = { timestampsInSnapshots: true }
-db.settings(settings)
+firebase.firestore().settings(settings)
+firebase.firestore().enablePersistence()
+  .then(function() {
+    // Initialize Cloud Firestore through firebase
+    console.log("Persistence: ok.")
+  })
+  .catch(function(err) {
+    if (err.code == 'failed-precondition') {
+      // Multiple tabs open, persistence can only be enabled
+      // in one tab at a a time.
+      // ...
+      console.log("Debug: Persistence error: multiple tabs open, can only be enable in one.")
+    } else if (err.code == 'unimplemented') {
+      // The current browser does not support all of the
+      // features required to enable persistence
+      // ...
+      console.log("Debug: The current browser does not support persistence.")
+    }
+  })
+export const db = firebase.firestore()
 ///////// Vuefire
 
 ///// filters
