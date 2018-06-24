@@ -7,7 +7,7 @@
                    fab
                    bottom
                    right
-                   color="red">
+                   color="red" to="/text/add">
               <v-icon>add</v-icon>
             </v-btn>
     <v-flex xs12>
@@ -37,6 +37,9 @@
           <h4 v-if="text.title"
               class="primary--text">{{text.title}}</h4>
           <p v-html="$options.filters.md(text.content)"></p>
+          <v-card-actions>
+          <v-btn flat :to="'/text/' + text.id" color="orange">Voir</v-btn>
+        </v-card-actions>
         </v-card-text>
       </v-card>
     </v-flex>
