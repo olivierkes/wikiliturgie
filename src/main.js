@@ -44,9 +44,12 @@ firebase.firestore().enablePersistence()
 export const db = firebase.firestore()
 ///////// Vuefire
 
-///// filters
+///// Filters
 import MarkdownFilter from "./filters/markdown"
 Vue.filter("md", MarkdownFilter)
+///// Components
+import EditTextCmp from "./components/Texts/Edit.vue"
+Vue.component("text-edit", EditTextCmp)
 //////
 
 new Vue({

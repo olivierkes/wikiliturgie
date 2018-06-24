@@ -1,3 +1,8 @@
 <template>
-<h1>Add text</h1>
+<text-edit></text-edit>
 </template>
+
+<script>
+import { db } from '@/main'
+export default {}
+</script>
