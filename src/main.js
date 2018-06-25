@@ -56,6 +56,8 @@ import ChipBarCmp from "./components/Filters/ChipBar.vue"
 Vue.component("chip-bar", ChipBarCmp)
 import FilterDialogCmp from "./components/Filters/Dialog.vue"
 Vue.component("filter-dialog", FilterDialogCmp)
+import GroupEditorCmp from "./components/Tags/GroupEditor.vue"
+Vue.component("tag-group-editor", GroupEditorCmp)
 //////
 
 new Vue({
