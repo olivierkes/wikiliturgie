@@ -11,11 +11,20 @@
            to="/text/add">
       <v-icon>add</v-icon>
     </v-btn>
-    <v-flex xs11 sm10 offset-sm1>
-      <tag-bar v-model="filters" :organizedTags="organizedTags"></tag-bar>
+    <v-flex xs11
+            sm10
+            offset-sm1>
+      <tag-bar v-model="filters"
+               :organizedTags="organizedTags"
+               :label="tagBarLabel"
+               solo></tag-bar>
     </v-flex>
     <v-flex xs1>
-      <v-btn flat icon @click.native.stop="showFilterDialog = true"><v-icon center>settings</v-icon></v-btn>
+      <v-btn flat
+             icon
+             @click.native.stop="showFilterDialog = true">
+        <v-icon center>settings</v-icon>
+      </v-btn>
     </v-flex>
     <v-flex xs12>
       <chip-bar v-model="filters"></chip-bar>
@@ -73,15 +82,17 @@ export default {
     organizedTags() {
       var items = []
       this.tagGroups.forEach(g => {
-        items.push({ header: g.name, groupId: g.id})
+        items.push({ header: g.name, groupId: g.id })
         g.tags.forEach(tagID => {
           var tag = this.tags.find(t => t.id == tagID)
-          items.push({ text: tag.name, group: g.name, groupId: g.id, type: "tag", id: tag.id})
+          items.push({ text: tag.name, group: g.name, groupId: g.id, type: "tag", id: tag.id })
         })
         // items.push({ divider: true, groupId: g.id})
       })
-      console.log(items)
       return items
+    },
+    tagBarLabel () {
+      return "Rechercher parmis " + this.texts.length +" textes liturgiques…"
     }
   },
   firestore() {

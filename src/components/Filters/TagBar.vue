@@ -9,7 +9,7 @@
             tags
             dense
             prepend-icon="search"
-            solo
+            :solo = "solo"
             no-data-text="Texte de recherche personnalisé"
             :filter="filter"
             :search-input.sync="search"
@@ -36,7 +36,7 @@
 <script>
 import { db } from '@/main'
 export default {
-  props: ["value", "organizedTags"],
+  props: ["value", "organizedTags", "label", "solo"],
   data() {
     return {
       search: "",
@@ -48,11 +48,6 @@ export default {
   watch: {
     value() {
       this.selected = this.value
-    }
-  },
-  computed: {
-    label () {
-      return "Rechercher parmis " + this.texts.length +" textes liturgiques…"
     }
   },
   methods: {
