@@ -5,6 +5,7 @@ import Profile from "@/components/User/Profile"
 import Signin from "@/components/User/Signin"
 import AddText from "@/components/Texts/Add"
 import ViewText from "@/components/Texts/View"
+import ViewTags from "@/components/Tags/View"
 
 
 Vue.use(Router)
@@ -25,6 +26,11 @@ export default new Router({
       name: "ViewText",
       component: ViewText,
       props: true,
+    },
+    {
+      path: "/tags",
+      name: "ViewTags",
+      component: ViewTags,
     },
     {
       path: "/profile",

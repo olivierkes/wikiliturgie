@@ -1,7 +1,7 @@
 <template>
   <v-select :items="items"
             v-model="internalSelected"
-            label="Rechercher…"
+            :label="label"
             chips
             max-height="auto"
             autocomplete
@@ -35,6 +35,7 @@
 </template>
 
 <script>
+import { db } from '@/main'
 export default {
   props: ["value"],
   data() {
@@ -54,11 +55,18 @@ export default {
         { text: "Jane Smith ", group: "Group 2", type: "tag", id: 6 },
         { text: "John Smith", group: "Group 2", type: "tag", id: 7 },
         { text: "Sandra Williams", group: "Group 2", type: "tag", id: 8 }
-      ]}
+      ],
+      texts: []
+    }
   },
   watch: {
     value() {
       this.selected = this.value
+    }
+  },
+  computed: {
+    label () {
+      return "Rechercher parmis " + this.texts.length +" textes liturgiques…"
     }
   },
   methods: {
@@ -102,6 +110,11 @@ export default {
     selectedItem(id) {
       return this.selected.some(e => e.id == id)
     }
-  }
+  },
+  firestore() {
+    return {
+      texts: db.collection("texts")
+    }
+  },
 };
 </script>

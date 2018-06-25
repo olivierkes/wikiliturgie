@@ -104,7 +104,11 @@ export default {
           link: "/signin"
         }]
       } else {
-        return []
+        return [{
+          icon: "dns",
+          title: "Tags",
+          link: "/tags"
+        }]
       }
     }
   }

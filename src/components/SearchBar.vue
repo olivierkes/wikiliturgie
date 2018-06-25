@@ -26,7 +26,7 @@
         </v-toolbar-items>
       </v-toolbar>
     </v-flex> -->
-    <v-flex xs11 >
+    <v-flex xs11 sm10 offset-sm1>
       <tag-bar v-model="filters"></tag-bar>
     </v-flex>
     <v-flex xs1>
