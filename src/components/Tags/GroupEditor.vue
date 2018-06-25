@@ -1,17 +1,26 @@
 <template>
-  <v-layout column v-if="groupId">
+  <v-layout column v-show="groupId">
     <v-flex>
       <h2>Groupe: {{currentGroupName}}</h2></v-flex>
     <v-flex>
       <v-card>
-        <v-list two-line>
+        <v-list  dense ref="sortableList">
           <v-list-tile v-for="t in groupTags"
                        :key="t.id"
                        @click="">
+            <v-list-tile-action>
+              <v-btn style="cursor: move" icon class="sortHandle"><v-icon>drag_handle</v-icon></v-btn>
+            </v-list-tile-action>
             <v-list-tile-content>
               <v-list-tile-title>{{t.name}}</v-list-tile-title>
-              <v-list-tile-sub-title>{{t.description}}</v-list-tile-sub-title>
+              <!-- <v-list-tile-sub-title>{{t.description}}</v-list-tile-sub-title> -->
             </v-list-tile-content>
+              <v-btn icon v-if="t.description">
+                 <v-tooltip top>
+                   <v-icon color="grey lighten-1" ripple slot="activator">info</v-icon>
+                   <span>{{t.description}}</span>
+                 </v-tooltip>
+              </v-btn>
             <v-list-tile-action>
               <v-btn icon
                      ripple
@@ -24,7 +33,7 @@
         <v-card-actions>
           <v-btn flat
                  color="orange"
-                 @click="addOrEditDialog = true">Ajouter</v-btn>
+                 @click="addTag">Ajouter</v-btn>
         </v-card-actions>
       </v-card>
     </v-flex>
@@ -37,11 +46,14 @@
             <v-flex xs12>
               <v-text-field label="Nom"
                             required
-                            v-model="tagName"></v-text-field>
+                            v-model="tagName"
+                            @keyup.enter="addOrEditTag"
+                            ref="tagName"></v-text-field>
             </v-flex>
             <v-flex xs12>
               <v-text-field label="Description"
-                            v-model="tagDescription"></v-text-field>
+                            v-model="tagDescription"
+                            @keyup.enter="addOrEditTag"></v-text-field>
             </v-flex>
           </v-layout>
         </v-container>
@@ -76,6 +88,14 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-snackbar
+      :timeout="2000"
+      bottom
+      v-model="snackbarConfirmSave"
+    >
+      {{ snackbarText }}
+      <v-btn flat color="pink" @click.native="snackbarConfirmSave = false">Close</v-btn>
+    </v-snackbar>
   </v-layout>
 </template>
 
@@ -83,6 +103,7 @@
 <script>
 import { db } from '@/main'
 import firebase from 'firebase/app'
+import Sortable from 'sortablejs'
 export default {
   props: ["groupId"],
 
@@ -94,7 +115,9 @@ export default {
       tagName: "",
       tagDescription: "",
       addOrEditDialog: false,
-      confirmDialog: false
+      confirmDialog: false,
+      snackbarConfirmSave: false,
+      snackbarText: "Le nouvel ordre a été sauvé."
     }
   },
 
@@ -129,12 +152,17 @@ export default {
       this.tagName = tag.name
       this.tagDescription = tag.description
       this.addOrEditDialog = true
+      this.$nextTick(function() {this.$refs.tagName.focus()})
     },
     cancelEditTag() {
       this.tagEdited = null
       this.tagName = ""
       this.tagDescription = ""
       this.addOrEditDialog = false
+    },
+    addTag() {
+      this.addOrEditDialog = true
+      this.$nextTick(function() {this.$refs.tagName.focus()})
     },
     addOrEditTag() {
       if (this.tagEdited) {
@@ -143,6 +171,10 @@ export default {
           name: this.tagName.trim(),
           description: this.tagDescription.trim()
         })
+          .then((data) => {
+            this.snackbarText = "Le tag a bien été modifié."
+            this.snackbarConfirmSave=true
+          })
         this.cancelEditTag()
       } else if (this.tagName !== "") {
         // We are creating a new group
@@ -153,6 +185,10 @@ export default {
           description: this.tagDescription.trim(),
           created: firebase.firestore.FieldValue.serverTimestamp()
         })
+          .then((data) => {
+            this.snackbarText = "Le tag a bien été crée."
+            this.snackbarConfirmSave=true
+          })
         var tags = this.group.tags || []
         tags.push(tagRef.id)
         db.collection("tagGroups").doc(this.groupId).update({
@@ -172,11 +208,26 @@ export default {
       var tags = this.group.tags
       tags.splice(tags.indexOf(this.tagEdited), 1)
       db.collection("tagGroups").doc(this.groupId).update({tags: tags})
+        .then((data) => {
+          this.snackbarText = "Le tag a bien été supprimé."
+          this.snackbarConfirmSave=true
+        })
 
       this.cancelEditTag()
     },
     removeTagCancel() {
       this.confirmDialog = false
+    },
+
+    // Sortable
+    dragReorder ({to, from, oldIndex, newIndex}) {
+      const movedItem = this.group.tags.splice(oldIndex, 1)[0]
+      this.group.tags.splice(newIndex, 0, movedItem)
+      db.collection("tagGroups").doc(this.groupId).update({tags: this.group.tags})
+        .then((data) => {
+          this.snackbarText = "Le nouvel ordre a été sauvé."
+          this.snackbarConfirmSave=true
+        })
     }
   },
 
@@ -186,5 +237,18 @@ export default {
       groups: db.collection("tagGroups")
     }
   },
+
+  mounted() {
+    this.$nextTick(function () {
+    // Code that will run only after the
+    // entire view has been rendered
+    var el = this.$refs.sortableList.$el
+    var sortable = Sortable.create(el, {
+        handle: '.sortHandle',
+        onEnd: this.dragReorder
+      })
+    })
+
+  }
 }
 </script>
