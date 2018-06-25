@@ -92,7 +92,7 @@
 
 
 <script>
-import { db } from '@/main'
+import { db } from '@/firebase'
 import firebase from 'firebase/app'
 export default {
   data() {

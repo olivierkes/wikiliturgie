@@ -87,10 +87,10 @@ export default {
   },
   computed: {
     userIsAuthenticated() {
-      return this.$store.getters.user !== null && this.$store.getters.user !== undefined
+      return this.$store.getters["users/user"] !== null && this.$store.getters["users/user"] !== undefined
     },
     avatarUrl() {
-      return this.$store.getters.user["providerData"][0]["photoURL"]
+      return this.$store.getters["users/user"]["providerData"][0]["photoURL"]
     },
     menuItems() {
       if (!this.userIsAuthenticated) {

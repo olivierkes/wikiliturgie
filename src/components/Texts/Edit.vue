@@ -77,7 +77,7 @@
 </template>
 
 <script>
-import { db } from '@/main'
+import { db } from '@/firebase'
 export default {
   props: ["id"],
   data() {

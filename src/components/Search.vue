@@ -58,38 +58,30 @@
 
 
 <script>
-import { db } from '@/main'
+import { db } from '@/firebase'
+import Vuex from "vuex"
 export default {
   data() {
     return {
       searchText: null,
       image: "",
       texts: [],
-      tags: [],
-      tagGroups: [],
       filters: [],
       showFilterDialog: false,
     }
   },
   computed: {
+    ...Vuex.mapGetters({
+      tags: "tags/tags",
+      tagGroups: "tags/tagGroups",
+      organizedTags: "tags/organizedTags"
+    }),
     searchedTexts() {
       if (this.searchText) {
         return this.texts.filter(txt => txt.content.toLowerCase().indexOf(this.searchText.toLowerCase()) != -1)
       } else {
         return this.texts
       }
-    },
-    organizedTags() {
-      var items = []
-      this.tagGroups.forEach(g => {
-        items.push({ header: g.name, groupId: g.id })
-        g.tags.forEach(tagID => {
-          var tag = this.tags.find(t => t.id == tagID)
-          items.push({ text: tag.name, group: g.name, groupId: g.id, type: "tag", id: tag.id })
-        })
-        // items.push({ divider: true, groupId: g.id})
-      })
-      return items
     },
     tagBarLabel () {
       return "Rechercher parmis " + this.texts.length +" textes liturgiques…"
@@ -98,8 +90,8 @@ export default {
   firestore() {
     return {
       texts: db.collection("texts"),
-      tags: db.collection("tags"),
-      tagGroups: db.collection("tagGroups")
+      // tags: db.collection("tags"),
+      // tagGroups: db.collection("tagGroups")
     }
   }
 }

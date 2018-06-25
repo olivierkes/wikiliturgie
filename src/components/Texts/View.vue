@@ -3,7 +3,6 @@
 </template>
 
 <script>
-import { db } from '@/main'
 export default {
   props: ["id"],
 }

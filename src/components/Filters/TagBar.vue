@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { db } from '@/main'
+import { db } from '@/firebase'
 export default {
   props: ["value", "organizedTags", "label", "solo"],
   data() {
@@ -79,8 +79,6 @@ export default {
         var filtered = this.organizedTags.filter(i => i.groupId == item.groupId
                                                       && i.type == "tag"
                                                       && this.filter(i, queryText, i.text) == true)
-        console.log(item.header)
-        console.log(filtered)
         return filtered.length != 0
       }
       // Default function from https://github.com/vuetifyjs/vuetify/blob/74553209a26255e9bff33ad98a6fac0d62f0212b/src/components/VSelect/mixins/select-autocomplete.js#L14-L23
