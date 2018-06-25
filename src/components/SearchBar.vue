@@ -30,15 +30,18 @@
       <tag-bar v-model="filters"></tag-bar>
     </v-flex>
     <v-flex xs1>
-      <v-btn flat icon><v-icon center>settings</v-icon></v-btn>
+      <v-btn flat icon @click.native.stop="showFilterDialog = true"><v-icon center>settings</v-icon></v-btn>
     </v-flex>
     <v-flex xs12>
       <chip-bar v-model="filters"></chip-bar>
     </v-flex>
+    <filter-dialog v-model="filters"
+                   :show="showFilterDialog"
+                   @close="showFilterDialog = false"></filter-dialog>
   </v-layout>
   <v-layout row
             wrap>
-    <v-flex xs6
+    <v-flex xs12
             sm4
             v-for="(text, key) in searchedTexts"
             :key="key">
@@ -72,7 +75,8 @@ export default {
       searchText: null,
       image: "",
       texts: [],
-      filters: []
+      filters: [],
+      showFilterDialog: false,
     }
   },
   computed: {

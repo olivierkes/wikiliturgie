@@ -54,6 +54,8 @@ import TagBarCmp from "./components/Filters/TagBar.vue"
 Vue.component("tag-bar", TagBarCmp)
 import ChipBarCmp from "./components/Filters/ChipBar.vue"
 Vue.component("chip-bar", ChipBarCmp)
+import FilterDialogCmp from "./components/Filters/Dialog.vue"
+Vue.component("filter-dialog", FilterDialogCmp)
 //////
 
 new Vue({
