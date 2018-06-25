@@ -1,10 +1,8 @@
 import Vue from "vue"
-import VueFire from 'vuefire'
 import firebase from 'firebase/app'
 import 'firebase/firestore'
 
 // explicit installation required in module environments
-Vue.use(VueFire)
 var config = {
   apiKey: "AIzaSyAwWJFoCL8H2cnLXgJUIMEjNyEvm4i6z7A",
   authDomain: "wikiliturgie.firebaseapp.com",

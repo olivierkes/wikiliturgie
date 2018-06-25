@@ -42,7 +42,6 @@ export default {
       search: "",
       internalSelected: [],
       selected: this.value,
-      texts: []
     }
   },
   watch: {
@@ -94,11 +93,6 @@ export default {
     selectedItem(id) {
       return this.selected.some(e => e.id == id)
     }
-  },
-  firestore() {
-    return {
-      texts: db.collection("texts")
-    }
-  },
+  }
 };
 </script>

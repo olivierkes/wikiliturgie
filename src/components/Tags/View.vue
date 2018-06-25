@@ -28,7 +28,7 @@
             <v-card-actions>
               <v-btn flat
                      color="orange"
-                     @click="addOrEditDialog = true">Ajouter</v-btn>
+                     @click="addGroup">Ajouter</v-btn>
             </v-card-actions>
           </v-card>
         </v-flex>
@@ -41,11 +41,14 @@
                 <v-flex xs12>
                   <v-text-field label="Nom"
                                 required
-                                v-model="groupName"></v-text-field>
+                                v-model="groupName"
+                                ref="tagName"
+                                @keyup.enter="addOrEditGroup"></v-text-field>
                 </v-flex>
                 <v-flex xs12>
                   <v-text-field label="Description"
-                                v-model="groupDescription"></v-text-field>
+                                v-model="groupDescription"
+                                @keyup.enter="addOrEditGroup"></v-text-field>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -97,7 +100,6 @@ import firebase from 'firebase/app'
 export default {
   data() {
     return {
-      groups: [],
       groupEdited: null, // to edit the group infos
       groupName: "",
       groupDescription: "",
@@ -107,14 +109,12 @@ export default {
       currentGroupEdited: null, // in the group editor (reorganize tags)
     }
   },
-  firestore() {
-    return {
-      groups: db.collection("tagGroups")
-    }
-  },
   computed: {
     isGroupEditing() {
       if (this.groupEdited == null) { return false } else { return true }
+    },
+    groups() {
+      return this.$store.getters["tags/tagGroups"]
     }
   },
   methods: {
@@ -124,6 +124,11 @@ export default {
       this.groupName = group.name
       this.groupDescription = group.description
       this.addOrEditDialog = true
+      this.$nextTick(function() {this.$refs.tagName.focus()})
+    },
+    addGroup(){
+      this.addOrEditDialog = true
+      this.$nextTick(function() {this.$refs.tagName.focus()})
     },
     cancelEditGroup() {
       this.groupEdited = null

@@ -7,7 +7,7 @@ Vue.use(Vuex)
 
 // TODO: read https://medium.com/js-dojo/build-a-realtime-chat-app-with-vuejs-vuex-and-firestore-32d081668709
 
-import db from "@/firebase"
+import { db } from "@/firebase"
 
 const state = {
   db: db
@@ -15,6 +15,7 @@ const state = {
 
 import users from './users'
 import tags from './tags'
+import texts from './texts'
 
 export var store = new Vuex.Store({
   // strict: process.env.NODE_ENV !== 'production', // strict in dev but not prod
@@ -25,6 +26,7 @@ export var store = new Vuex.Store({
   },
   modules: {
     users,
-    tags
+    tags,
+    texts
   }
 })

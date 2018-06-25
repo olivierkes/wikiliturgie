@@ -34,6 +34,7 @@ new Vue({
     // Firestore binding with VuexFire
     this.$store.dispatch("tags/setTagsRef", db.collection("tags"))
     this.$store.dispatch("tags/setTagGroupsRef", db.collection("tagGroups"))
+    this.$store.dispatch("texts/setTextsRef", db.collection("texts"))
 
     // Auth
     firebase.auth().onAuthStateChanged((user) => {

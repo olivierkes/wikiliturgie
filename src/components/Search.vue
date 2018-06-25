@@ -65,7 +65,6 @@ export default {
     return {
       searchText: null,
       image: "",
-      texts: [],
       filters: [],
       showFilterDialog: false,
     }
@@ -74,7 +73,8 @@ export default {
     ...Vuex.mapGetters({
       tags: "tags/tags",
       tagGroups: "tags/tagGroups",
-      organizedTags: "tags/organizedTags"
+      organizedTags: "tags/organizedTags",
+      texts: "texts/texts"
     }),
     searchedTexts() {
       if (this.searchText) {
@@ -85,13 +85,6 @@ export default {
     },
     tagBarLabel () {
       return "Rechercher parmis " + this.texts.length +" textes liturgiques…"
-    }
-  },
-  firestore() {
-    return {
-      texts: db.collection("texts"),
-      // tags: db.collection("tags"),
-      // tagGroups: db.collection("tagGroups")
     }
   }
 }

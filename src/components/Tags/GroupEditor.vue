@@ -104,13 +104,12 @@
 import { db } from '@/firebase'
 import firebase from 'firebase/app'
 import Sortable from 'sortablejs'
+import Vuex from "vuex"
 export default {
   props: ["groupId"],
 
   data () {
     return {
-      tags: [],
-      groups: [],
       tagEdited: null,
       tagName: "",
       tagDescription: "",
@@ -122,6 +121,10 @@ export default {
   },
 
   computed: {
+    ...Vuex.mapGetters({
+      tags: "tags/tags",
+      groups: "tags/tagGroups"
+    }),
     group () {
       return this.groups.find(g => g.id == this.groupId)
     },
@@ -228,13 +231,6 @@ export default {
           this.snackbarText = "Le nouvel ordre a été sauvé."
           this.snackbarConfirmSave=true
         })
-    }
-  },
-
-  firestore() {
-    return {
-      tags: db.collection("tags"),
-      groups: db.collection("tagGroups")
     }
   },
 

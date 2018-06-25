@@ -82,7 +82,6 @@ export default {
   props: ["id"],
   data() {
     return {
-      texts: [],
       local_text: { title: "", content: "" }
     }
   },
@@ -95,6 +94,7 @@ export default {
     }
   },
   computed: {
+    texts() {return this.$store.getters["texts/texts"]},
     escapedContent: {
       get: function () {
         return this.text.content.split("\\n").join("\n")
@@ -115,11 +115,6 @@ export default {
     },
     saveBtnText() {
       return this.id ? "Modifier" : "Créer"
-    }
-  },
-  firestore() {
-    return {
-      texts: db.collection("texts") //.doc(this.id)
     }
   }
 }
