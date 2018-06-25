@@ -50,6 +50,8 @@ Vue.filter("md", MarkdownFilter)
 ///// Components
 import EditTextCmp from "./components/Texts/Edit.vue"
 Vue.component("text-edit", EditTextCmp)
+import TagBarCmp from "./components/TagBar.vue"
+Vue.component("tag-bar", TagBarCmp)
 //////
 
 new Vue({

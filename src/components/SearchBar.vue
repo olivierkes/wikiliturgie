@@ -2,28 +2,32 @@
 <v-container grid-list-md>
   <v-layout row
             wrap>
-            <v-btn fixed
-                   dark
-                   fab
-                   bottom
-                   right
-                   color="red" to="/text/add">
-              <v-icon>add</v-icon>
-            </v-btn>
-    <v-flex xs12>
+    <v-btn fixed
+           dark
+           fab
+           bottom
+           right
+           color="red"
+           to="/text/add">
+      <v-icon>add</v-icon>
+    </v-btn>
+    <!-- <v-flex xs12>
       <v-toolbar dense>
         <v-text-field prepend-icon="search"
                       full-width
                       hide-details
                       single-line
                       v-model="searchText"></v-text-field>
+
         <v-toolbar-items>
-          <v-btn flat
-                 small>
-            <v-icon>filter</v-icon>
+          <v-btn flat>
+            <v-icon>settings</v-icon>
           </v-btn>
         </v-toolbar-items>
       </v-toolbar>
+    </v-flex> -->
+    <v-flex xs12>
+      <tag-bar></tag-bar>
     </v-flex>
   </v-layout>
   <v-layout row
@@ -38,8 +42,10 @@
               class="primary--text">{{text.title}}</h4>
           <p v-html="$options.filters.md(text.content)"></p>
           <v-card-actions>
-          <v-btn flat :to="'/text/' + text.id" color="orange">Voir</v-btn>
-        </v-card-actions>
+            <v-btn flat
+                   :to="'/text/' + text.id"
+                   color="orange">Voir</v-btn>
+          </v-card-actions>
         </v-card-text>
       </v-card>
     </v-flex>
