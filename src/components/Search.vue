@@ -11,23 +11,8 @@
            to="/text/add">
       <v-icon>add</v-icon>
     </v-btn>
-    <!-- <v-flex xs12>
-      <v-toolbar dense>
-        <v-text-field prepend-icon="search"
-                      full-width
-                      hide-details
-                      single-line
-                      v-model="searchText"></v-text-field>
-
-        <v-toolbar-items>
-          <v-btn flat>
-            <v-icon>settings</v-icon>
-          </v-btn>
-        </v-toolbar-items>
-      </v-toolbar>
-    </v-flex> -->
     <v-flex xs11 sm10 offset-sm1>
-      <tag-bar v-model="filters"></tag-bar>
+      <tag-bar v-model="filters" :organizedTags="organizedTags"></tag-bar>
     </v-flex>
     <v-flex xs1>
       <v-btn flat icon @click.native.stop="showFilterDialog = true"><v-icon center>settings</v-icon></v-btn>
@@ -64,17 +49,15 @@
 
 
 <script>
-import { db } from '../main'
+import { db } from '@/main'
 export default {
-  name: 'SearchBar',
-  props: {
-    msg: String
-  },
   data() {
     return {
       searchText: null,
       image: "",
       texts: [],
+      tags: [],
+      tagGroups: [],
       filters: [],
       showFilterDialog: false,
     }
@@ -86,11 +69,26 @@ export default {
       } else {
         return this.texts
       }
+    },
+    organizedTags() {
+      var items = []
+      this.tagGroups.forEach(g => {
+        items.push({ header: g.name, groupId: g.id})
+        g.tags.forEach(tagID => {
+          var tag = this.tags.find(t => t.id == tagID)
+          items.push({ text: tag.name, group: g.name, groupId: g.id, type: "tag", id: tag.id})
+        })
+        // items.push({ divider: true, groupId: g.id})
+      })
+      console.log(items)
+      return items
     }
   },
   firestore() {
     return {
-      texts: db.collection("texts")
+      texts: db.collection("texts"),
+      tags: db.collection("tags"),
+      tagGroups: db.collection("tagGroups")
     }
   }
 }

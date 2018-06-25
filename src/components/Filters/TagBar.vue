@@ -1,15 +1,14 @@
 <template>
-  <v-select :items="items"
+  <v-select :items="organizedTags"
             v-model="internalSelected"
             :label="label"
             chips
-            max-height="auto"
             autocomplete
             single-line
             hide-details
             tags
             dense
-            prepend-icon="filter_list"
+            prepend-icon="search"
             solo
             no-data-text="Texte de recherche personnalisé"
             :filter="filter"
@@ -37,25 +36,12 @@
 <script>
 import { db } from '@/main'
 export default {
-  props: ["value"],
+  props: ["value", "organizedTags"],
   data() {
     return {
       search: "",
       internalSelected: [],
       selected: this.value,
-      items: [
-        { header: "Group 1" },
-        { text: "Sandra Adams", group: "Group 1", type: "tag", id: 1 },
-        { text: "Ali Connors", group: "Group 1", type: "tag", id: 2 },
-        { text: "Trevor Hansen", group: "Group 1", type: "tag", id: 3 },
-        { text: "Tucker Smith", group: "Group 1", type: "tag", id: 4 },
-        { divider: true },
-        { header: "Group 2" },
-        { text: "Britta Holt", group: "Group 2", type: "tag", id: 5 },
-        { text: "Jane Smith ", group: "Group 2", type: "tag", id: 6 },
-        { text: "John Smith", group: "Group 2", type: "tag", id: 7 },
-        { text: "Sandra Williams", group: "Group 2", type: "tag", id: 8 }
-      ],
       texts: []
     }
   },
@@ -95,7 +81,12 @@ export default {
     validates(keyEvent) {},
     filter (item, queryText, itemText) {
       if ("header" in item || "divider" in item) {
-        return true
+        var filtered = this.organizedTags.filter(i => i.groupId == item.groupId
+                                                      && i.type == "tag"
+                                                      && this.filter(i, queryText, i.text) == true)
+        console.log(item.header)
+        console.log(filtered)
+        return filtered.length != 0
       }
       // Default function from https://github.com/vuetifyjs/vuetify/blob/74553209a26255e9bff33ad98a6fac0d62f0212b/src/components/VSelect/mixins/select-autocomplete.js#L14-L23
       // <v-select autocomplete> will be deprecated in favor of <v-autocomplete>,
