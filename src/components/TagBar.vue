@@ -37,11 +37,12 @@
 
 <script>
 export default {
+  props: ["value"],
   data() {
     return {
-      selected: [],
       search: "",
       internalSelected: [],
+      selected: this.value,
       items: [
         { header: "Group 1" },
         { text: "Sandra Adams", group: "Group 1", type: "tag" },
@@ -63,7 +64,7 @@ export default {
       // When custom search, selected is a string, so we mutate it in an object
       if (typeof(selected) == "string") {
         selected = {
-          text: selected,
+          text: selected.trim(),
           group: "Texte de recherche",
           type: "text"
         }
@@ -79,6 +80,7 @@ export default {
     remove(item) {
       this.selected.splice(this.selected.indexOf(item), 1)
       this.selected = [...this.selected]
+      this.$emit('input', this.selected)
     },
     filter (item, queryText, itemText) {
       if ("header" in item || "divider" in item) {

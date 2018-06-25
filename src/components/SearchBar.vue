@@ -27,7 +27,10 @@
       </v-toolbar>
     </v-flex> -->
     <v-flex xs12>
-      <tag-bar></tag-bar>
+      <tag-bar v-model="filters"></tag-bar>
+    </v-flex>
+    <v-flex xs12>
+      {{filters}}
     </v-flex>
   </v-layout>
   <v-layout row
@@ -65,7 +68,8 @@ export default {
     return {
       searchText: null,
       image: "",
-      texts: []
+      texts: [],
+      filters: []
     }
   },
   computed: {
