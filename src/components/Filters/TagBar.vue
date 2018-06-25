@@ -1,38 +1,22 @@
 <template>
-<v-container>
-  <v-layout column>
-    <v-flex xs12>
-      <v-select prepend-icon="filter_list"
-                :items="items"
-                v-model="internalSelected"
-                label="Rechercher…"
-                chips
-                max-height="auto"
-                autocomplete
-                hide-details
-                single-line
-                hide-selected
-                tags
-                no-data-text="Texte de recherche personnalisé"
-                :filter="filter"
-                :search-input.sync="search"
-                @input="input"
-                @keyup.enter="validates"
-                @change="change"> </v-select>
-    </v-flex>
-    <v-flex xs12>
-      <v-tooltip v-for="chip in selected" bottom>
-        <v-chip close
-                small
-                label
-                :color="(chip.type == 'tag') ? 'grey' : 'blue-grey lighten-2'"
-                @input="remove(chip)"
-                slot="activator"> {{chip.text}} </v-chip>
-        <span> {{ chip.group }}</span>
-      </v-tooltip>
-    </v-flex>
-  </v-layout>
-</v-container>
+  <v-select prepend-icon="filter_list"
+            :items="items"
+            v-model="internalSelected"
+            label="Rechercher…"
+            chips
+            max-height="auto"
+            autocomplete
+            hide-details
+            single-line
+            hide-selected
+            tags
+            no-data-text="Texte de recherche personnalisé"
+            :filter="filter"
+            :search-input.sync="search"
+            @input="input"
+            @keyup.enter="validates"
+            @change="change">
+  </v-select>
 </template>
 
 <script>
@@ -57,12 +41,20 @@ export default {
         { text: "Sandra Williams", group: "Group 2", type: "tag" }
       ]}
   },
+  watch: {
+    value() {
+      this.selected = this.value
+    }
+  },
   methods: {
     change(val) {},
     input(val) {
       var selected = this.internalSelected[0]
       // When custom search, selected is a string, so we mutate it in an object
       if (typeof(selected) == "string") {
+        if (!selected.trim()) {
+          this.internalSelected = []
+          return}
         selected = {
           text: selected.trim(),
           group: "Texte de recherche",
@@ -75,13 +67,9 @@ export default {
         this.selected.push(selected)
       }
       this.internalSelected = []
-    },
-    validates(keyEvent) {},
-    remove(item) {
-      this.selected.splice(this.selected.indexOf(item), 1)
-      this.selected = [...this.selected]
       this.$emit('input', this.selected)
     },
+    validates(keyEvent) {},
     filter (item, queryText, itemText) {
       if ("header" in item || "divider" in item) {
         return true

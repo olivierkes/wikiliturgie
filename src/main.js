@@ -50,8 +50,10 @@ Vue.filter("md", MarkdownFilter)
 ///// Components
 import EditTextCmp from "./components/Texts/Edit.vue"
 Vue.component("text-edit", EditTextCmp)
-import TagBarCmp from "./components/TagBar.vue"
+import TagBarCmp from "./components/Filters/TagBar.vue"
 Vue.component("tag-bar", TagBarCmp)
+import ChipBarCmp from "./components/Filters/ChipBar.vue"
+Vue.component("chip-bar", ChipBarCmp)
 //////
 
 new Vue({

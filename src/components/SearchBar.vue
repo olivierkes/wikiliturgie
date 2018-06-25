@@ -30,7 +30,7 @@
       <tag-bar v-model="filters"></tag-bar>
     </v-flex>
     <v-flex xs12>
-      {{filters}}
+      <chip-bar v-model="filters"></chip-bar>
     </v-flex>
   </v-layout>
   <v-layout row
