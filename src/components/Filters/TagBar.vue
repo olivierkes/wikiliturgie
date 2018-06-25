@@ -1,21 +1,36 @@
 <template>
-  <v-select prepend-icon="filter_list"
-            :items="items"
+  <v-select :items="items"
             v-model="internalSelected"
             label="Rechercher…"
             chips
             max-height="auto"
             autocomplete
-            hide-details
             single-line
-            hide-selected
+            hide-details
             tags
+            dense
+            prepend-icon="filter_list"
+            solo
             no-data-text="Texte de recherche personnalisé"
             :filter="filter"
             :search-input.sync="search"
             @input="input"
             @keyup.enter="validates"
             @change="change">
+    <template slot="item" slot-scope="data">
+      <template v-if="typeof data.item !== 'object'">
+        <v-list-tile-content v-text="data.item"></v-list-tile-content>
+      </template>
+      <template v-else>
+        <v-list-tile-action>
+          <!-- <v-icon v-if="data.item" >star</v-icon> -->
+          <v-checkbox :input-value="selectedItem(data.item.id)"></v-checkbox>
+        </v-list-tile-action>
+        <v-list-tile-content>
+          <v-list-tile-title v-html="data.item.text" ></v-list-tile-title>
+        </v-list-tile-content>
+      </template>
+    </template>
   </v-select>
 </template>
 
@@ -29,16 +44,16 @@ export default {
       selected: this.value,
       items: [
         { header: "Group 1" },
-        { text: "Sandra Adams", group: "Group 1", type: "tag" },
-        { text: "Ali Connors", group: "Group 1", type: "tag" },
-        { text: "Trevor Hansen", group: "Group 1", type: "tag" },
-        { text: "Tucker Smith", group: "Group 1", type: "tag" },
+        { text: "Sandra Adams", group: "Group 1", type: "tag", id: 1 },
+        { text: "Ali Connors", group: "Group 1", type: "tag", id: 2 },
+        { text: "Trevor Hansen", group: "Group 1", type: "tag", id: 3 },
+        { text: "Tucker Smith", group: "Group 1", type: "tag", id: 4 },
         { divider: true },
         { header: "Group 2" },
-        { text: "Britta Holt", group: "Group 2", type: "tag" },
-        { text: "Jane Smith ", group: "Group 2", type: "tag" },
-        { text: "John Smith", group: "Group 2", type: "tag" },
-        { text: "Sandra Williams", group: "Group 2", type: "tag" }
+        { text: "Britta Holt", group: "Group 2", type: "tag", id: 5 },
+        { text: "Jane Smith ", group: "Group 2", type: "tag", id: 6 },
+        { text: "John Smith", group: "Group 2", type: "tag", id: 7 },
+        { text: "Sandra Williams", group: "Group 2", type: "tag", id: 8 }
       ]}
   },
   watch: {
@@ -83,6 +98,9 @@ export default {
       return text.toString()
         .toLowerCase()
         .indexOf(query.toString().toLowerCase()) > -1
+    },
+    selectedItem(id) {
+      return this.selected.some(e => e.id == id)
     }
   }
 };

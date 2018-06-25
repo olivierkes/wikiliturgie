@@ -26,8 +26,11 @@
         </v-toolbar-items>
       </v-toolbar>
     </v-flex> -->
-    <v-flex xs12>
+    <v-flex xs11 >
       <tag-bar v-model="filters"></tag-bar>
+    </v-flex>
+    <v-flex xs1>
+      <v-btn flat icon><v-icon center>settings</v-icon></v-btn>
     </v-flex>
     <v-flex xs12>
       <chip-bar v-model="filters"></chip-bar>
