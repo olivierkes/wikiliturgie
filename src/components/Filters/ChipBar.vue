@@ -22,6 +22,11 @@ export default {
       selected: this.value,
     }
   },
+  watch: {
+    value() {
+      this.selected = this.value
+    }
+  },
   methods: {
     remove(item) {
       this.selected.splice(this.selected.indexOf(item), 1)

@@ -17,7 +17,13 @@ const getters = {
       items.push({ header: g.name, groupId: g.id })
       g.tags.forEach(tagID => {
         var tag = getters.tags.find(t => t.id == tagID)
-        items.push({ text: tag.name, group: g.name, groupId: g.id, type: "tag", id: tag.id })
+        items.push({
+          text: tag.name,
+          group: g.name,
+          groupId: g.id,
+          type: "tag",
+          id: tag.id
+        })
       })
       // items.push({ divider: true, groupId: g.id})
     })

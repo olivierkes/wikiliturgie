@@ -21,6 +21,8 @@ import FilterDialogCmp from "./components/Filters/Dialog.vue"
 Vue.component("filter-dialog", FilterDialogCmp)
 import GroupEditorCmp from "./components/Tags/GroupEditor.vue"
 Vue.component("tag-group-editor", GroupEditorCmp)
+import ConfirmDialogCmp from "./components/Shared/ConfirmDialog.vue"
+Vue.component("confirm-dialog", ConfirmDialogCmp)
 //////
 
 import firebase from "firebase"

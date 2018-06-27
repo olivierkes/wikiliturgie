@@ -15,7 +15,8 @@
             sm10
             offset-sm1>
       <tag-bar v-model="filters"
-               :organizedTags="organizedTags"
+               :tags="organizedTags"
+               allows-custom-search
                :label="tagBarLabel"
                solo></tag-bar>
     </v-flex>
@@ -42,7 +43,7 @@
       <v-card>
         <v-card-text>
           <h4 v-if="text.title"
-              class="primary--text">{{text.title}}</h4>
+              class="grey--text">{{text.title}}</h4>
           <p v-html="$options.filters.md(text.content)"></p>
           <v-card-actions>
             <v-btn flat
