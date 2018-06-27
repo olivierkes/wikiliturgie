@@ -1,3 +1,5 @@
+import firebase from "firebase"
+
 const state = {
   all: {},
   currentUser: null

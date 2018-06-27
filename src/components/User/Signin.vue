@@ -38,7 +38,7 @@ export default {
   },
   computed: {
     user() {
-      return this.$store.getters.user
+      return this.$store.getters["users/user"]
     }
   },
   watch: {
@@ -50,10 +50,10 @@ export default {
   },
   methods: {
     authWithGoogle() {
-      this.$store.dispatch("signIn", { provider: new firebase.auth.GoogleAuthProvider() })
+      this.$store.dispatch("users/signIn", { provider: new firebase.auth.GoogleAuthProvider() })
     },
     authWithFacebook() {
-      this.$store.dispatch("signIn", { provider: new firebase.auth.FacebookAuthProvider() })
+      this.$store.dispatch("users/signIn", { provider: new firebase.auth.FacebookAuthProvider() })
     },
   }
 }
