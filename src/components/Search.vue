@@ -28,7 +28,7 @@
       </v-btn>
     </v-flex>
     <v-flex xs12>
-      <chip-bar v-model="filters"></chip-bar>
+      <chip-bar v-model="filters" clearable></chip-bar>
     </v-flex>
     <filter-dialog v-model="filters"
                    :show="showFilterDialog"
