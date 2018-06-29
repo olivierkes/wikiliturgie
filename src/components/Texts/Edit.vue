@@ -170,8 +170,13 @@ export default {
         created_by: this.user ? this.user.uid : "",
         bible_ref: this.text.bible_ref || "",
         comments: this.text.comments || "",
-        license_wl: this.text.license_wl || false
+        license_wl: this.text.license_wl || false,
+        author: this.text.author || ""
       }
+      // FIXME: all of this is ugly, plus it does'nt work
+      // Cannot create new author, because authorName gets "" when out of
+      // focus. Let's wait for vuetify 1.1.0 for combobox...
+      var author = this.authors.find(a => a.id == this.text.author)
       if (this.text.author == "me") {
         // Finding me in authors
         var me = this.authors.find(a => a.user == this.user.uid)
@@ -179,18 +184,15 @@ export default {
           me = this.createAuthor(this.user.displayName, true)
         }
         obj.author = me.id
-      } else if (this.authorName) {
-        var author = this.authors.find(a => a.id == this.text.author)
+      } else if (author) {
+        // && author.name == this.authorName
         // Double check, because we can have the old author selected
-        //but a new text typed:
-        if (author && author.name == this.authorName) {
-          // Author exists
-          obj.author = this.text.author
-        } else if (this.authorName && (!this.text.author || author.name !== this.authorName)) {
-          // New name for author
-          var authorRef = this.createAuthor(this.authorName)
-          obj.author = authorRef.id
-        }
+        // but a new text typed
+        obj.author = this.text.author
+      } else if (this.authorName) {
+        // New name for author
+        var authorRef = this.createAuthor(this.authorName)
+        obj.author = authorRef.id
       } else {
         // Undefined author
         obj.author = ""
