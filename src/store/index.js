@@ -16,6 +16,7 @@ const state = {
 import users from './users'
 import tags from './tags'
 import texts from './texts'
+import authors from './authors'
 
 export var store = new Vuex.Store({
   // strict: process.env.NODE_ENV !== 'production', // strict in dev but not prod
@@ -27,6 +28,7 @@ export var store = new Vuex.Store({
   modules: {
     users,
     tags,
-    texts
+    texts,
+    authors
   }
 })

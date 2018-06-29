@@ -37,6 +37,7 @@ new Vue({
     this.$store.dispatch("tags/setTagsRef", db.collection("tags"))
     this.$store.dispatch("tags/setTagGroupsRef", db.collection("tagGroups"))
     this.$store.dispatch("texts/setTextsRef", db.collection("texts"))
+    this.$store.dispatch("authors/setAuthorsRef", db.collection("authors"))
 
     // Auth
     firebase.auth().onAuthStateChanged((user) => {
