@@ -88,14 +88,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-snackbar
-      :timeout="2000"
-      bottom
-      v-model="snackbarConfirmSave"
-    >
-      {{ snackbarText }}
-      <v-btn flat color="pink" @click.native="snackbarConfirmSave = false">Close</v-btn>
-    </v-snackbar>
   </v-layout>
 </template>
 
@@ -105,6 +97,7 @@ import { db } from '@/firebase'
 import firebase from 'firebase/app'
 import Sortable from 'sortablejs'
 import Vuex from "vuex"
+import { snackbar } from "@/utils"
 export default {
   props: ["groupId"],
 
@@ -115,8 +108,6 @@ export default {
       tagDescription: "",
       addOrEditDialog: false,
       confirmDialog: false,
-      snackbarConfirmSave: false,
-      snackbarText: "Le nouvel ordre a été sauvé."
     }
   },
 
@@ -175,8 +166,7 @@ export default {
           description: this.tagDescription.trim()
         })
           .then((data) => {
-            this.snackbarText = "Le tag a bien été modifié."
-            this.snackbarConfirmSave=true
+            snackbar("Le tag a bien été modifié.")
           })
         this.cancelEditTag()
       } else if (this.tagName !== "") {
@@ -189,8 +179,7 @@ export default {
           created: firebase.firestore.FieldValue.serverTimestamp()
         })
           .then((data) => {
-            this.snackbarText = "Le tag a bien été crée."
-            this.snackbarConfirmSave=true
+              snackbar("Le tag a bien été crée.")
           })
         var tags = this.group.tags || []
         tags.push(tagRef.id)
@@ -212,8 +201,7 @@ export default {
       tags.splice(tags.indexOf(this.tagEdited), 1)
       db.collection("tagGroups").doc(this.groupId).update({tags: tags})
         .then((data) => {
-          this.snackbarText = "Le tag a bien été supprimé."
-          this.snackbarConfirmSave=true
+          snackbar("Le tag a bien été supprimé.")
         })
 
       this.cancelEditTag()
@@ -228,8 +216,7 @@ export default {
       this.group.tags.splice(newIndex, 0, movedItem)
       db.collection("tagGroups").doc(this.groupId).update({tags: this.group.tags})
         .then((data) => {
-          this.snackbarText = "Le nouvel ordre a été sauvé."
-          this.snackbarConfirmSave=true
+          snackbar("Le nouvel ordre a été sauvé.")
         })
     }
   },

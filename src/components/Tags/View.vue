@@ -1,6 +1,7 @@
 <template>
 <v-container grid-list-lg>
-  <v-layout row wrap>
+  <v-layout row
+            wrap>
     <v-flex xs12
             sm6>
       <v-layout column>
@@ -32,7 +33,8 @@
             </v-card-actions>
           </v-card>
         </v-flex>
-        <v-dialog v-model="addOrEditDialog" max-width="600">
+        <v-dialog v-model="addOrEditDialog"
+                  max-width="600">
           <v-card>
             <v-container fluid
                          class="px-3">
@@ -97,6 +99,7 @@
 <script>
 import { db } from '@/firebase'
 import firebase from 'firebase/app'
+import { snackbar } from "@/utils"
 export default {
   data() {
     return {
@@ -124,11 +127,11 @@ export default {
       this.groupName = group.name
       this.groupDescription = group.description
       this.addOrEditDialog = true
-      this.$nextTick(function() {this.$refs.tagName.focus()})
+      this.$nextTick(function () { this.$refs.tagName.focus() })
     },
-    addGroup(){
+    addGroup() {
       this.addOrEditDialog = true
-      this.$nextTick(function() {this.$refs.tagName.focus()})
+      this.$nextTick(function () { this.$refs.tagName.focus() })
     },
     cancelEditGroup() {
       this.groupEdited = null
@@ -142,7 +145,7 @@ export default {
         db.collection("tagGroups").doc(this.groupEdited).update({
           name: this.groupName.trim(),
           description: this.groupDescription.trim()
-        })
+        }).then(snackbar("Le groupe a été mis à jour."))
         this.cancelEditGroup()
       } else if (this.groupName !== "") {
         // We are creating a new group
@@ -150,7 +153,7 @@ export default {
           name: this.groupName.trim(),
           description: this.groupDescription.trim(),
           created: firebase.firestore.FieldValue.serverTimestamp()
-        })
+        }).then(snackbar("Le groupe a bien été crée."))
         this.cancelEditGroup()
       }
     },
@@ -159,7 +162,7 @@ export default {
     },
     removeGroupConfirm() {
       this.confirmDialog = false
-      db.collection("tagGroups").doc(this.groupEdited).delete()
+      db.collection("tagGroups").doc(this.groupEdited).delete().then(snackbar("Le groupe a bien été supprimé."))
       this.cancelEditGroup()
     },
     removeGroupCancel() {

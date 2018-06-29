@@ -28,7 +28,8 @@
       </v-btn>
     </v-flex>
     <v-flex xs12>
-      <chip-bar v-model="filters" clearable></chip-bar>
+      <chip-bar v-model="filters"
+                clearable></chip-bar>
     </v-flex>
     <filter-dialog v-model="filters"
                    :show="showFilterDialog"
@@ -70,8 +71,7 @@ export default {
       showFilterDialog: false,
     }
   },
-  computed: {
-    ...Vuex.mapGetters({
+  computed: { ...Vuex.mapGetters({
       tags: "tags/tags",
       tagGroups: "tags/tagGroups",
       organizedTags: "tags/organizedTags",
@@ -84,8 +84,8 @@ export default {
         return this.texts
       }
     },
-    tagBarLabel () {
-      return "Rechercher parmis " + this.texts.length +" textes liturgiques…"
+    tagBarLabel() {
+      return "Rechercher parmis " + this.texts.length + " textes liturgiques…"
     }
   }
 }

@@ -131,13 +131,6 @@
       </v-layout>
     </v-flex>
   </v-layout>
-  <v-snackbar :timeout="2000"
-              bottom
-              v-model="snackbar"> {{ snackbarText }}
-    <v-btn flat
-           color="pink"
-           @click.native="snackbar = false">Close</v-btn>
-  </v-snackbar>
   <confirm-dialog :visible.sync="confirmDialog"
                   @confirm="confirmRemoveText">Tu es sur le point de supprimer un texte. Es-tu sûr de toi?</confirm-dialog>
 </v-container>
@@ -147,6 +140,7 @@
 import { db } from '@/firebase'
 import Vuex from "vuex"
 import firebase from 'firebase/app'
+import { snackbar } from "@/utils"
 export default {
   props: ["id"],
   data() {
@@ -160,8 +154,6 @@ export default {
         license_wl: true
       },
       filters: [],
-      snackbar: false,
-      snackbarText: "",
       confirmDialog: false,
       authorName: "",
     }
@@ -185,7 +177,6 @@ export default {
         var me = this.authors.find(a => a.user == this.user.uid)
         if (!me) {
           me = this.createAuthor(this.user.displayName, true)
-          // FIXME: snackbar
         }
         obj.author = me.id
       } else if (this.authorName) {
@@ -208,11 +199,12 @@ export default {
       if (!this.id) {
         // Creating text
         db.collection("texts").add(obj).then(() => {
+          snackbar("Le texte a été crée.")
           this.$router.push("/")
         })
       } else {
         // Editing text
-        db.collection("texts").doc(this.id).update(obj)
+        db.collection("texts").doc(this.id).update(obj).then(snackbar("Le texte a été mis à jour."))
       }
     },
     removeText() {
@@ -220,6 +212,7 @@ export default {
     },
     confirmRemoveText() {
       db.collection("texts").doc(this.id).delete().then(() => {
+        snackbar("Le texte a bien été supprimé.")
         this.$router.push("/")
       })
     },
@@ -232,7 +225,7 @@ export default {
       if (isUser) {
         obj.user = this.user.uid
       }
-      authorRef.set(obj)
+      authorRef.set(obj).then("L'auteur a été crée.")
       return authorRef
     }
   },

@@ -64,6 +64,7 @@
   </v-toolbar>
   <v-content>
     <router-view></router-view>
+    <snackbar></snackbar>
   </v-content>
   <v-footer :fixed="fixed"
             app> <span>&copy; 2017</span> </v-footer>
