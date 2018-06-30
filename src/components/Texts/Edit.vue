@@ -49,7 +49,7 @@
                     <v-layout column>
                       <v-flex xs12>
                         <h1 class="subheading orange--text">Auteur</h1></v-flex>
-                      <v-flex xs12> {{ tempText.author }} {{selectedAuthor}}
+                      <v-flex xs12>
                         <v-switch v-if="user"
                                   label="Je suis l'auteur du texte"
                                   v-model="iAmAuthor"></v-switch>
@@ -91,7 +91,6 @@
                       <v-flex>
                         <h1 class="subheading orange--text">License WikiLiturgie</h1></v-flex>
                       <v-flex>
-                        FIXME: {{ tempText.license_wl}}
                         <p class="body-1 grey--text">Pour pouvoir être utilisé, le texte doit être placé sous la licence WikiLiturgie. Je certifie que l'auteur du texte l'accepte:</p>
                         <v-switch :disabled="user==null"
                                   :label="tempText.license_wl? 'Oui': 'Non / je ne suis pas sûr'"
@@ -153,7 +152,7 @@ export default {
       },
       // View props
       confirmDialog: false,
-      selectedAuthor: "",
+      synced: false // used to perform sync only once
     }
   },
   computed: { ...Vuex.mapGetters({
@@ -179,23 +178,23 @@ export default {
           return false
         } else if (this.userAuthor) {
           // User exists as author
-          return this.author == this.userAuthor.id
+          return this.tempText.author == this.userAuthor.id
         } else {
           // I don't exist as author
-          return this.author == "me"
+          return this.tempText.author == "me"
         }
       },
       set: function (val) {
         if (!this.user) { return } else if (val) {
           if (this.userAuthor) {
             // User is Author
-            this.author = this.userAuthor.id
+            this.tempText.author = this.userAuthor.id
           } else {
             // User is not yet author
-            this.author = "me"
+            this.tempText.author = "me"
           }
         } else {
-          this.author = ""
+          this.tempText.author = ""
         }
       }
     },
@@ -208,12 +207,12 @@ export default {
     },
     tempText: {
       get: function () {
-        if (this.id) {
+        if (this.id && !this.synced) {
           var text = this.texts.find(t => t.id == this.id)
-          var obj = {}
-          // for (var k in text) obj[k] = this.local_text[k] || text[k]
-          for (var k in text) this.$set(this.local_text, k, this.local_text[k] || text[k])
-          // return obj
+          if (text) {
+            for (var k in text) this.$set(this.local_text, k, this.local_text[k] || text[k])
+            this.synced = true
+          }
           return this.local_text
         } else {
           return this.local_text
@@ -235,38 +234,100 @@ export default {
       set: function (val) {
         this.tempText.tags = val.map(t => t.id)
       }
+    },
+    selectedAuthor: {
+      get: function () {
+        if (this.tempText.author) {
+          var author = this.authors.find(a => a.id == this.tempText.author)
+          if (author) {
+            return author
+          } else {
+            return this.tempText.author
+          }
+        }
+      },
+      set: function (newVal) {
+        // v-combobox replaces the object with the name of the object,
+        // don't know why...
+        var oldVal = this.selectedAuthor
+        var authorID = ""
+        if (newVal && typeof (newVal) == "object") {
+          this.tempText.author = newVal.id
+        } else if (typeof (newVal) == "string" && typeof (oldVal) == "object" && oldVal.name == newVal) {
+          // this.selectedAuthor = oldVal
+          // authorID = oldVal.id
+          this.tempText.author = oldVal.id
+        } else {
+          this.tempText.author = newVal
+        }
+      }
     }
   },
   methods: {
-    saveText() {},
-    removeText() {},
-    confirmRemoveText() {}
-  },
-  watch: {
-    selectedAuthor: function (newVal, oldVal) {
-      // v-combobox replaces the object with the name of the object,
-      // don't know why...
-      var authorID = ""
-      if (newVal && typeof (newVal) == "object") {
-        authorID = newVal.id
-      } else if (typeof (newVal) == "string" && typeof (oldVal) == "object" && oldVal.name == newVal) {
-        this.selectedAuthor = oldVal
-        authorID = oldVal.id
-      } else {
-        authorID = newVal
+    saveText() {
+      // Prepare object
+      var obj = {
+        title: this.tempText.title,
+        content: this.tempText.content,
+        created_on: firebase.firestore.FieldValue.serverTimestamp(),
+        tags: this.tempText.tags,
+        created_by: this.user ? this.user.uid : "",
+        bible_ref: this.tempText.bible_ref || "",
+        comments: this.tempText.comments || "",
+        license_wl: this.tempText.license_wl || false,
+        author: this.tempText.author || ""
       }
-      this.author = authorID
+      if (obj.author == "me") {
+        // We need to create an author for user
+        me = this.createAuthor(this.user.displayName, true)
+        obj.author = me.id
+      } else if (obj.author !== "") {
+        // Check if author exsits
+        var author = this.authors.find(a => a.id == obj.author)
+        if (author) {
+          // Author exists, everything alright, nothing to do
+        } else {
+          // Need to create author
+          var authorRef = this.createAuthor(obj.author)
+          obj.author = authorRef.id
+        }
+      } else {
+        // Author is "", let's do nothing for now
+      }
+      // Saving object
+      if (!this.id) {
+        // Creating text
+        db.collection("texts").add(obj).then(() => {
+          snackbar("Le texte a été crée.")
+          this.$router.push("/")
+        })
+      } else {
+        // Editing text
+        db.collection("texts").doc(this.id).update(obj).then(snackbar("Le texte a été mis à jour."))
+      }
+      this.tempText.author = obj.author
+    },
+    removeText() {
+      this.confirmDialog = true
+    },
+    confirmRemoveText() {
+      db.collection("texts").doc(this.id).delete().then(() => {
+        snackbar("Le texte a bien été supprimé.")
+        this.$router.push("/")
+      })
+    },
+    createAuthor(name, isUser) {
+      var authorRef = db.collection("authors").doc()
+      var obj = {
+        name: name,
+        created_by: this.user ? this.user.uid : "",
+      }
+      if (isUser) {
+        obj.user = this.user.uid
+      }
+      authorRef.set(obj).then(snackbar("L'auteur " + name + " a été crée."))
+      return authorRef
     }
-  },
-  // mounted() {
-  //   // FIXME: not reactive, because loaded only once in the view...
-  //   // Find a way to use a computed property
-  //   this.$nextTick(function () {
-  //     if (this.id) {
-  //       var text = this.texts.find(t => t.id == this.id)
-  //       for (var k in text) this[k] = text[k]
-  //     }
-  //   })
-  // }
+  }
 }
 </script>
