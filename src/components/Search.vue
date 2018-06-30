@@ -92,11 +92,15 @@ export default {
       texts: "texts/texts"
     }),
     searchedTexts() {
-      if (this.searchText) {
-        return this.texts.filter(txt => txt.content.toLowerCase().indexOf(this.searchText.toLowerCase()) != -1)
-      } else {
-        return this.texts
-      }
+      var texts = this.texts
+      this.filters.forEach(f => {
+        if (f.type == "text"){
+          texts = texts.filter(txt => JSON.stringify(txt).toLowerCase().indexOf(f.text.toLowerCase()) != -1)
+        } else if (f.type == "tag"){
+          texts = texts.filter(txt => txt.tags.some(t => t == f.id))
+        }
+      })
+      return texts
     },
     tagBarLabel() {
       return "Rechercher parmis " + this.texts.length + " textes liturgiques…"
