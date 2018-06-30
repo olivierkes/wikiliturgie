@@ -13,6 +13,10 @@ Vue.filter("md", MarkdownFilter)
 ///// Components
 import EditTextCmp from "./components/Texts/Edit.vue"
 Vue.component("text-edit", EditTextCmp)
+import TextsViewerCmp from "./components/Texts/Viewer.vue"
+Vue.component("texts-viewer", TextsViewerCmp)
+import TextViewerCmp from "./components/Texts/SingleCard.vue"
+Vue.component("text-card", TextViewerCmp)
 import TagBarCmp from "./components/Filters/TagBar.vue"
 Vue.component("tag-bar", TagBarCmp)
 import ChipBarCmp from "./components/Filters/ChipBar.vue"

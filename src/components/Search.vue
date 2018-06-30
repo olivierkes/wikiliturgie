@@ -1,63 +1,76 @@
 <template>
-<v-container grid-list-md>
-  <v-layout row
-            wrap>
-    <v-btn fixed
-           dark
-           fab
-           bottom
-           right
-           color="red"
-           to="/text/add">
-      <v-icon>add</v-icon>
-    </v-btn>
-    <v-flex xs11
-            sm10
-            offset-sm1>
-      <tag-bar v-model="filters"
-               :tags="organizedTags"
-               allows-custom-search
-               :label="tagBarLabel"
-               solo></tag-bar>
+<v-container grid-list-md
+             fill-height>
+  <v-btn fixed
+         dark
+         fab
+         bottom
+         right
+         color="red"
+         to="/text/add">
+    <v-icon>add</v-icon>
+  </v-btn>
+  <v-layout column>
+    <!-- style="position: sticky; top: 50px; z-index: 10;" -->
+    <v-flex>
+      <v-layout column>
+        <v-flex>
+          <v-layout row>
+            <v-flex xs11
+                    sm10
+                    offset-sm1>
+              <tag-bar v-model="filters"
+                       :tags="organizedTags"
+                       allows-custom-search
+                       :label="tagBarLabel"
+                       solo></tag-bar>
+            </v-flex>
+            <v-flex xs1>
+              <v-btn flat
+                     icon
+                     @click.native.stop="showFilterDialog = true">
+                <v-icon center>settings</v-icon>
+              </v-btn>
+            </v-flex>
+          </v-layout>
+        </v-flex>
+        <v-flex>
+          <v-layout row
+                    wrap>
+            <!-- Chip bar -->
+            <v-flex xs12 md9>
+              <chip-bar v-model="filters"
+                        clearable></chip-bar>
+            </v-flex>
+            <v-flex xs12 md3>
+              <v-icon small>keyboard_arrow_left</v-icon>
+              <span class="grey--text" style="font-size:small;">{{searchedTexts.length}} textes</span>
+              <v-icon small>keyboard_arrow_right</v-icon>
+              <v-btn icon
+                     small
+                     disabled>
+                <v-icon small>sort_by_alpha</v-icon>
+              </v-btn>
+              <v-btn icon
+                     small
+                     @click="viewSingleMode = !viewSingleMode">
+                <v-icon small>{{ viewSingleMode ? "view_module" : "view_carousel" }}</v-icon>
+              </v-btn>
+            </v-flex>
+          </v-layout>
+        </v-flex>
+        <filter-dialog v-model="filters"
+                       :show="showFilterDialog"
+                       @close="showFilterDialog = false"></filter-dialog>
+      </v-layout>
     </v-flex>
-    <v-flex xs1>
-      <v-btn flat
-             icon
-             @click.native.stop="showFilterDialog = true">
-        <v-icon center>settings</v-icon>
-      </v-btn>
-    </v-flex>
-    <v-flex xs12>
-      <chip-bar v-model="filters"
-                clearable></chip-bar>
-    </v-flex>
-    <filter-dialog v-model="filters"
-                   :show="showFilterDialog"
-                   @close="showFilterDialog = false"></filter-dialog>
-  </v-layout>
-  <v-layout row
-            wrap>
-    <v-flex xs12
-            sm4
-            v-for="(text, key) in searchedTexts"
-            :key="key">
-      <v-card>
-        <v-card-text>
-          <h4 v-if="text.title"
-              class="grey--text">{{text.title}}</h4>
-          <p v-html="$options.filters.md(text.content)"></p>
-          <v-card-actions>
-            <v-btn flat
-                   :to="'/text/' + text.id"
-                   color="orange">Voir</v-btn>
-          </v-card-actions>
-        </v-card-text>
-      </v-card>
+    <v-flex fill-height>
+      <texts-viewer :texts="searchedTexts"
+                    :single-mode="viewSingleMode"></texts-viewer>
     </v-flex>
   </v-layout>
 </v-container>
 </template>
-
 
 <script>
 import { db } from '@/firebase'
@@ -69,6 +82,7 @@ export default {
       image: "",
       filters: [],
       showFilterDialog: false,
+      viewSingleMode: false
     }
   },
   computed: { ...Vuex.mapGetters({
