@@ -63,27 +63,37 @@ export default {
     "tags": Array,
     "label": String,
     "solo": Boolean,
-    "allowsCustomText": Boolean
+    "allowsCustomText": Boolean,
+    "tagOnly": Boolean  // Returns array of tag's id only
   },
   data() {
     return {
       search: "",
       internalSelected: [],
-      selected: this.value,
+      selectedInput: this.value,
     }
   },
   watch: {
     value() {
-      this.selected = this.value
+      this.selectedInput = this.value
+    }
+  },
+  computed: {
+    tagObject() {return this.$store.getters["tags/tagObject"]},
+    selected() {
+      // Must return an array of tagObject
+      if (this.tagOnly){
+        return this.selectedInput ? this.selectedInput.map(tagId => this.tagObject(tagId))
+                                  : []
+      } else {
+        return this.selectedInput
+      }
     }
   },
   methods: {
     change(val) {},
     input(val) {
-      console.log("Input!")
-      console.log(val)
       var selected = this.internalSelected[0]
-      console.log(selected)
       // When custom text, selected is a string, so we mutate it in an object
       if (typeof (selected) == "string" && this.allowsCustomText) {
         if (!selected.trim()) {
@@ -105,7 +115,7 @@ export default {
         this.selected.push(selected)
       }
       this.internalSelected = []
-      this.$emit('input', this.selected)
+      this.emit()
     },
     validates(keyEvent) {},
     filter(item, queryText, itemText) {
@@ -123,6 +133,14 @@ export default {
     },
     selectedItem(id) {
       return this.selected.some(e => e.id == id)
+    },
+    emit() {
+      if (this.tagOnly){
+        // Returns array of tags ID only
+        this.$emit("input", this.selected.map(s => s.id))
+      } else {
+        this.$emit("input", this.selected)
+      }
     }
   }
 };

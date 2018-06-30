@@ -1,6 +1,6 @@
 <template>
 <v-container grid-list-lg
-             v-if="text">
+             v-if="tempText">
   <v-layout row
             wrap>
     <v-flex xs12
@@ -9,15 +9,14 @@
         <v-flex xs12>
           <h1>{{ this.id ? "Modifier un texte" : "Ajouter un texte"}}</h1> </v-flex>
         <v-flex xs12>
-          <v-text-field v-model="text.title"
+          <v-text-field v-model="tempText.title"
                         label="Titre"> </v-text-field>
         </v-flex>
         <v-flex xs12>
-          <v-text-field v-model="escapedContent"
-                        multi-line
-                        label="Contenu"
-                        required
-                        rows="25"></v-text-field>
+          <v-textarea v-model="escapedContent"
+                      label="Contenu"
+                      required
+                      rows="25"></v-textarea>
         </v-flex>
       </v-layout>
     </v-flex>
@@ -27,7 +26,7 @@
         <v-flex>
           <v-btn flat
                  color="primary"
-                 :disabled="!text.content"
+                 :disabled="!tempText.content"
                  @click="saveText">{{ this.id ? "Modifier" : "Créer" }}</v-btn>
           <v-btn flat
                  color="grey"
@@ -50,56 +49,55 @@
                     <v-layout column>
                       <v-flex xs12>
                         <h1 class="subheading orange--text">Auteur</h1></v-flex>
-                      <v-flex xs12>
+                      <v-flex xs12> {{ tempText.author }} {{selectedAuthor}}
                         <v-switch v-if="user"
                                   label="Je suis l'auteur du texte"
                                   v-model="iAmAuthor"></v-switch>
-                        <v-select v-if="!user || !iAmAuthor"
-                                  combobox
-                                  label="Auteur"
-                                  :items="authors"
-                                  v-model="authorObj"
-                                  item-text="name"
-                                  item-value="id"
-                                  :search-input.sync="authorName"
-                                  return-object
-                                  dense></v-select>
+                        <v-combobox v-if="!user || !iAmAuthor"
+                                    label="Auteur"
+                                    :items="authors"
+                                    v-model="selectedAuthor"
+                                    :item-text="i => i.name"
+                                    :item-value="i => i.id"
+                                    return-object
+                                    dense> </v-combobox>
                       </v-flex>
                       <v-flex>
                         <h1 class="subheading orange--text">Tags</h1></v-flex>
                       <v-flex>
                         <v-layout column>
                           <v-flex xs12>
-                            <tag-bar v-model="filters"
-                                     :tags="organizedTags"></tag-bar>
+                            <tag-bar v-model="tempText.tags"
+                                     :tags="organizedTags"
+                                     tag-only></tag-bar>
                           </v-flex>
                           <v-flex>
-                            <chip-bar v-model="filters"></chip-bar>
+                            <chip-bar v-model="computedTags"></chip-bar>
                           </v-flex>
                         </v-layout>
                       </v-flex>
                       <v-flex>
                         <h1 class="subheading orange--text">Autres</h1></v-flex>
                       <v-flex>
-                        <v-text-field v-model="text.bible_ref"
+                        <v-text-field v-model="tempText.bible_ref"
                                       slot="activator"
                                       label="Texte(s) biblique(s)"></v-text-field>
                       </v-flex>
                       <v-flex>
-                        <v-text-field v-model="text.comments"
-                                      label="Remarques générales"
-                                      multi-line
-                                      rows="4"></v-text-field>
+                        <v-textarea v-model="tempText.comments"
+                                    label="Remarques générales"
+                                    rows="4"></v-textarea>
                       </v-flex>
                       <v-flex>
                         <h1 class="subheading orange--text">License WikiLiturgie</h1></v-flex>
                       <v-flex>
+                        FIXME: {{ tempText.license_wl}}
                         <p class="body-1 grey--text">Pour pouvoir être utilisé, le texte doit être placé sous la licence WikiLiturgie. Je certifie que l'auteur du texte l'accepte:</p>
                         <v-switch :disabled="user==null"
-                                  :label="text.license_wl? 'Oui': 'Non / je ne suis pas sûr'"
-                                  v-model="text.license_wl"></v-switch>
+                                  :label="tempText.license_wl? 'Oui': 'Non / je ne suis pas sûr'"
+                                  v-model="tempText.license_wl"></v-switch>
                         <p class="body-1 grey--text"
-                           v-if="!text.license_wl">Dans ce cas, le texte sera enregistré mais signalé aux administrateurs pour vérifier la situation.</p>
+                           v-if="!tempText.license_wl">Dans ce cas, le texte sera enregistré mais signalé aux administrateurs pour vérifier la situation.</p>
                       </v-flex>
                     </v-layout>
                   </v-card-text>
@@ -107,20 +105,14 @@
               </v-tab-item>
               <!-- Aperçu -->
               <v-tab-item id="tab-2">
-                <v-card flat>
-                  <v-card-text>
-                    <h4 v-if="text.title"
-                        class="grey--text">{{text.title}}</h4>
-                    <p v-html="$options.filters.md(text.content)"></p>
-                  </v-card-text>
-                </v-card>
+                <text-card :text="tempText"></text-card>
               </v-tab-item>
               <!-- Révisions -->
               <v-tab-item id="tab-3">
                 <v-card flat>
                   <v-card-text>
                     <v-list>
-                      <v-list-tile v-if="text.created">Crée le: {{text.created}}</v-list-tile>
+                      <v-list-tile v-if="tempText.created_on">Crée le: {{tempText.created_on}}</v-list-tile>
                     </v-list>
                   </v-card-text>
                 </v-card>
@@ -137,6 +129,8 @@
 </template>
 
 <script>
+// FIXME: big problem. I'm changing this.text.xxx which creates a discrepancy
+// between firebase and the local copy. I should only change local values.
 import { db } from '@/firebase'
 import Vuex from "vuex"
 import firebase from 'firebase/app'
@@ -145,161 +139,134 @@ export default {
   props: ["id"],
   data() {
     return {
+      // Text object props
       local_text: {
-        title: "",
-        content: "",
-        bible_ref: "",
-        comments: "",
-        author: "",
-        license_wl: true
+        title: "", // String
+        content: "", // String
+        bible_ref: "", // String
+        comments: "", // String
+        author: "", // ID (String)
+        license_wl: true, // Boolean
+        created_on: "",
+        created_by: "",
+        tags: null
       },
-      filters: [],
+      // View props
       confirmDialog: false,
-      authorName: "",
-    }
-  },
-  methods: {
-    saveText() {
-      var tags = this.filters.map(f => f.id)
-      // Prepare object
-      var obj = {
-        title: this.text.title,
-        content: this.text.content,
-        created_on: firebase.firestore.FieldValue.serverTimestamp(),
-        tags: tags,
-        created_by: this.user ? this.user.uid : "",
-        bible_ref: this.text.bible_ref || "",
-        comments: this.text.comments || "",
-        license_wl: this.text.license_wl || false,
-        author: this.text.author || ""
-      }
-      // FIXME: all of this is ugly, plus it does'nt work
-      // Cannot create new author, because authorName gets "" when out of
-      // focus. Let's wait for vuetify 1.1.0 for combobox...
-      var author = this.authors.find(a => a.id == this.text.author)
-      if (this.text.author == "me") {
-        // Finding me in authors
-        var me = this.authors.find(a => a.user == this.user.uid)
-        if (!me) {
-          me = this.createAuthor(this.user.displayName, true)
-        }
-        obj.author = me.id
-      } else if (author) {
-        // && author.name == this.authorName
-        // Double check, because we can have the old author selected
-        // but a new text typed
-        obj.author = this.text.author
-      } else if (this.authorName) {
-        // New name for author
-        var authorRef = this.createAuthor(this.authorName)
-        obj.author = authorRef.id
-      } else {
-        // Undefined author
-        obj.author = ""
-      }
-      // Saving object
-      if (!this.id) {
-        // Creating text
-        db.collection("texts").add(obj).then(() => {
-          snackbar("Le texte a été crée.")
-          this.$router.push("/")
-        })
-      } else {
-        // Editing text
-        db.collection("texts").doc(this.id).update(obj).then(snackbar("Le texte a été mis à jour."))
-      }
-    },
-    removeText() {
-      this.confirmDialog = true
-    },
-    confirmRemoveText() {
-      db.collection("texts").doc(this.id).delete().then(() => {
-        snackbar("Le texte a bien été supprimé.")
-        this.$router.push("/")
-      })
-    },
-    createAuthor(name, isUser) {
-      var authorRef = db.collection("authors").doc()
-      var obj = {
-        name: name,
-        created_by: this.user ? this.user.uid : "",
-      }
-      if (isUser) {
-        obj.user = this.user.uid
-      }
-      authorRef.set(obj).then("L'auteur a été crée.")
-      return authorRef
+      selectedAuthor: "",
     }
   },
   computed: { ...Vuex.mapGetters({
       tags: "tags/tags",
       tagGroups: "tags/tagGroups",
       organizedTags: "tags/organizedTags",
+      tagObject: "tags/tagObject",
       texts: "texts/texts",
-      authors: "authors/authors"
+      authors: "authors/authors",
+      user: "users/user"
     }),
-    iAmAuthor: {
+    escapedContent: {
       get: function () {
-        var author = this.authors.find(a => a.id == this.text.author)
-        return this.user && author && author.user == this.user.uid || this.text.author == "me"
+        return this.tempText.content.split("\\n").join("\n")
       },
       set: function (val) {
-        this.text.author = val ? "me" : false
+        this.tempText.content = val
       }
     },
-    authorObj: {
+    iAmAuthor: {
       get: function () {
-        return this.authors.find(a => a.id == this.text.author)
+        if (!this.user) {
+          return false
+        } else if (this.userAuthor) {
+          // User exists as author
+          return this.author == this.userAuthor.id
+        } else {
+          // I don't exist as author
+          return this.author == "me"
+        }
       },
-      set: function (obj) {
-        if (typeof (obj) == "object") {
-          this.text.author = obj.id
+      set: function (val) {
+        if (!this.user) { return } else if (val) {
+          if (this.userAuthor) {
+            // User is Author
+            this.author = this.userAuthor.id
+          } else {
+            // User is not yet author
+            this.author = "me"
+          }
+        } else {
+          this.author = ""
         }
       }
     },
-    escapedContent: {
+    userAuthor() {
+      if (this.user && this.authors.some(a => a.user == this.user.uid)) {
+        return this.authors.find(a => a.user == this.user.uid)
+      } else {
+        return null
+      }
+    },
+    tempText: {
       get: function () {
-        return this.text.content.split("\\n").join("\n")
+        if (this.id) {
+          var text = this.texts.find(t => t.id == this.id)
+          var obj = {}
+          // for (var k in text) obj[k] = this.local_text[k] || text[k]
+          for (var k in text) this.$set(this.local_text, k, this.local_text[k] || text[k])
+          // return obj
+          return this.local_text
+        } else {
+          return this.local_text
+        }
       },
       set: function (val) {
-        this.text.content = val
+        console.log("SETTING TEMP TEXT")
+        console.log(val)
       }
     },
-    text() {
-      if (this.id) {
-        var obj = this.texts.find((obj) => {
-          return obj.id === this.id
-        })
-        return obj
-      } else {
-        return this.local_text
+    computedTags: {
+      get: function () {
+        if (this.tempText.tags) {
+          return this.tempText.tags.map(tagId => this.tagObject(tagId))
+        } else {
+          return []
+        }
+      },
+      set: function (val) {
+        this.tempText.tags = val.map(t => t.id)
       }
-    },
-    user() {
-      return this.$store.getters["users/user"]
     }
   },
-  mounted() {
-    // FIXME: not reactive, because loaded only once in the view...
-    // Find a way to use a computed property
-    this.$nextTick(function () {
-      if (this.id) {
-        var tags = this.text.tags
-        var filters = []
-        tags.forEach(tagId => {
-          var tag = this.tags.find(t => t.id == tagId)
-          var g = this.tagGroups.find(g => g.tags.some(t => t == tagId))
-          filters.push({
-            text: tag.name,
-            group: g.name,
-            groupId: g.id,
-            type: "tag",
-            id: tag.id
-          })
-        })
-        this.filters = filters
+  methods: {
+    saveText() {},
+    removeText() {},
+    confirmRemoveText() {}
+  },
+  watch: {
+    selectedAuthor: function (newVal, oldVal) {
+      // v-combobox replaces the object with the name of the object,
+      // don't know why...
+      var authorID = ""
+      if (newVal && typeof (newVal) == "object") {
+        authorID = newVal.id
+      } else if (typeof (newVal) == "string" && typeof (oldVal) == "object" && oldVal.name == newVal) {
+        this.selectedAuthor = oldVal
+        authorID = oldVal.id
+      } else {
+        authorID = newVal
       }
-    })
-  }
+      this.author = authorID
+    }
+  },
+  // mounted() {
+  //   // FIXME: not reactive, because loaded only once in the view...
+  //   // Find a way to use a computed property
+  //   this.$nextTick(function () {
+  //     if (this.id) {
+  //       var text = this.texts.find(t => t.id == this.id)
+  //       for (var k in text) this[k] = text[k]
+  //     }
+  //   })
+  // }
 }
 </script>

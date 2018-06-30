@@ -28,6 +28,9 @@ const getters = {
       // items.push({ divider: true, groupId: g.id})
     })
     return items
+  },
+  tagObject: (state, getters) => {
+    return id => getters.organizedTags.find(ot => ot.id == id)
   }
 }
 
