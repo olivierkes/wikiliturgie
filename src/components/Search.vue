@@ -21,7 +21,7 @@
                     offset-sm1>
               <tag-bar v-model="filters"
                        :tags="organizedTags"
-                       allows-custom-search
+                       allows-custom-text
                        :label="tagBarLabel"
                        solo></tag-bar>
             </v-flex>

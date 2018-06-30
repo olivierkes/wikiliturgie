@@ -1,35 +1,58 @@
 <template>
-  <v-select :items="tags"
-            v-model="internalSelected"
-            :label="label"
-            chips
-            autocomplete
-            single-line
-            hide-details
-            tags
-            dense
-            prepend-icon="search"
-            :solo = "solo"
-            :filter="filter"
-            :search-input.sync="search"
-            @input="input"
-            @keyup.enter="validates"
-            @change="change">
-    <template slot="item" slot-scope="data">
-      <template v-if="typeof data.item !== 'object'">
-        <v-list-tile-content v-text="data.item"></v-list-tile-content>
+  <v-combobox :items="tags"
+              v-model="internalSelected"
+              :label="label"
+              chips
+              small-chips
+              deletable-chips
+              single-line
+              hide-details
+              multiple
+              return-object
+              dense
+              prepend-icon="search"
+              :solo="solo"
+              :filter="filter"
+              :search-input.sync="search"
+              @input="input"
+              @keyup.enter="validates"
+              @change="change">
+      <template slot="no-data">
+        <v-card flat>
+          <v-card-text v-if="allowsCustomText">
+            Appuie sur <kbd>enter</kbd> pour rechercher le texte <v-chip small label>{{search}}</v-chip>
+          </v-card-text>
+          <v-card-text v-if="!allowsCustomText">
+            Aucun élément ne correspond à "<strong>{{ search }}</strong>"
+          </v-card-text>
+        </v-card>
+       <!-- <v-list-tile>
+         <v-list-tile-content>
+           <v-list-tile-title v-if="allowsCustomText">
+             Rechercher le texte <v-chip small label>{{search}}</v-chip>
+           </v-list-tile-title>
+             <v-list-tile-title v-if="!allowsCustomText">
+               Aucun élément ne correspond à "<strong>{{ search }}</strong>"
+             </v-list-tile-title>
+         </v-list-tile-content>
+       </v-list-tile> -->
+     </template>
+     <template slot="item"
+              slot-scope="data">
+        <template v-if="typeof data.item !== 'object'">
+          <v-list-tile-content v-text="data.item"></v-list-tile-content>
+        </template>
+        <template v-else>
+          <v-list-tile-action>
+            <!-- <v-icon v-if="data.item" >star</v-icon> -->
+            <v-checkbox :input-value="selectedItem(data.item.id)"></v-checkbox>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title v-html="data.item.text" ></v-list-tile-title>
+          </v-list-tile-content>
+        </template>
       </template>
-      <template v-else>
-        <v-list-tile-action>
-          <!-- <v-icon v-if="data.item" >star</v-icon> -->
-          <v-checkbox :input-value="selectedItem(data.item.id)"></v-checkbox>
-        </v-list-tile-action>
-        <v-list-tile-content>
-          <v-list-tile-title v-html="data.item.text" ></v-list-tile-title>
-        </v-list-tile-content>
-      </template>
-    </template>
-  </v-select>
+  </v-combobox>
 </template>
 
 <script>
@@ -40,7 +63,8 @@ export default {
     "tags": Array,
     "label": String,
     "solo": Boolean,
-    "allowsCustomSearch": Boolean},
+    "allowsCustomText": Boolean
+  },
   data() {
     return {
       search: "",
@@ -56,36 +80,37 @@ export default {
   methods: {
     change(val) {},
     input(val) {
+      console.log("Input!")
+      console.log(val)
       var selected = this.internalSelected[0]
-      // When custom search, selected is a string, so we mutate it in an object
-      if (typeof(selected) == "string" && this.allowsCustomSearch) {
+      console.log(selected)
+      // When custom text, selected is a string, so we mutate it in an object
+      if (typeof (selected) == "string" && this.allowsCustomText) {
         if (!selected.trim()) {
           this.internalSelected = []
-          return}
+          return
+        }
         selected = {
           text: selected.trim(),
           group: "Texte de recherche",
           type: "text"
         }
-      }
-      else if (typeof(selected) == "string" && !this.allowsCustomSearch){
+      } else if (typeof (selected) == "string" && !this.allowsCustomText) {
         this.internalSelected = []
         return
       }
       if (!this.selected.includes(selected) && // for tags
-          !this.selected.some(e => e.text === selected.text && e.group === selected.group) // for custom search
-          ) {
+        !this.selected.some(e => e.text === selected.text && e.group === selected.group) // for custom search
+      ) {
         this.selected.push(selected)
       }
       this.internalSelected = []
       this.$emit('input', this.selected)
     },
     validates(keyEvent) {},
-    filter (item, queryText, itemText) {
+    filter(item, queryText, itemText) {
       if ("header" in item || "divider" in item) {
-        var filtered = this.tags.filter(i => i.groupId == item.groupId
-                                              && i.type == "tag"
-                                              && this.filter(i, queryText, i.text) == true)
+        var filtered = this.tags.filter(i => i.groupId == item.groupId && i.type == "tag" && this.filter(i, queryText, i.text) == true)
         return filtered.length != 0
       }
       // Default function from https://github.com/vuetifyjs/vuetify/blob/74553209a26255e9bff33ad98a6fac0d62f0212b/src/components/VSelect/mixins/select-autocomplete.js#L14-L23
@@ -94,9 +119,7 @@ export default {
       const hasValue = val => val != null ? val : ''
       const text = hasValue(itemText)
       const query = hasValue(queryText)
-      return text.toString()
-        .toLowerCase()
-        .indexOf(query.toString().toLowerCase()) > -1
+      return text.toString().toLowerCase().indexOf(query.toString().toLowerCase()) > -1
     },
     selectedItem(id) {
       return this.selected.some(e => e.id == id)
