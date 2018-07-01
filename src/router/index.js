@@ -11,6 +11,7 @@ import ViewTags from "@/components/Tags/View"
 Vue.use(Router)
 
 export default new Router({
+  scrollBehavior: () => ({ y: 0 }),
   routes: [{
       path: "/",
       name: "Search",
