@@ -88,7 +88,7 @@ export default {
   },
   computed: {
     userIsAuthenticated() {
-      return this.$store.getters["users/user"] !== null && this.$store.getters["users/user"] !== undefined
+      return this.$store.getters["users/isAuthenticated"]
     },
     avatarUrl() {
       return this.$store.getters["users/user"]["providerData"][0]["photoURL"]

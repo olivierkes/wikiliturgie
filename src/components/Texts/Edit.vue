@@ -150,7 +150,7 @@ export default {
         license_wl: true, // Boolean
         created_on: "",
         created_by: "",
-        tags: null
+        tags: []
       },
       // View props
       confirmDialog: false,

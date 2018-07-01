@@ -43,7 +43,8 @@ const actions = {
 }
 
 const getters = {
-  user: state => state.currentUser
+  user: state => state.currentUser,
+  isAuthenticated: state => state.currentUser !== null && state.currentUser !== undefined
 }
 
 export default {
