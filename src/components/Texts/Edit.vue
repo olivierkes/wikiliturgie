@@ -69,7 +69,9 @@
                           <v-flex xs12>
                             <tag-bar v-model="tempText.tags"
                                      :tags="organizedTags"
-                                     tag-only></tag-bar>
+                                     tag-only
+                                     show-count
+                                     :texts="texts"></tag-bar>
                           </v-flex>
                           <v-flex>
                             <chip-bar v-model="computedTags"></chip-bar>

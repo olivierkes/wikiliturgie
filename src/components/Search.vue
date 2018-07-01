@@ -23,7 +23,10 @@
                        :tags="organizedTags"
                        allows-custom-text
                        :label="tagBarLabel"
-                       solo></tag-bar>
+                       solo
+                       show-count
+                       :texts="searchedTexts"
+                       hide-empty></tag-bar>
             </v-flex>
             <v-flex xs1>
               <v-btn flat

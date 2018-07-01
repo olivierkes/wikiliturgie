@@ -1,23 +1,22 @@
 <template>
-  <v-combobox :items="tags"
-              v-model="internalSelected"
-              :label="label"
-              chips
-              small-chips
-              deletable-chips
-              single-line
-              hide-details
-              multiple
-              return-object
-              dense
-              prepend-icon="search"
-              :solo="solo"
-              :filter="filter"
-              :search-input.sync="search"
-              @input="input"
-              @keyup.enter="validates"
-              @change="change">
-      <template slot="no-data">
+<v-combobox :items="computedTags"
+            v-model="internalSelected"
+            :label="label"
+            chips
+            small-chips
+            deletable-chips
+            single-line
+            hide-details
+            multiple
+            return-object
+            dense
+            prepend-icon="search"
+            :solo="solo"
+            :filter="filter"
+            :search-input.sync="search"
+            @input="input"
+            @keyup.enter="validates"
+            @change="change"> <template slot="no-data">
         <v-card flat>
           <v-card-text v-if="allowsCustomText">
             Appuie sur <kbd>enter</kbd> pour rechercher le texte <v-chip small label>{{search}}</v-chip>
@@ -36,23 +35,21 @@
              </v-list-tile-title>
          </v-list-tile-content>
        </v-list-tile> -->
-     </template>
-     <template slot="item"
-              slot-scope="data">
+     </template> <template slot="item"
+            slot-scope="data">
         <template v-if="typeof data.item !== 'object'">
           <v-list-tile-content v-text="data.item"></v-list-tile-content>
-        </template>
-        <template v-else>
+        </template> <template v-else>
           <v-list-tile-action>
             <!-- <v-icon v-if="data.item" >star</v-icon> -->
             <v-checkbox :input-value="selectedItem(data.item.id)"></v-checkbox>
           </v-list-tile-action>
           <v-list-tile-content>
-            <v-list-tile-title v-html="data.item.text" ></v-list-tile-title>
+            <v-list-tile-title v-if="showCount">{{data.item.text}} <span class="grey--text">({{data.item.tagCount}})</span></v-list-tile-title>
+            <v-list-tile-title v-if="!showCount" v-html="data.item.text" ></v-list-tile-title>
           </v-list-tile-content>
-        </template>
-      </template>
-  </v-combobox>
+        </template> </template>
+</v-combobox>
 </template>
 
 <script>
@@ -64,7 +61,10 @@ export default {
     "label": String,
     "solo": Boolean,
     "allowsCustomText": Boolean,
-    "tagOnly": Boolean  // Returns array of tag's id only
+    "tagOnly": Boolean, // Returns array of tag's id only
+    "showCount": Boolean, // Display the number of item for each tags. Requires "texts"
+    "texts": Array, // The object counted, in their 'tags' prop
+    "hideEmpty": Boolean // Hide tags that have no texts
   },
   data() {
     return {
@@ -79,14 +79,35 @@ export default {
     }
   },
   computed: {
-    tagObject() {return this.$store.getters["tags/tagObject"]},
+    tagObject() { return this.$store.getters["tags/tagObject"] },
     selected() {
       // Must return an array of tagObject
-      if (this.tagOnly){
-        return this.selectedInput ? this.selectedInput.map(tagId => this.tagObject(tagId))
-                                  : []
+      if (this.tagOnly) {
+        return this.selectedInput ? this.selectedInput.map(tagId => this.tagObject(tagId)) : []
       } else {
         return this.selectedInput
+      }
+    },
+    computedTags() {
+      // Used for items
+      if (!this.showCount || !this.texts) {
+        // Normal tags
+        return this.tags
+      } else {
+        // Tag with count
+        var tags = []
+        this.tags.forEach(t => {
+          var tag = Object.assign({}, t);
+          tag.tagCount = this.texts.filter(txt => txt.tags.some(tagId => tagId == t.id)).length
+          if ("header" in tag || "divider" in tag) {
+            tags.push(tag)
+          } else if (this.hideEmpty && !tag.tagCount) {
+            // Not pushing empty tags
+          } else {
+            tags.push(tag)
+          }
+        })
+        return tags
       }
     }
   },
@@ -120,7 +141,7 @@ export default {
     validates(keyEvent) {},
     filter(item, queryText, itemText) {
       if ("header" in item || "divider" in item) {
-        var filtered = this.tags.filter(i => i.groupId == item.groupId && i.type == "tag" && this.filter(i, queryText, i.text) == true)
+        var filtered = this.computedTags.filter(i => i.groupId == item.groupId && i.type == "tag" && this.filter(i, queryText, i.text) == true)
         return filtered.length != 0
       }
       // Default function from https://github.com/vuetifyjs/vuetify/blob/74553209a26255e9bff33ad98a6fac0d62f0212b/src/components/VSelect/mixins/select-autocomplete.js#L14-L23
@@ -135,7 +156,7 @@ export default {
       return this.selected.some(e => e.id == id)
     },
     emit() {
-      if (this.tagOnly){
+      if (this.tagOnly) {
         // Returns array of tags ID only
         this.$emit("input", this.selected.map(s => s.id))
       } else {
