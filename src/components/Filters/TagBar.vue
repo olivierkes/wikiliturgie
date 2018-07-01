@@ -98,7 +98,7 @@ export default {
         var tags = []
         this.tags.forEach(t => {
           var tag = Object.assign({}, t);
-          tag.tagCount = this.texts.filter(txt => txt.tags.some(tagId => tagId == t.id)).length
+          tag.tagCount = this.texts.filter(txt => txt.tags && txt.tags.some(tagId => tagId == t.id)).length
           if ("header" in tag || "divider" in tag) {
             tags.push(tag)
           } else if (this.hideEmpty && !tag.tagCount) {
