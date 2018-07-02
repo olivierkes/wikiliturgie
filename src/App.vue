@@ -34,8 +34,7 @@
   <v-toolbar app
              clipped-left
              clipped-right
-             class="primary"
-             dark
+             class="grey lighten-5"
              flat
              dense>
     <v-toolbar-side-icon @click.stop="leftDrawer = !leftDrawer"></v-toolbar-side-icon>
@@ -63,6 +62,7 @@
     </v-btn>
   </v-toolbar>
   <v-content>
+    <v-divider></v-divider>
     <data-loading-status v-if="!dataLoaded"></data-loading-status>
     <router-view v-if="dataLoaded"></router-view>
   </v-content>
