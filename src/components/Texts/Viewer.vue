@@ -13,7 +13,7 @@
                 offset-md3
                 xl4
                 offset-xl4>
-          <text-card :text="texts[page-1]"></text-card>
+          <text-card :text="texts[page-1]" flat></text-card>
         </v-flex>
       </v-layout>
       <v-flex>
@@ -51,6 +51,22 @@ export default {
   data() {
     return {
       page: 1
+    }
+  },
+  watch: {
+    texts() { this.page = 1}
+  },
+  created: function () {
+    window.addEventListener('keyup', this.nextText)
+  },
+  methods: {
+    nextText(event) {
+      if (event.altKey || event.ctrlKey) { return }
+      if (event.key == "ArrowRight") {
+        this.page = Math.min(this.texts.length, this.page + 1)
+      } else if (event.key == "ArrowLeft") {
+        this.page = Math.max(1, this.page - 1)
+      }
     }
   }
 }

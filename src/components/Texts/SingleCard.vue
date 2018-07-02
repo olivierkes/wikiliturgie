@@ -2,7 +2,8 @@
 <!-- @mouseover="overflow = true" @mouseleave="overflow=false" -->
 <v-card v-if="text"
         :hover="abstract && !overflow"
-        @dblclick="overflow=!overflow">
+        @dblclick="overflow=!overflow"
+        :flat="flat">
   <v-card-text :style="style">
     <!-- <p v-html="$options.filters.md(text.content.slice(0, 300))"></p> -->
     <h4 v-if="text.title"
@@ -44,7 +45,8 @@ import { snackbar } from "@/utils"
 export default {
   props: {
     text: Object,
-    abstract: Boolean
+    abstract: Boolean,
+    flat: Boolean
   },
   data() {
     return {
