@@ -41,13 +41,15 @@
           <v-layout row
                     wrap>
             <!-- Chip bar -->
-            <v-flex xs12 md9>
+            <v-flex xs12
+                    md9>
               <chip-bar v-model="filters"
                         clearable></chip-bar>
             </v-flex>
-            <v-flex xs12 md3>
-              <v-icon small>keyboard_arrow_left</v-icon>
-              <span class="grey--text" style="font-size:small;">{{searchedTexts.length}} textes</span>
+            <v-flex xs12
+                    md3>
+              <v-icon small>keyboard_arrow_left</v-icon> <span class="grey--text"
+                    style="font-size:small;">{{searchedTexts.length}} textes</span>
               <v-icon small>keyboard_arrow_right</v-icon>
               <v-btn icon
                      small
@@ -97,9 +99,9 @@ export default {
     searchedTexts() {
       var texts = this.texts
       this.filters.forEach(f => {
-        if (f.type == "text"){
+        if (f.type == "text") {
           texts = texts.filter(txt => JSON.stringify(txt).toLowerCase().indexOf(f.text.toLowerCase()) != -1)
-        } else if (f.type == "tag"){
+        } else if (f.type == "tag") {
           texts = texts.filter(txt => txt.tags.some(t => t == f.id))
         }
       })
