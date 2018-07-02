@@ -34,7 +34,15 @@ const getters = {
     return items
   },
   tagObject: (state, getters) => {
+    // Returns a tag object used in tab-bar and other filters
     return id => getters.organizedTags.find(ot => ot.id == id)
+  },
+  groupTagCount: (state, getters) => {
+    // Returns a function (groupID => number of tags in group)
+    return id => {
+      var group = getters.tagGroups.find(g => g.id == id)
+      if (group && group.tags) { return group.tags.length } else { return 0 }
+    }
   },
   dataLoaded(state) {
     return state.dataLoaded.tags == true && state.dataLoaded.tagGroups == true

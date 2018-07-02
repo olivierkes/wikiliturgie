@@ -14,7 +14,7 @@
                            :key="g.id"
                            @click="currentGroupEdited = g.id">
                 <v-list-tile-content>
-                  <v-list-tile-title>{{g.name}}</v-list-tile-title>
+                  <v-list-tile-title>{{g.name}} <span class="grey--text">({{groupTagCount(g.id)}})</span></v-list-tile-title>
                   <v-list-tile-sub-title>{{g.description}}</v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
@@ -100,6 +100,7 @@
 import { db } from '@/firebase'
 import firebase from 'firebase/app'
 import { snackbar } from "@/utils"
+import Vuex from "vuex"
 export default {
   data() {
     return {
@@ -112,12 +113,14 @@ export default {
       currentGroupEdited: null, // in the group editor (reorganize tags)
     }
   },
-  computed: {
+  computed: { ...Vuex.mapGetters({
+      tags: "tags/tags",
+      groups: "tags/tagGroups",
+      texts: "texts/texts",
+      groupTagCount: "tags/groupTagCount"
+    }),
     isGroupEditing() {
       if (this.groupEdited == null) { return false } else { return true }
-    },
-    groups() {
-      return this.$store.getters["tags/tagGroups"]
     }
   },
   methods: {
@@ -162,6 +165,11 @@ export default {
     },
     removeGroupConfirm() {
       this.confirmDialog = false
+      if (this.groupTagCount(this.groupEdited)) {
+        // On ne peut pas supprimre le groupe, il y a des tags...
+        snackbar("Le groupe ne peux pas être supprimé, il contient des tags. Merci bonsoir.")
+        return
+      }
       db.collection("tagGroups").doc(this.groupEdited).delete().then(snackbar("Le groupe a bien été supprimé."))
       this.cancelEditGroup()
     },
