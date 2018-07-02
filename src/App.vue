@@ -63,7 +63,8 @@
     </v-btn>
   </v-toolbar>
   <v-content>
-    <router-view></router-view>
+    <data-loading-status v-if="!dataLoaded"></data-loading-status>
+    <router-view v-if="dataLoaded"></router-view>
   </v-content>
   <snackbar></snackbar>
   <v-footer :fixed="fixed"
@@ -89,6 +90,9 @@ export default {
   computed: {
     userIsAuthenticated() {
       return this.$store.getters["users/isAuthenticated"]
+    },
+    dataLoaded() {
+      return this.$store.getters.dataLoaded
     },
     avatarUrl() {
       return this.$store.getters["users/user"]["providerData"][0]["photoURL"]

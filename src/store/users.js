@@ -2,7 +2,7 @@ import firebase from "firebase"
 
 const state = {
   all: {},
-  currentUser: null
+  currentUser: null,
 }
 
 const mutations = {

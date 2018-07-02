@@ -5,7 +5,11 @@ import { firebaseAction } from 'vuexfire'
 const state = {
   all: {},
   tags: [],
-  tagGroups: []
+  tagGroups: [],
+  dataLoaded: {
+    tags: false,
+    tagGroups: false
+  }
 }
 
 const getters = {
@@ -31,17 +35,30 @@ const getters = {
   },
   tagObject: (state, getters) => {
     return id => getters.organizedTags.find(ot => ot.id == id)
+  },
+  dataLoaded(state) {
+    return state.dataLoaded.tags == true && state.dataLoaded.tagGroups == true
   }
 }
 
-const mutations = {}
+const mutations = {
+  setDataLoaded(state, payload) {
+    state.dataLoaded[payload.collection] = payload.loaded
+  }
+}
 
 const actions = {
-  setTagsRef: firebaseAction(({ bindFirebaseRef }, ref) => {
-    bindFirebaseRef('tags', ref)
+  setTagsRef: firebaseAction(({ bindFirebaseRef, commit }, ref) => {
+    commit("setDataLoaded", { collection: "tags", loaded: false })
+    bindFirebaseRef('tags', ref).then(() => {
+      commit("setDataLoaded", { collection: "tags", loaded: true })
+    })
   }),
-  setTagGroupsRef: firebaseAction(({ bindFirebaseRef }, ref) => {
-    bindFirebaseRef('tagGroups', ref)
+  setTagGroupsRef: firebaseAction(({ bindFirebaseRef, commit }, ref) => {
+    commit("setDataLoaded", { collection: "tagGroups", loaded: false })
+    bindFirebaseRef('tagGroups', ref).then(() => {
+      commit("setDataLoaded", { collection: "tagGroups", loaded: true })
+    })
   }),
 }
 

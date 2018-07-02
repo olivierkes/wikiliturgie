@@ -4,18 +4,27 @@ import { firebaseAction } from 'vuexfire'
 
 const state = {
   all: {},
-  authors: []
+  authors: [],
+  dataLoaded: false
 }
 
 const getters = {
   authors: state => state.authors,
+  dataLoaded: state => state.dataLoaded
 }
 
-const mutations = {}
+const mutations = {
+  setDataLoaded(state, payload) {
+    state.dataLoaded = payload
+  }
+}
 
 const actions = {
-  setAuthorsRef: firebaseAction(({ bindFirebaseRef }, ref) => {
-    bindFirebaseRef('authors', ref)
+  setAuthorsRef: firebaseAction(({ bindFirebaseRef, commit }, ref) => {
+    commit("setDataLoaded", false)
+    bindFirebaseRef('authors', ref).then(() => {
+      commit("setDataLoaded", true)
+    })
   }),
 }
 

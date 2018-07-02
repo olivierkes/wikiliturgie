@@ -29,6 +29,8 @@ import ConfirmDialogCmp from "./components/Shared/ConfirmDialog.vue"
 Vue.component("confirm-dialog", ConfirmDialogCmp)
 import SnackBarCmp from "./components/Shared/Snackbar.vue"
 Vue.component("snackbar", SnackBarCmp)
+import DataLoadingStatusCmp from "./components/Shared/DataLoadingStatus.vue"
+Vue.component("data-loading-status", DataLoadingStatusCmp)
 //////
 
 import firebase from "firebase"
