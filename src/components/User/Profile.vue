@@ -7,7 +7,7 @@
           <h1>Profile</h1> </v-flex>
         <v-flex xs5>
           <v-btn @click="signOut">
-            <v-icon>close</v-icon>Sign out</v-btn>
+            <v-icon>close</v-icon>Déconnection</v-btn>
         </v-flex>
       </v-layout>
       <v-flex xs12>
