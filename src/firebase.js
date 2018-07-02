@@ -1,6 +1,8 @@
 import Vue from "vue"
 import firebase from 'firebase/app'
 import 'firebase/firestore'
+// import firebase from "firebase"
+import firebaseui from 'firebaseui'
 
 // explicit installation required in module environments
 var config = {
@@ -32,5 +34,7 @@ firebase.firestore().enablePersistence()
     }
   })
 
-
 export const db = firebase.firestore()
+
+// FirebaseUI auth flow
+export const ui = new firebaseui.auth.AuthUI(firebase.auth())

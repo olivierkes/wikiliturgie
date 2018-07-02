@@ -1,30 +1,15 @@
 <template>
 <v-container>
-  <v-layout row
-            justify-center>
-    <v-flex xs12
-            sm6
-            text-xs-center>
-      <div>
-        <v-btn block
-               color="white"
-               @click="authWithGoogle">Connexion via Google</v-btn>
-      </div>
-      <div>
-        <v-btn block
-               color="indigo"
-               dark
-               @click="authWithFacebook">Connexion via Facebook</v-btn>
-      </div>
-      <div>
-        <v-btn block
-               color="light-blue lighten-4">Connexion via Twitter</v-btn>
-      </div>
-      <div>
-        <v-btn block
-               color="black"
-               dark>Connexion via Github</v-btn>
-      </div>
+  <v-layout column>
+    <v-flex xs12>
+      <h1>Connection</h1> </v-flex>
+    <v-flex xs12>
+      <div id="firebaseui-auth-container"></div>
+      <div id="loader" v-if="loading">Chargement...</div>
+
+    </v-flex>
+    <v-flex xs12>
+      <v-alert type="warning" :value="true">FIXME: css import issue.</v-alert>
     </v-flex>
   </v-layout>
 </v-container>
@@ -32,9 +17,17 @@
 
 <script>
 import firebase from "firebase"
+import firebaseui from 'firebaseui'
+import { ui } from "@/firebase"
+//FIXME: CSS is not loaded properly??
+require("@/../node_modules/firebaseui/dist/firebaseui.css")
+
+
 export default {
   data() {
-    return {}
+    return {
+      loading: true,
+    }
   },
   computed: {
     user() {
@@ -49,12 +42,40 @@ export default {
     }
   },
   methods: {
-    authWithGoogle() {
-      this.$store.dispatch("users/signIn", { provider: new firebase.auth.GoogleAuthProvider() })
+    signInSuccessWithAuthResult(authResult, redirectUrl) {
+      // User successfully signed in.
+      // Return type determines whether we continue the redirect automatically
+      // or whether we leave that to developer to handle.
+      this.$store.dispatch("users/signIn", authResult)
+      return false;
     },
-    authWithFacebook() {
-      this.$store.dispatch("users/signIn", { provider: new firebase.auth.FacebookAuthProvider() })
-    },
+  },
+  mounted: function () {
+    // Firebase UI (auth flow)
+    // Initialize the FirebaseUI Widget using Firebase.
+    var uiConfig = {
+      callbacks: {
+        signInSuccessWithAuthResult: this.signInSuccessWithAuthResult,
+        uiShown: this.loading = false
+      },
+      // Will use popup for IDP Providers sign-in flow instead of the default, redirect.
+      // signInFlow: 'popup',
+      // signInSuccessUrl: '/',
+      signInOptions: [
+        // Leave the lines as is for the providers you want to offer your users.
+        firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+        firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+        firebase.auth.TwitterAuthProvider.PROVIDER_ID,
+        firebase.auth.GithubAuthProvider.PROVIDER_ID,
+        firebase.auth.EmailAuthProvider.PROVIDER_ID,
+        // firebase.auth.PhoneAuthProvider.PROVIDER_ID
+      ],
+      // Terms of service url.
+      // tosUrl: '<your-tos-url>'
+    }
+    this.$nextTick(function () {
+      ui.start('#firebaseui-auth-container', uiConfig)
+    })
   }
 }
 </script>
