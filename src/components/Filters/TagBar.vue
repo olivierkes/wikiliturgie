@@ -152,8 +152,9 @@ export default {
       const query = hasValue(queryText)
       return text.toString().toLowerCase().indexOf(query.toString().toLowerCase()) > -1
     },
-    selectedItem(id) {
-      return this.selected.some(e => e.id == id)
+    selectedItem(tagId) {
+      // Returns true if tagId is selected
+      return this.selected.some(e => e.id == tagId)
     },
     emit() {
       if (this.tagOnly) {

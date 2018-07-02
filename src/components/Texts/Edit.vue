@@ -212,7 +212,7 @@ export default {
         if (this.id && !this.synced) {
           var text = this.texts.find(t => t.id == this.id)
           if (text) {
-            for (var k in text) this.$set(this.local_text, k, this.local_text[k] || text[k])
+            for (var k in text) this.$set(this.local_text, k, text[k])
             this.synced = true
           }
           return this.local_text
