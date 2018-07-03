@@ -109,7 +109,12 @@ export default {
           icon: "dns",
           title: "Tags",
           link: "/tags"
-        }]
+        },{
+          icon: "supervised_user_circle",
+          title: "Utilisateurs",
+          link: "/users"
+        },
+      ]
       }
     }
   }

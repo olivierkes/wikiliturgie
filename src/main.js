@@ -46,12 +46,13 @@ new Vue({
     this.$store.dispatch("tags/setTagGroupsRef", db.collection("tagGroups"))
     this.$store.dispatch("texts/setTextsRef", db.collection("texts"))
     this.$store.dispatch("authors/setAuthorsRef", db.collection("authors"))
+    this.$store.dispatch("users/setUsersRef", db.collection("users"))
 
     // Auth
     firebase.auth().onAuthStateChanged((user) => {
-  if (user) {
-    this.$store.dispatch("users/autoSignIn", user)
-  }
-})
+      if (user) {
+        this.$store.dispatch("users/autoSignIn", user)
+      }
+    })
   }
 }).$mount("#app")

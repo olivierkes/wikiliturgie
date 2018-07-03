@@ -41,7 +41,8 @@ export var store = new Vuex.Store({
       var modules = [
         "tags",
         "texts",
-        "authors"
+        "authors",
+        "users"
       ]
       var res = {
         modules: [],
