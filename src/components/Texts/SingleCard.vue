@@ -9,9 +9,6 @@
     <h4 v-if="text.title"
         class="grey--text">{{text.title}}</h4>
     <p v-html="$options.filters.md(text.content)"></p>
-    <p v-html="$options.filters.md(text.content)"></p>
-    <p v-html="$options.filters.md(text.content)"></p>
-    <p v-html="$options.filters.md(text.content)"></p>
   </v-card-text>
   <v-card-actions :class="(!abstract || overflow)? '':'elevation-2'">
     <v-btn v-if="abstract"
