@@ -33,6 +33,20 @@ const getters = {
     })
     return items
   },
+  organizedTagsWithAuthors: (state, getters, rootState, rootGetters) => {
+    var items = getters.organizedTags.slice()
+    items.push({ header: "Auteur" })
+    var authors = rootGetters["authors/authors"]
+    authors.forEach(a => {
+      items.push({
+        text: a.name,
+        group: "Auteur",
+        type: "author",
+        id: a.id
+      })
+    })
+    return items
+  },
   tagObject: (state, getters) => {
     // Returns a tag object used in tab-bar and other filters
     return id => getters.organizedTags.find(ot => ot.id == id)

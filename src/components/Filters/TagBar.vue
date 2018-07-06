@@ -54,6 +54,7 @@
 
 <script>
 import { db } from '@/firebase'
+import { filterTextsByTagObjects } from "@/utils"
 export default {
   props: {
     "value": Array,
@@ -97,8 +98,8 @@ export default {
         // Tag with count
         var tags = []
         this.tags.forEach(t => {
-          var tag = Object.assign({}, t);
-          tag.tagCount = this.texts.filter(txt => txt.tags && txt.tags.some(tagId => tagId == t.id)).length
+          var tag = Object.assign({}, t)
+          tag.tagCount = filterTextsByTagObjects(this.texts, [t]).length
           if ("header" in tag || "divider" in tag) {
             tags.push(tag)
           } else if (this.hideEmpty && !tag.tagCount) {

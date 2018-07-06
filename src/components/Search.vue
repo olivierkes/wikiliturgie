@@ -20,7 +20,7 @@
                     sm10
                     offset-sm1>
               <tag-bar v-model="filters"
-                       :tags="organizedTags"
+                       :tags="organizedTagsWithAuthors"
                        allows-custom-text
                        :label="tagBarLabel"
                        solo
@@ -80,6 +80,7 @@
 <script>
 import { db } from '@/firebase'
 import Vuex from "vuex"
+import { filterTextsByTagObjects } from "@/utils"
 export default {
   data() {
     return {
@@ -93,19 +94,14 @@ export default {
   computed: { ...Vuex.mapGetters({
       tags: "tags/tags",
       tagGroups: "tags/tagGroups",
-      organizedTags: "tags/organizedTags",
+      organizedTagsWithAuthors: "tags/organizedTagsWithAuthors",
       texts: "texts/texts"
     }),
     searchedTexts() {
-      var texts = this.texts
-      this.filters.forEach(f => {
-        if (f.type == "text") {
-          texts = texts.filter(txt => JSON.stringify(txt).toLowerCase().indexOf(f.text.toLowerCase()) != -1)
-        } else if (f.type == "tag") {
-          texts = texts.filter(txt => txt.tags.some(t => t == f.id))
-        }
-      })
-      return texts
+      return filterTextsByTagObjects(this.texts, this.filters)
+      // var texts = this.texts
+      // this.filters.forEach(f => filterTextsByTagObjects(texts, f))
+      // return texts
     },
     tagBarLabel() {
       return "Rechercher parmis " + this.texts.length + " textes liturgiques…"
