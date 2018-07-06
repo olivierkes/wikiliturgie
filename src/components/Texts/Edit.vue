@@ -41,7 +41,7 @@
             <v-tabs center>
               <v-tab href="#tab-1"> Métadonnées </v-tab>
               <v-tab href="#tab-2"> Aperçu </v-tab>
-              <v-tab href="#tab-3"> Révisions </v-tab>
+              <v-tab href="#tab-3"> Modifications </v-tab>
               <!-- Métadonnées -->
               <v-tab-item id="tab-1">
                 <v-card flat>
@@ -112,9 +112,7 @@
               <v-tab-item id="tab-3">
                 <v-card flat>
                   <v-card-text>
-                    <v-list>
-                      <v-list-tile v-if="tempText.created_on">Crée le: {{tempText.created_on}}</v-list-tile>
-                    </v-list>
+                    <revisions :revisions="revisions"></revisions>
                   </v-card-text>
                 </v-card>
               </v-tab-item>
@@ -136,8 +134,12 @@ import { db } from '@/firebase'
 import Vuex from "vuex"
 import firebase from 'firebase/app'
 import { snackbar } from "@/utils"
+import revisions from "@/components/Texts/Revisions/Revisions.vue"
 export default {
   props: ["id"],
+  components: {
+    revisions
+  },
   data() {
     return {
       // Text object props
@@ -154,7 +156,14 @@ export default {
       },
       // View props
       confirmDialog: false,
-      synced: false // used to perform sync only once
+      synced: false, // used to perform sync only once
+      // Revisions TEMP
+      revisions: [{
+        content: "blabla",
+        created_on: ""
+      }, {
+        title: "new title"
+      }]
     }
   },
   computed: { ...Vuex.mapGetters({
@@ -225,6 +234,11 @@ export default {
         console.log(val)
       }
     },
+    revisions2() {
+      if (this.id) {
+        return this.texts.find(t => t.id == this.id).revisions
+      }
+    },
     computedTags: {
       get: function () {
         if (this.tempText.tags) {
@@ -252,12 +266,10 @@ export default {
         // v-combobox replaces the object with the name of the object,
         // don't know why...
         var oldVal = this.selectedAuthor
-        var authorID = ""
         if (newVal && typeof (newVal) == "object") {
           this.tempText.author = newVal.id
         } else if (typeof (newVal) == "string" && typeof (oldVal) == "object" && oldVal.name == newVal) {
           // this.selectedAuthor = oldVal
-          // authorID = oldVal.id
           this.tempText.author = oldVal.id
         } else {
           this.tempText.author = newVal
@@ -281,7 +293,7 @@ export default {
       }
       if (obj.author == "me") {
         // We need to create an author for user
-        me = this.createAuthor(this.user.displayName, true)
+        var me = this.createAuthor(this.user.displayName, true)
         obj.author = me.id
       } else if (obj.author !== "") {
         // Check if author exsits
