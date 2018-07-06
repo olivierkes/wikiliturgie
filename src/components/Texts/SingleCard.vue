@@ -9,6 +9,18 @@
     <h4 v-if="text.title"
         class="grey--text">{{text.title}}</h4>
     <p v-html="$options.filters.md(text.content)"></p>
+    <v-divider></v-divider>
+    <v-layout row
+              wrap
+              v-for="(md, i) in metadata"
+              :key="i">
+      <v-flex xs4
+              class="body-2 grey--text"> {{md.title}} </v-flex>
+      <v-flex xs8 class="grey--text">{{ md.value }}</v-flex>
+    </v-layout>
+    <v-chip v-for="t in text.tags"
+            small
+            label>{{tags.find(tag => tag.id == t).name}}</v-chip>
   </v-card-text>
   <v-card-actions :class="(!abstract || overflow)? '':'elevation-2'">
     <v-btn v-if="abstract"
@@ -70,7 +82,9 @@ export default {
   },
   computed: { ...Vuex.mapGetters({
       user: "users/user",
-      userIsAuthenticated: "users/isAuthenticated"
+      userIsAuthenticated: "users/isAuthenticated",
+      authors: "authors/authors",
+      tags: "tags/tags"
     }),
     style() {
       return {
@@ -78,6 +92,35 @@ export default {
         overflowY: "hidden"
       }
     },
+    metadata() {
+      var md = []
+      if (this.textAuthor) {
+        md.push({
+          title: "Auteur",
+          value: this.textAuthor
+        })
+      }
+      if (this.text.bible_ref) {
+        md.push({
+          title: "Référence biblique",
+          value: this.text.bible_ref
+        })
+      }
+      if (this.text.comments) {
+        md.push({
+          title: "Remarques",
+          value: this.text.comments
+        })
+      }
+      return md
+    },
+    textAuthor() {
+      if (this.text.author) {
+        return this.authors.find(a => a.id == this.text.author).name
+      }
+      return null
+    },
+    // Stars
     starCount() {
       return this.text.stars ? this.text.stars.length : 0
     },
