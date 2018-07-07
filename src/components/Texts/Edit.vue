@@ -110,11 +110,11 @@
               </v-tab-item>
               <!-- Révisions -->
               <v-tab-item id="tab-3">
-                <v-card flat>
-                  <v-card-text>
-                    <revisions :revisions="revisions"></revisions>
-                  </v-card-text>
-                </v-card>
+                <!-- <v-card flat>
+                  <v-card-text> -->
+                    <revisions :revisions="computedRevisions"></revisions>
+                  <!-- </v-card-text>
+                </v-card> -->
               </v-tab-item>
             </v-tabs>
           </v-card>
@@ -157,14 +157,13 @@ export default {
       // View props
       confirmDialog: false,
       synced: false, // used to perform sync only once
-      // Revisions TEMP
-      revisions: [{
-        content: "blabla",
-        created_on: ""
-      }, {
-        title: "new title"
-      }]
     }
+  },
+  mounted() {
+    this.$nextTick(function () {
+      // We bind revisions for the current text
+      this.$store.dispatch("texts/bindRevisionsForText", this.id)
+    })
   },
   computed: { ...Vuex.mapGetters({
       tags: "tags/tags",
@@ -172,6 +171,7 @@ export default {
       organizedTags: "tags/organizedTags",
       tagObject: "tags/tagObject",
       texts: "texts/texts",
+      revisions: "texts/revisions",
       authors: "authors/authors",
       user: "users/user"
     }),
@@ -219,11 +219,13 @@ export default {
     tempText: {
       get: function () {
         if (this.id && !this.synced) {
+          // Load values as a local copy
           var text = this.texts.find(t => t.id == this.id)
           if (text) {
             for (var k in text) this.$set(this.local_text, k, text[k])
             this.synced = true
           }
+          // Return local text
           return this.local_text
         } else {
           return this.local_text
@@ -237,6 +239,13 @@ export default {
     revisions2() {
       if (this.id) {
         return this.texts.find(t => t.id == this.id).revisions
+      }
+    },
+    computedRevisions() {
+      // Adds the current text to revisions, to display it
+      if (this.revisions && this.local_text) {
+        console.log(this.local_text)
+        return [this.local_text].slice().concat(this.revisions)
       }
     },
     computedTags: {
@@ -316,8 +325,13 @@ export default {
           this.$router.push("/")
         })
       } else {
-        // Editing text
-        db.collection("texts").doc(this.id).update(obj).then(snackbar("Le texte a été mis à jour."))
+        // Editing text, so we add a revisions
+        var text = this.texts.find(t => t.id == this.id)
+        var old_obj = {}
+        for (var k in text) this.$set(old_obj, k, text[k])
+        db.collection("texts").doc(this.id).collection("revisions").add(old_obj).then(
+          () => db.collection("texts").doc(this.id).update(obj).then(
+            () => snackbar("Le texte a été mis à jour.")))
       }
       this.tempText.author = obj.author
     },

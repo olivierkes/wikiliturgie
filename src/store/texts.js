@@ -1,15 +1,17 @@
 import Vue from 'vue'
 import { firebaseAction } from 'vuexfire'
-
+import { db } from "@/firebase"
 
 const state = {
   all: {},
   texts: [],
+  revisions: null,
   dataLoaded: false
 }
 
 const getters = {
   texts: state => state.texts,
+  revisions: state => state.revisions,
   dataLoaded: state => state.dataLoaded
 }
 
@@ -25,6 +27,11 @@ const actions = {
     bindFirebaseRef('texts', ref).then(() => {
       commit("setDataLoaded", true)
     })
+  }),
+  bindRevisionsForText: firebaseAction(({ bindFirebaseRef, unbindFirebaseRef, commit, state }, textId) => {
+    if (state.messages != null) { unbindFirebaseRef('revisions') }
+    var ref = db.collection("texts").doc(textId).collection("revisions")
+    bindFirebaseRef('revisions', ref)
   }),
 }
 

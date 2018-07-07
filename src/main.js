@@ -8,8 +8,11 @@ import router from "./router"
 Vue.config.productionTip = false
 
 ///// Filters
-import MarkdownFilter from "./filters/markdown"
+import MarkdownFilter from "@/filters/markdown"
 Vue.filter("md", MarkdownFilter)
+import DateFilter from "@/filters/date"
+Vue.filter("date", DateFilter)
+
 ///// Components
 import EditTextCmp from "./components/Texts/Edit.vue"
 Vue.component("text-edit", EditTextCmp)
