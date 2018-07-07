@@ -20,7 +20,7 @@
         <v-layout wrap>
           <v-flex xs4
                   v-for="group in tagGroups">
-            <v-toolbar dense
+            <v-toolbar dense dark
                        color="primary">
               <v-toolbar-title>{{ group.name }}</v-toolbar-title>
             </v-toolbar>
@@ -31,7 +31,7 @@
                              avatar
                              @click="">
                   <v-list-tile-content>
-                    <v-list-tile-title v-text="tag"></v-list-tile-title>
+                    <v-list-tile-title>{{tags.find(t => t.id == tag).name}}</v-list-tile-title>
                   </v-list-tile-content>
                   <v-list-tile-action>
                     <v-icon  :color="Math.random() > .5 ? 'pink' : ''">star</v-icon>
