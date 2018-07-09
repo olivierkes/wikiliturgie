@@ -52,6 +52,7 @@ new Vue({
     this.$store.dispatch("texts/setTextsRef", db.collection("texts"))
     this.$store.dispatch("authors/setAuthorsRef", db.collection("authors"))
     this.$store.dispatch("users/setUsersRef", db.collection("users"))
+    this.$store.dispatch("docs/setDocsRef", db.collection("docs"))
 
     // Auth
     firebase.auth().onAuthStateChanged((user) => {

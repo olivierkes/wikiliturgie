@@ -7,6 +7,7 @@ import AddText from "@/components/Texts/Add"
 import ViewText from "@/components/Texts/View"
 import ViewTags from "@/components/Tags/View"
 import Users from "@/components/User/Users"
+import Doc from "@/components/Doc/Doc"
 
 Vue.use(Router)
 
@@ -47,7 +48,18 @@ export default new Router({
       path: "/signin",
       name: "Signin",
       component: Signin
-    }
+    },
+    {
+      path: "/doc/:id",
+      name: "Doc",
+      component: Doc,
+      props: true
+    },
+    {
+      path: "/doc",
+      name: "Doc",
+      component: Doc
+    },
   ],
   mode: "history"
 })
