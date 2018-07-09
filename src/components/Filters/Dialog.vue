@@ -18,27 +18,23 @@
       </v-toolbar>
       <v-container grid-list-lg>
         <v-layout wrap>
-          <v-flex xs4
+          <v-flex xs6
                   v-for="group in tagGroups">
             <v-toolbar dense dark
                        color="primary">
               <v-toolbar-title>{{ group.name }}</v-toolbar-title>
             </v-toolbar>
-            <v-card>
-              <v-list dense>
-                <v-list-tile v-for="tag in group.tags"
-                             :key="tag"
-                             avatar
-                             @click="">
-                  <v-list-tile-content>
-                    <v-list-tile-title>{{tags.find(t => t.id == tag).name}}</v-list-tile-title>
-                  </v-list-tile-content>
-                  <v-list-tile-action>
-                    <v-icon  :color="Math.random() > .5 ? 'pink' : ''">star</v-icon>
-                  </v-list-tile-action>
-                </v-list-tile>
-              </v-list>
-            </v-card>
+            <v-select v-model="selectedTags"
+                      :items="group.tags.map(tagId => tags.find(t => t.id == tagId))"
+                      multiple
+                      item-text="name"
+                      item-value="id"
+                      dense
+                      small-chips
+                      deletable-chips
+                      solo
+                      chips
+                      :label="group.name"></v-select>
           </v-flex>
         </v-layout>
       </v-container>
@@ -58,13 +54,32 @@ export default {
     return {
       notifications: false,
       sound: true,
-      widgets: false
+      widgets: false,
+      selectedTags: null
+    }
+  },
+  watch: {
+    value() {
+      this.selectedTags = this.value.map(t => t.id)
+    },
+    selectedTags() {
+      this.$emit("value", this.computedTags)
     }
   },
   computed: { ...Vuex.mapGetters({
       tags: "tags/tags",
       tagGroups: "tags/tagGroups",
-    })
+      tagObject: "tags/tagObject"
+    }),
+    computedTags() {
+      if (this.selectedTags) {
+        return this.selectedTags.map(tagId => this.tagObject(tagId))
+      }
+      return []
+    },
+    computedTagsId() {
+      return this.computedTags.map(t => t.id)
+    }
   }
 }
 </script>
