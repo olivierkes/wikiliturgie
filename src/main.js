@@ -12,6 +12,8 @@ import MarkdownFilter from "@/filters/markdown"
 Vue.filter("md", MarkdownFilter)
 import DateFilter from "@/filters/date"
 Vue.filter("date", DateFilter)
+import DiffFilter from "@/filters/diff"
+Vue.filter("diff", DiffFilter)
 
 ///// Components
 import EditTextCmp from "./components/Texts/Edit.vue"

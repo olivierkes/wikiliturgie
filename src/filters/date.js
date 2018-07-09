@@ -1,5 +1,13 @@
 export default (value) => {
-  const date = value.toDate()
+  var date
+  if (!value) {
+    return ""
+  } else if (value.methodName && value.methodName == "FieldValue.serverTimestamp") {
+    // Firebase timestamp
+    date = Date.now
+  } else {
+    date = value.toDate()
+  }
   return date.toLocaleString(
     ["fr-CH", "en-US"], {
       month: "short",

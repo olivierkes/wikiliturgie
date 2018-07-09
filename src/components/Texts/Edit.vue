@@ -112,8 +112,10 @@
               <v-tab-item id="tab-3">
                 <!-- <v-card flat>
                   <v-card-text> -->
-                    <revisions :revisions="computedRevisions"></revisions>
-                  <!-- </v-card-text>
+                <revisions :revisions="computedRevisions"
+                           :text-id="id"
+                           @restore-revision="restoreRevision($event)"></revisions>
+                <!-- </v-card-text>
                 </v-card> -->
               </v-tab-item>
             </v-tabs>
@@ -236,16 +238,11 @@ export default {
         console.log(val)
       }
     },
-    revisions2() {
-      if (this.id) {
-        return this.texts.find(t => t.id == this.id).revisions
-      }
-    },
     computedRevisions() {
       // Adds the current text to revisions, to display it
       if (this.revisions && this.local_text) {
-        console.log(this.local_text)
-        return [this.local_text].slice().concat(this.revisions)
+        var copy = this.copyOfCurrentText()
+        return [copy].concat(this.revisions)
       }
     },
     computedTags: {
@@ -326,9 +323,7 @@ export default {
         })
       } else {
         // Editing text, so we add a revisions
-        var text = this.texts.find(t => t.id == this.id)
-        var old_obj = {}
-        for (var k in text) this.$set(old_obj, k, text[k])
+        var old_obj = this.copyOfCurrentText()
         db.collection("texts").doc(this.id).collection("revisions").add(old_obj).then(
           () => db.collection("texts").doc(this.id).update(obj).then(
             () => snackbar("Le texte a été mis à jour.")))
@@ -355,6 +350,28 @@ export default {
       }
       authorRef.set(obj).then(snackbar("L'auteur " + name + " a été crée."))
       return authorRef
+    },
+    copyOfCurrentText() {
+      var text = this.texts.find(t => t.id == this.id)
+      var obj = {}
+      if (text) {
+        for (var k in text) this.$set(obj, k, text[k])
+      }
+      return obj
+    },
+    restoreRevision(revId) {
+      // 1. current text becomes a revisions
+      // 2. current revision updates text
+      var revision = this.revisions.find(r => r.id == revId)
+      revision.created_on = firebase.firestore.FieldValue.serverTimestamp()
+      var text = this.copyOfCurrentText()
+      db.collection("texts").doc(this.id).collection("revisions").add(text).then(
+        () => db.collection("texts").doc(this.id).update(revision).then(
+          () => db.collection("texts").doc(this.id).collection("revisions").doc(revision.id).delete().then(
+            () => {
+              snackbar("Le texte a été restauré.")
+              this.synced = false
+          })))
     }
   }
 }
