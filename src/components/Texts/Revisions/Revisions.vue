@@ -63,7 +63,7 @@ export default {
     removeRevision(rev) {
       var ref = db.collection("texts").doc(this.textId).collection("revisions").doc(rev.id)
       ref.delete().then(() => {
-        snackbar("La révisions a été supprimée.")
+        snackbar("La modification a été supprimée de l'historique.")
       })
     }
   }

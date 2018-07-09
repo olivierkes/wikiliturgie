@@ -114,6 +114,7 @@
                   <v-card-text> -->
                 <revisions :revisions="computedRevisions"
                            :text-id="id"
+                           v-if="revisions && revisions.length"
                            @restore-revision="restoreRevision($event)"></revisions>
                 <!-- </v-card-text>
                 </v-card> -->
@@ -164,7 +165,7 @@ export default {
   mounted() {
     this.$nextTick(function () {
       // We bind revisions for the current text
-      this.$store.dispatch("texts/bindRevisionsForText", this.id)
+      if (this.id) { this.$store.dispatch("texts/bindRevisionsForText", this.id) }
     })
   },
   computed: { ...Vuex.mapGetters({
@@ -334,6 +335,11 @@ export default {
       this.confirmDialog = true
     },
     confirmRemoveText() {
+      // Remove revisions
+      this.revisions.forEach(r => {
+        db.collection("texts").doc(this.id).collection("revisions").doc(r.id).delete()
+      })
+      // Remove text
       db.collection("texts").doc(this.id).delete().then(() => {
         snackbar("Le texte a bien été supprimé.")
         this.$router.push("/")
@@ -371,7 +377,7 @@ export default {
             () => {
               snackbar("Le texte a été restauré.")
               this.synced = false
-          })))
+            })))
     }
   }
 }
