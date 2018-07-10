@@ -87,14 +87,19 @@ export default {
       return this.$store.getters["users/user"]["providerData"][0]["photoURL"]
     },
     menuItems() {
+      var res = [{
+        icon: "help",
+        title: "Aide",
+        link: "/doc"
+      }]
       if (!this.userIsAuthenticated) {
-        return [{
+        return res.concat([{
           icon: "person",
           title: "Connexion",
           link: "/signin"
-        }]
+        }])
       } else {
-        return [{
+        return res.concat([{
           icon: "dns",
           title: "Tags",
           link: "/tags"
@@ -102,7 +107,7 @@ export default {
           icon: "supervised_user_circle",
           title: "Utilisateurs",
           link: "/users"
-        }, ]
+        }])
       }
     }
   }
