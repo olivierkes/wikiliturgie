@@ -14,7 +14,7 @@
           <v-spacer></v-spacer>
           <v-btn icon
                  @click.native="showMenu = ! showMenu"
-                 v-if="item.children && breakpoint.xsOnly && !isEditing">
+                 v-if="children.length && breakpoint.xsOnly && !isEditing">
             <v-icon>menu</v-icon>
           </v-btn>
           <!-- Edit btn -->
@@ -34,7 +34,7 @@
         <v-breadcrumbs v-if="itemPath.length > 1">
           <v-icon slot="divider">forward</v-icon>
           <v-breadcrumbs-item v-for="(p, i) in itemPath"
-                              :to="'/doc/' + p.id"
+                              :to="isEditing? '' : '/doc/' + p.id"
                               :key="i"> {{ p.name }} </v-breadcrumbs-item>
         </v-breadcrumbs>
       </v-card>
@@ -43,7 +43,7 @@
     <v-slide-y-transition>
       <v-flex xs12
               sm4
-              v-if="showMenu && item.children || isEditing">
+              v-if="showMenu && children.length || isEditing">
         <v-card>
           <v-toolbar color="grey darken-1"
                      dark
@@ -52,11 +52,19 @@
                      flat> <span>
                         Sous éléments
                       </span></v-toolbar>
-          <v-list>
-            <v-list-tile v-for="(c, i) in item.children"
+          <v-list ref="sortableList">
+            <v-list-tile v-for="(c, i) in children"
                          :key="i"
-                         :to="'/doc/' + child(c).id">
-              <v-list-tile-title>{{child(c).name}}</v-list-tile-title>
+                         :to="isEditing? '' : '/doc/' + c.id"
+                         :id="c.id">
+              <v-list-tile-action v-if="isEditing">
+                <v-btn style="cursor: move"
+                       icon
+                       class="sortHandle">
+                  <v-icon>drag_handle</v-icon>
+                </v-btn>
+              </v-list-tile-action>
+              <v-list-tile-title>{{c.name}}</v-list-tile-title>
             </v-list-tile>
           </v-list>
           <v-card-text v-if="isEditing">
@@ -64,7 +72,8 @@
                       wrap>
               <v-flex xs12
                       sm9>
-                <v-text-field label="Ajouter une rubrique"></v-text-field>
+                <v-text-field label="Ajouter une rubrique"
+                              v-model="newDocName"></v-text-field>
               </v-flex>
               <v-flex xs12
                       sm3>
@@ -91,9 +100,11 @@
       <v-slide-x-transition>
         <v-card v-if="isEditing">
           <v-card-text>
-            <v-text-field label="Titre"></v-text-field>
+            <v-text-field label="Titre"
+                          v-model="name"></v-text-field>
             <v-textarea autoGrow
-                        label="Contenu"></v-textarea>
+                        label="Contenu"
+                        v-model="content"></v-textarea>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -116,18 +127,31 @@
 
 <script>
 import Vuex from "vuex"
+import Sortable from 'sortablejs'
+import { db } from "@/firebase"
+import { snackbar } from "@/utils"
+var sortable
 export default {
   props: ["id"],
   data() {
     return {
       showMenu: true,
       isEditing: false,
+      newDocName: "",
+      name: "",
+      content: ""
     }
   },
   watch: {
     breakpoint() {
       // Breakpoint (screen size) changed
       this.showMenu = !this.breakpoint.xsOnly
+    },
+    isEditing() {
+      if (this.isEditing) {
+        this.content = this.item.content
+        this.name = this.item.name
+      }
     }
   },
   computed: { ...Vuex.mapGetters({
@@ -141,50 +165,63 @@ export default {
         return this.docs.find(d => d.id == this.id)
       }
     },
+    children() {
+      var children = this.docs.filter(doc => doc.parent == this.item.id)
+      console.log(children.map(c => c.name + ": " + c.weight).sort(c => c.weight))
+      return children.sort(c => c.weight)
+    },
     itemPath() {
-      var parent = this.item
+      var item = this.item
       var path = []
-      while (parent) {
+      while (item) {
         path.push({
-          name: parent.name,
-          id: parent.id
+          name: item.name,
+          id: item.id
         })
-        parent = this.parent(parent.id)
+        item = this.parent(item)
       }
       return path.reverse()
     },
     rootItem() {
       // Returns the root item, ie the item whose id is in no "children"
       // props of any object
-      var root = {}
-      this.docs.forEach(doc => {
-        var hasParent = false
-        this.docs.forEach(d => {
-          if (!hasParent && d.children && d.children.some(c => c == doc.id)) {
-            hasParent = true
-          }
-        })
-        if (!hasParent) { root = doc }
-      })
-      return root
+      return this.docs.find(doc => !doc.parent)
     },
     breakpoint() {
       return this.$vuetify.breakpoint
     }
   },
   methods: {
-    parent(parentId) {
-      return this.docs.find(doc => doc.children && doc.children.some(c => c == parentId))
-    },
-    child(childId) {
-      return this.docs.find(d => d.id == childId)
+    parent(item) {
+      return this.docs.find(doc => doc.id == item.parent)
     },
     addNewDoc() {
-      console.log("FIXME: ADD NEW DOC")
-      this.isEditing = false
+      if (!this.newDocName) {
+        snackbar("Le nom ne peut pas être vide")
+        return
+      }
+      db.collection("docs").add({
+        parent: this.item.id,
+        name: this.newDocName,
+        content: "",
+        weight: 100
+      }).then(snackbar("Le document '" + this.newDocName + "' a été crée."))
+      this.newDocName = ""
+      // this.isEditing = false
     },
     saveEdit() {
       console.log("FIXME: SAVE EDIT")
+      if (!this.name) {
+        snackbar("Le titre ne peut pas être vide, le pauve.")
+        return
+      } else {
+        db.collection("docs").doc(this.item.id).update({
+          name: this.name,
+          content: this.content
+        }).then(() => {
+          snackbar("Enregistré!")
+        })
+      }
       this.isEditing = false
     },
     cancelEdit() {
@@ -192,14 +229,57 @@ export default {
       this.isEditing = false
     },
     deleteDoc() {
-      console.log("FIXME: DELETE DOC")
-      // CANNOT DELETE IF CONTAINS SUB ITEMS
-      this.$router.push("PARENT-ITEM")
+      console.log(this.item.parent)
+      if (!this.children.length && this.item.parent) {
+        db.collection("docs").doc(this.item.id).delete().then(() => {
+          snackbar("L'élément a été supprimé")
+        })
+        this.isEditing = false
+        this.$router.push("/doc/" + this.item.parent)
+      } else {
+        snackbar("Tu ne peux pas supprimer un doc qui a des enfants. C'est cruel.")
+      }
+    },
+    // Sortable
+    dragReorder({ to, from, oldIndex, newIndex }) {
+      var order = []
+      this.$refs.sortableList.$el.querySelectorAll("div.v-list__tile").forEach(item => order.push(item.getAttribute("id")))
+      db.runTransaction(transaction => {
+        // This code may get re-run multiple times if there are conflicts.
+        var p = Promise.resolve()
+        return p.then(() => {
+          order.forEach((docId, idx) => {
+            transaction.update(db.collection("docs").doc(docId), { weight: idx })
+          })
+        })
+      }).then(function () {
+        snackbar("L'ordre a bien été mis à jour.")
+      }).catch(function (error) {
+        snackbar("Error ! Voir la console...")
+        console.log("Transaction failed: ", error)
+      })
+    },
+    createSortable() {
+      if (!this.children.length || !this.isEditing) {
+        if (sortable) {sortable.destroy()}
+      } else {
+        var el = this.$refs.sortableList.$el
+        sortable = Sortable.create(el, {
+          handle: '.sortHandle',
+          onEnd: this.dragReorder,
+        })
+      }
     }
   },
   mounted() {
     this.$nextTick(() => {
       this.showMenu = !this.breakpoint.xsOnly
+    })
+  },
+  updated() {
+    // After each dom modif
+    this.$nextTick(() => {
+      this.createSortable()
     })
   }
 }
