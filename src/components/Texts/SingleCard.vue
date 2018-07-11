@@ -16,7 +16,8 @@
               :key="i">
       <v-flex xs4
               class="body-2 grey--text"> {{md.title}} </v-flex>
-      <v-flex xs8 class="grey--text">{{ md.value }}</v-flex>
+      <v-flex xs8
+              class="grey--text">{{ md.value }}</v-flex>
     </v-layout>
     <v-chip v-for="t in text.tags"
             small
@@ -29,15 +30,18 @@
       <v-icon>{{ overflow ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</v-icon>
     </v-btn>
     <v-spacer></v-spacer>
-    <v-icon v-if="!userIsAuthenticated"
-            :color="starCount > 0 ? 'yellow' : 'grey'">star </v-icon>
+    <v-tooltip top>
+      <v-icon v-if="!userIsAuthenticated && starCount"
+              :color="starCount > 0 ? 'yellow' : 'grey'"
+              slot="activator">star </v-icon> <span>{{starCount}} étoile{{starCount > 1 ? "s":""}}</span> </v-tooltip>
     <v-btn v-if="userIsAuthenticated"
            flat
            icon>
-      <v-icon :color="userStarred ? 'yellow' : 'grey'"
-              @click="toggleStar">star</v-icon>
+      <v-tooltip top>
+        <v-icon :color="userStarred ? 'yellow' : 'grey'"
+                @click="toggleStar"
+                slot="activator">star</v-icon> <span>{{starCountDisplay}} étoile{{starCount > 1 ? "s":""}}</span> </v-tooltip>
     </v-btn>
-    <p class="grey--text">{{ starCountDisplay }}</p>
     <v-btn flat
            icon
            :to="'/text/' + text.id">
@@ -76,7 +80,6 @@ export default {
       }
       // update Text object
       this.text.stars = stars
-      console.log(this.text)
       db.collection("texts").doc(this.text.id).update(this.text)
     }
   },
@@ -125,7 +128,7 @@ export default {
       return this.text.stars ? this.text.stars.length : 0
     },
     starCountDisplay() {
-      return this.starCount ? this.starCount : ""
+      return this.starCount ? this.starCount : "0"
     },
     userStarred() {
       if (!this.userIsAuthenticated) { return false }
