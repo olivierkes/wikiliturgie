@@ -39,58 +39,9 @@
         </v-breadcrumbs>
       </v-card>
     </v-flex>
-    <!-- Menu -->
-    <v-slide-y-transition>
-      <v-flex xs12
-              sm4
-              v-if="showMenu && children.length || isEditing">
-        <v-card>
-          <v-toolbar color="grey darken-1"
-                     dark
-                     dense
-                     height="32"
-                     flat> <span>
-                        Sous éléments
-                      </span></v-toolbar>
-          <v-list ref="sortableList">
-            <v-list-tile v-for="(c, i) in children"
-                         :key="i"
-                         :to="isEditing? '' : '/doc/' + c.id"
-                         :id="c.id">
-              <v-list-tile-action v-if="isEditing">
-                <v-btn style="cursor: move"
-                       icon
-                       class="sortHandle">
-                  <v-icon>drag_handle</v-icon>
-                </v-btn>
-              </v-list-tile-action>
-              <v-list-tile-title>{{c.name}}</v-list-tile-title>
-            </v-list-tile>
-          </v-list>
-          <v-card-text v-if="isEditing">
-            <v-layout row
-                      wrap>
-              <v-flex xs12
-                      sm9>
-                <v-text-field label="Ajouter une rubrique"
-                              v-model="newDocName"></v-text-field>
-              </v-flex>
-              <v-flex xs12
-                      sm3>
-                <v-btn :icon="breakpoint.smAndUp"
-                       flat
-                       color="green"
-                       @click="addNewDoc">
-                  <v-icon :left="breakpoint.xsOnly">add</v-icon> {{breakpoint.smAndUp ? "":"Ajouter"}} </v-btn>
-              </v-flex>
-            </v-layout>
-          </v-card-text>
-        </v-card>
-      </v-flex>
-    </v-slide-y-transition>
+    <!-- Content -->
     <v-flex xs12
             sm8>
-      <!-- Content -->
       <v-slide-x-transition>
         <v-card>
           <v-card-text v-if="!isEditing"
@@ -121,25 +72,83 @@
         </v-card>
       </v-slide-x-transition>
     </v-flex>
+    <!-- Menu -->
+    <v-slide-y-transition>
+      <v-flex xs12
+              sm4
+              v-if="showMenu && children.length || isEditing">
+        <v-card>
+          <v-toolbar color="grey darken-1"
+                     dark
+                     dense
+                     height="32"
+                     flat> <span>
+                        Sous éléments
+                      </span></v-toolbar>
+          <v-progress-circular v-if="loadingChildrenOrder"
+                               indeterminate
+                               color="primary"></v-progress-circular>
+          <v-list v-if="!loadingChildrenOrder">
+            <draggable v-model="children"
+                       ref="sortableList"
+                       :options="{handle:'.sortHandle'}">
+              <!-- @end="dragReorder" -->
+              <v-list-tile v-for="(c, i) in sortByWeight(children)"
+                           :key="i"
+                           :to="isEditing? '' : '/doc/' + c.id"
+                           :id="c.id">
+                <v-list-tile-action v-if="isEditing">
+                  <v-btn style="cursor: move"
+                         icon
+                         class="sortHandle">
+                    <v-icon>drag_handle</v-icon>
+                  </v-btn>
+                </v-list-tile-action>
+                <v-list-tile-title>{{c.name}}</v-list-tile-title>
+              </v-list-tile>
+            </draggable>
+          </v-list>
+          <v-card-text v-if="isEditing">
+            <v-layout row
+                      wrap>
+              <v-flex xs12
+                      sm12>
+                <v-text-field label="Ajouter une rubrique"
+                              v-model="newDocName"
+                              single-line
+                              append-outer-icon="add"
+                              @click:append-outer="addNewDoc"
+                              @keyup.enter="addNewDoc"></v-text-field>
+              </v-flex>
+            </v-layout>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+    </v-slide-y-transition>
   </v-layout>
 </v-container>
 </template>
 
 <script>
 import Vuex from "vuex"
-import Sortable from 'sortablejs'
 import { db } from "@/firebase"
 import { snackbar } from "@/utils"
-var sortable
+// import Sortable from 'sortablejs'
+// var sortable
+import draggable from 'vuedraggable'
 export default {
   props: ["id"],
+  components: {
+    draggable,
+  },
   data() {
     return {
       showMenu: true,
       isEditing: false,
       newDocName: "",
       name: "",
-      content: ""
+      content: "",
+      loadingChildrenOrder: false
     }
   },
   watch: {
@@ -165,10 +174,29 @@ export default {
         return this.docs.find(d => d.id == this.id)
       }
     },
-    children() {
-      var children = this.docs.filter(doc => doc.parent == this.item.id)
-      console.log(children.map(c => c.name + ": " + c.weight).sort(c => c.weight))
-      return children.sort(c => c.weight)
+    children: {
+      get() {
+        this.loadingChildrenOrder = false
+        var children = this.docs.filter(doc => doc.parent == this.item.id)
+        return children
+      },
+      set(val) {
+        this.loadingChildrenOrder = true
+        db.runTransaction(transaction => {
+          // This code may get re-run multiple times if there are conflicts.
+          var p = Promise.resolve()
+          return p.then(() => {
+            val.forEach((doc, idx) => {
+              transaction.update(db.collection("docs").doc(doc.id), { weight: idx })
+            })
+          })
+        }).then(function () {
+          snackbar("L'ordre a bien été mis à jour.")
+        }).catch(function (error) {
+          snackbar("Error ! Voir la console...")
+          console.log("Transaction failed: ", error)
+        })
+      }
     },
     itemPath() {
       var item = this.item
@@ -195,6 +223,9 @@ export default {
     parent(item) {
       return this.docs.find(doc => doc.id == item.parent)
     },
+    sortByWeight(arr) {
+      return arr.sort((c1, c2) => c1.weight > c2.weight)
+    },
     addNewDoc() {
       if (!this.newDocName) {
         snackbar("Le nom ne peut pas être vide")
@@ -210,7 +241,6 @@ export default {
       // this.isEditing = false
     },
     saveEdit() {
-      console.log("FIXME: SAVE EDIT")
       if (!this.name) {
         snackbar("Le titre ne peut pas être vide, le pauve.")
         return
@@ -225,11 +255,9 @@ export default {
       this.isEditing = false
     },
     cancelEdit() {
-      console.log("FIXME: CANCEL EDIT")
       this.isEditing = false
     },
     deleteDoc() {
-      console.log(this.item.parent)
       if (!this.children.length && this.item.parent) {
         db.collection("docs").doc(this.item.id).delete().then(() => {
           snackbar("L'élément a été supprimé")
@@ -239,47 +267,11 @@ export default {
       } else {
         snackbar("Tu ne peux pas supprimer un doc qui a des enfants. C'est cruel.")
       }
-    },
-    // Sortable
-    dragReorder({ to, from, oldIndex, newIndex }) {
-      var order = []
-      this.$refs.sortableList.$el.querySelectorAll("div.v-list__tile").forEach(item => order.push(item.getAttribute("id")))
-      db.runTransaction(transaction => {
-        // This code may get re-run multiple times if there are conflicts.
-        var p = Promise.resolve()
-        return p.then(() => {
-          order.forEach((docId, idx) => {
-            transaction.update(db.collection("docs").doc(docId), { weight: idx })
-          })
-        })
-      }).then(function () {
-        snackbar("L'ordre a bien été mis à jour.")
-      }).catch(function (error) {
-        snackbar("Error ! Voir la console...")
-        console.log("Transaction failed: ", error)
-      })
-    },
-    createSortable() {
-      if (!this.children.length || !this.isEditing) {
-        if (sortable) {sortable.destroy()}
-      } else {
-        var el = this.$refs.sortableList.$el
-        sortable = Sortable.create(el, {
-          handle: '.sortHandle',
-          onEnd: this.dragReorder,
-        })
-      }
     }
   },
   mounted() {
     this.$nextTick(() => {
       this.showMenu = !this.breakpoint.xsOnly
-    })
-  },
-  updated() {
-    // After each dom modif
-    this.$nextTick(() => {
-      this.createSortable()
     })
   }
 }
