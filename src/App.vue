@@ -91,7 +91,11 @@ export default {
         icon: "help",
         title: "Aide",
         link: "/doc"
-      }]
+      },{
+        icon: "info",
+        title: "Blog",
+        link: "/blog"
+      },]
       if (!this.userIsAuthenticated) {
         return res.concat([{
           icon: "person",

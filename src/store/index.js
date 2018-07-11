@@ -18,7 +18,7 @@ import tags from './tags'
 import texts from './texts'
 import authors from './authors'
 import components from './components'
-import docs from './docs'
+import about from './about'
 
 export var store = new Vuex.Store({
   // strict: process.env.NODE_ENV !== 'production', // strict in dev but not prod
@@ -29,7 +29,7 @@ export var store = new Vuex.Store({
     texts,
     authors,
     components,
-    docs
+    about
   },
   mutations: {
     ...firebaseMutations,
@@ -45,7 +45,7 @@ export var store = new Vuex.Store({
         "texts",
         "authors",
         "users",
-        "docs"
+        "about"
       ]
       var res = {
         modules: [],

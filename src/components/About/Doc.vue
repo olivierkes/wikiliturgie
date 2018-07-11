@@ -164,7 +164,7 @@ export default {
     }
   },
   computed: { ...Vuex.mapGetters({
-      docs: "docs/docs",
+      docs: "about/docs",
       userIsAuthenticated: "users/isAuthenticated",
     }),
     item() {

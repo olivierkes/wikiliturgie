@@ -14,6 +14,8 @@ import DateFilter from "@/filters/date"
 Vue.filter("date", DateFilter)
 import DiffFilter from "@/filters/diff"
 Vue.filter("diff", DiffFilter)
+import ExcerptFilter from "@/filters/excerpt"
+Vue.filter("excerpt", ExcerptFilter)
 
 ///// Components
 import EditTextCmp from "./components/Texts/Edit.vue"
@@ -52,7 +54,8 @@ new Vue({
     this.$store.dispatch("texts/setTextsRef", db.collection("texts"))
     this.$store.dispatch("authors/setAuthorsRef", db.collection("authors"))
     this.$store.dispatch("users/setUsersRef", db.collection("users"))
-    this.$store.dispatch("docs/setDocsRef", db.collection("docs"))
+    this.$store.dispatch("about/setDocsRef", db.collection("docs"))
+    this.$store.dispatch("about/setBlogsRef", db.collection("blogs"))
 
     // Auth
     firebase.auth().onAuthStateChanged((user) => {
