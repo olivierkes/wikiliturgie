@@ -6,21 +6,33 @@
     <v-flex xs12
             sm9
             md8>
+      <v-btn v-if="userIsAuthenticated && !id"
+             dark
+             fixed
+             fab
+             bottom
+             right
+             color="primary"
+             to="/blog/add">
+        <v-icon>add</v-icon>
+      </v-btn>
       <div v-if="id">
+        <!-- Single blog post -->
         <v-layout row
                   wrap>
-          <!-- Blog post -->
           <v-flex xs12>
             <blog-post :id="id"></blog-post>
           </v-flex>
         </v-layout>
       </div>
       <div v-if="!id">
+        <!-- List all blog posts -->
         <v-layout row
                   wrap>
           <v-flex xs12
                   v-for="post in sortedBlogPosts">
-            <blog-post :id="post.id" excerpt></blog-post>
+            <blog-post :id="post.id"
+                       excerpt></blog-post>
           </v-flex>
         </v-layout>
       </div>
@@ -42,7 +54,7 @@ export default {
       userIsAuthenticated: "users/isAuthenticated"
     }),
     sortedBlogPosts() {
-      return this.blogs.sort((a, b) => a.created_on < b.created_on)
+      return this.blogs.slice().sort((a, b) => a.created_on < b.created_on)
     }
   }
 }
