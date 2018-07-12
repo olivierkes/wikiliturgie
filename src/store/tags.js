@@ -15,6 +15,7 @@ const state = {
 const getters = {
   tags: state => state.tags,
   tagGroups: state => state.tagGroups,
+  tagById: state => id => state.tags.find(t => t.id == id) || {},
   organizedTags: (state, getters) => {
     var items = []
     getters.tagGroups.forEach(g => {

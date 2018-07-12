@@ -114,7 +114,7 @@
                   <v-card-text> -->
                 <revisions :revisions="computedRevisions"
                            :text-id="id"
-                           v-if="revisions && revisions.length"
+                           v-if="id"
                            @restore-revision="restoreRevision($event)"></revisions>
                 <!-- </v-card-text>
                 </v-card> -->
@@ -176,6 +176,8 @@ export default {
       texts: "texts/texts",
       revisions: "texts/revisions",
       authors: "authors/authors",
+      authorById: "authors/authorById",
+      authorByUid: "authors/authorByUid",
       user: "users/user"
     }),
     escapedContent: {
@@ -214,7 +216,7 @@ export default {
     },
     userAuthor() {
       if (this.user && this.authors.some(a => a.user == this.user.uid)) {
-        return this.authors.find(a => a.user == this.user.uid)
+        return this.authorByUid(this.user.uid)
       } else {
         return null
       }
@@ -261,7 +263,7 @@ export default {
     selectedAuthor: {
       get: function () {
         if (this.tempText.author) {
-          var author = this.authors.find(a => a.id == this.tempText.author)
+          var author = this.authorById(this.tempText.author)
           if (author) {
             return author
           } else {

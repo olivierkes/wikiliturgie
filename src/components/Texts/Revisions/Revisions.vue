@@ -15,7 +15,7 @@
           flat
           hover>
     <v-card-text>
-      <p class="caption grey--text"> <span>Le {{rev.created_on | date}} par {{users.find(u => u.id == rev.created_by).displayName}}</span> <span v-if="k == 0"> (version actuelle)</span> </p>
+      <p class="caption grey--text"> <span>Le {{rev.created_on | date}} par {{userById(rev.created_by).displayName}}</span> <span v-if="k == 0"> (version actuelle)</span> </p>
       <revision :now="rev"
                 :before="sortedRevisions[k+1]"></revision>
     </v-card-text>
@@ -51,7 +51,8 @@ export default {
     revision
   },
   computed: { ...Vuex.mapGetters({
-      users: "users/users"
+      users: "users/users",
+      userById: "users/userById"
     }),
     sortedRevisions() {
       if (this.revisions) {

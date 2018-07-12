@@ -10,6 +10,8 @@ const state = {
 
 const getters = {
   authors: state => state.authors,
+  authorByUid: state => uid => state.authors.find(a => a.user == uid) || {},
+  authorById: state => id => state.authors.find(a => a.id == id) || {},
   dataLoaded: state => state.dataLoaded
 }
 

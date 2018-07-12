@@ -39,7 +39,9 @@ export default {
       user: "users/user",
       userIsAuthenticated: "users/isAuthenticated",
       authors: "authors/authors",
-      tags: "tags/tags"
+      authorById: "authors/authorById",
+      tags: "tags/tags",
+      tagById: "tags/tagById"
     }),
     diff() {
       return key => {
@@ -124,12 +126,12 @@ export default {
   methods: {
     textAuthor(obj) {
       if (obj.author) {
-        return this.authors.find(a => a.id == obj.author).name
+        return this.authorById(obj.author).name
       }
       return null
     },
     tagName(tagId) {
-      return this.tags.find(t => t.id == tagId).name
+      return this.tagById(tagId).name
     }
   }
 }

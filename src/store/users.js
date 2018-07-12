@@ -58,7 +58,7 @@ const getters = {
   dataLoaded: state => state.dataLoaded,
   user: state => state.currentUser,
   isAuthenticated: state => state.currentUser !== null && state.currentUser !== undefined,
-  userById: state => id => state.users.find(u => u.id == id),
+  userById: state => id => state.users.find(u => u.id == id) || {},
   avatar: (state, getters) => id => getters.userById(id).photoURL
 }
 
