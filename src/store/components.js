@@ -1,30 +1,30 @@
 import Vue from 'vue'
 
 const state = {
-  snackbar: false,
-  snackbar_text: ""
+  snackbar_visible: false,
+  snackbar: {}
 }
 
 const getters = {
+  snackbar_visible: state => state.snackbar_visible,
   snackbar: state => state.snackbar,
-  snackbar_text: state => state.snackbar_text,
 }
 
 const mutations = {
-  snackbar(state, text) {
-    if (text) {
-      state.snackbar_text = text
-      state.snackbar = true
+  snackbar(state, snackbar) {
+    if (snackbar && snackbar.text) {
+      state.snackbar = snackbar
+      state.snackbar_visible = true
     } else {
       state.snackbar_text = ""
-      state.snackbar = false
+      state.snackbar_visible = false
     }
   }
 }
 
 const actions = {
-  snackbar({ commit }, text) {
-    commit("snackbar", text)
+  snackbar({ commit }, snackbar) {
+    commit("snackbar", snackbar)
   }
 }
 

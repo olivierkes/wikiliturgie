@@ -1,7 +1,21 @@
 import { store } from '@/store'; // path to your Vuex store
 
-function snackbar(text) {
-  store.dispatch("components/snackbar", text)
+function snackbar(text, {
+  timeout = 2000,
+  multiLine = false,
+  color = "pink",
+  position = "bottom",
+  background = ""
+} = {}) {
+  store.dispatch("components/snackbar", {
+    text: text,
+    timeout: timeout,
+    multiLine: multiLine,
+    color: color,
+    top: position == "top",
+    bottom: position == "bottom",
+    background: background
+  })
 }
 
 export { snackbar }

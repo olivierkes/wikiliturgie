@@ -80,7 +80,8 @@
                           </v-flex>
                           <v-flex>
                             <v-alert :value="true"
-                                     type="warning"><b>Entre si possible au moins 2 tags.</b> Pour la plupart des textes, il faut remplir au minimum les catégories <code>moment de culte</code> et <code>occasion</code>.<br /><br />Si tu ne trouves pas de tag approprié, note le en commentaire et des admins ajusteront.</v-alert>
+                                     type="warning"><b>Entre si possible au moins 2 tags.</b> Pour la plupart des textes, il faut remplir au minimum les catégories <code>moment de culte</code> et <code>occasion</code>.<br /><br />Si tu ne trouves pas de tag approprié, note le
+                              en commentaire et des admins ajusteront.</v-alert>
                           </v-flex>
                         </v-layout>
                       </v-flex>
@@ -93,7 +94,10 @@
                       </v-flex>
                       <v-flex>
                         <v-textarea v-model="tempText.comments"
-                                    label="Remarques générales"
+                                    label="Remarques"
+                                    append-icon="help"
+                                    @click:append="help('comments')"
+                                    auto-grow
                                     rows="4"></v-textarea>
                       </v-flex>
                       <v-flex>
@@ -157,6 +161,7 @@ export default {
         content: "", // String
         bible_ref: "", // String
         comments: "", // String
+        toAdmins: "",
         author: "", // ID (String)
         license_wl: true, // Boolean
         created_on: "",
@@ -386,6 +391,11 @@ export default {
               snackbar("Le texte a été restauré.")
               this.synced = false
             })))
+    },
+    help(value) {
+      if (value == "comments") {
+        snackbar("Commentaires à propos du texte: son origine, sa source, une remarque sur son utilisation, etc. Tout ce qui peut être utile et informatif.", {timeout:5000, multiLine:true, position:"top", background: "info", color: ""})
+      }
     }
   }
 }

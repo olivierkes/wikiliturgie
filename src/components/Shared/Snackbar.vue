@@ -1,9 +1,13 @@
 <template>
-<v-snackbar :timeout="2000"
-            bottom
-            v-model="visible"> {{ text }}
+<v-snackbar :timeout="snackbar.timeout"
+            :bottom="snackbar.bottom"
+            :top="snackbar.top"
+            :multi-line="snackbar.multiLine"
+            :vertical="snackbar.multiLine"
+            :color="snackbar.background"
+            v-model="visible"> {{ snackbar.text }}
   <v-btn flat
-         color="pink"
+         :color="snackbar.color"
          @click.native="visible = false">Close</v-btn>
 </v-snackbar>
 </template>
@@ -12,11 +16,11 @@
 import Vuex from "vuex"
 export default {
   computed: { ...Vuex.mapGetters({
-      text: "components/snackbar_text",
+      snackbar: "components/snackbar",
     }),
     visible: {
       get: function () {
-        return this.$store.getters["components/snackbar"]
+        return this.$store.getters["components/snackbar_visible"]
       },
       set: function (val) {
         if (!val) {
