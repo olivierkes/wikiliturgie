@@ -61,6 +61,8 @@
                                     :item-value="i => i.id"
                                     return-object
                                     dense> </v-combobox>
+                        <v-alert :value="true"
+                                 type="error"><b>Tu dois indiquer un auteur:</b> Toi, un auteur de la liste, ou en créer un nouveau en entrant son nom.<br /><br />Si l'auteur est inconnu, choisis <code>Inconnu / Anonyme</code>.</v-alert>
                       </v-flex>
                       <v-flex>
                         <h1 class="subheading orange--text">Tags</h1></v-flex>
@@ -75,6 +77,10 @@
                           </v-flex>
                           <v-flex>
                             <chip-bar v-model="computedTags"></chip-bar>
+                          </v-flex>
+                          <v-flex>
+                            <v-alert :value="true"
+                                     type="warning"><b>Entre si possible au moins 2 tags.</b> Pour la plupart des textes, il faut remplir au minimum les catégories <code>moment de culte</code> et <code>occasion</code>.<br /><br />Si tu ne trouves pas de tag approprié, note le en commentaire et des admins ajusteront.</v-alert>
                           </v-flex>
                         </v-layout>
                       </v-flex>
