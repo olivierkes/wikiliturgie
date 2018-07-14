@@ -13,10 +13,12 @@
                         label="Titre"> </v-text-field>
         </v-flex>
         <v-flex xs12>
-          <v-textarea v-model="tempText.content"
+          <!-- <v-textarea v-model="tempText.content"
                       label="Contenu"
                       required
-                      rows="25"></v-textarea>
+                      rows="25"></v-textarea> -->
+          <markdown-editor v-model="tempText.content"
+                           :configs="simpleMDEConfig"></markdown-editor>
         </v-flex>
       </v-layout>
     </v-flex>
@@ -148,6 +150,7 @@ import Vuex from "vuex"
 import firebase from 'firebase/app'
 import { snackbar } from "@/utils"
 import revisions from "@/components/Texts/Revisions/Revisions.vue"
+import SimpleMDE from "simplemde"
 export default {
   props: ["id"],
   components: {
@@ -171,6 +174,13 @@ export default {
       // View props
       confirmDialog: false,
       synced: false, // used to perform sync only once
+      simpleMDEConfig: {
+        tabSize: 8,
+        placeholder: 'Contenu du texte.',
+        spellChecker: false,
+        status: false,
+        toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', "horizontal-rule", '|', 'preview', 'side-by-side', 'fullscreen', '|', 'guide']
+      }
     }
   },
   mounted() {
@@ -372,7 +382,7 @@ export default {
     },
     help(value) {
       if (value == "comments") {
-        snackbar("Commentaires à propos du texte: son origine, sa source, une remarque sur son utilisation, etc. Tout ce qui peut être utile et informatif.", {timeout:5000, multiLine:true, position:"top", background: "info", color: ""})
+        snackbar("Commentaires à propos du texte: son origine, sa source, une remarque sur son utilisation, etc. Tout ce qui peut être utile et informatif.", { timeout: 5000, multiLine: true, position: "top", background: "info", color: "" })
       }
     }
   }

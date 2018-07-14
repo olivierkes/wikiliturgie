@@ -27,9 +27,11 @@
   <v-card-text v-if="!excerpt && !isEditing"
                v-html="$options.filters.md(post.content)"></v-card-text>
   <v-card-text v-if="isEditing">
-    <v-textarea v-model="local_content"
+    <!-- <v-textarea v-model="local_content"
                 label="Contenu"
-                auto-grow></v-textarea>
+                auto-grow></v-textarea> -->
+    <markdown-editor v-model="local_content"
+                     :configs="simpleMDEConfig"></markdown-editor>
     <v-text-field v-model="local_imageUrl"
                   label="URL de l'image"></v-text-field>
   </v-card-text>
@@ -78,7 +80,11 @@ export default {
       isEditing: false,
       local_title: "",
       local_content: "",
-      local_imageUrl: ""
+      local_imageUrl: "",
+      simpleMDEConfig: {
+        tabSize: 8,
+        spellChecker: false
+      }
     }
   },
   watch: {

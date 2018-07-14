@@ -117,3 +117,8 @@ export default {
   }
 }
 </script>
+
+<style>
+  /* SimpleMDE: https://github.com/F-loat/vue-simplemde */
+  @import '~simplemde-theme-base/dist/simplemde-theme-base.min.css';
+</style>

@@ -53,9 +53,11 @@
           <v-card-text>
             <v-text-field label="Titre"
                           v-model="name"></v-text-field>
-            <v-textarea autoGrow
+            <!-- <v-textarea autoGrow
                         label="Contenu"
-                        v-model="content"></v-textarea>
+                        v-model="content"></v-textarea> -->
+            <markdown-editor v-model="content"
+                             :configs="simpleMDEConfig"></markdown-editor>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -148,7 +150,11 @@ export default {
       newDocName: "",
       name: "",
       content: "",
-      loadingChildrenOrder: false
+      loadingChildrenOrder: false,
+      simpleMDEConfig: {
+        tabSize: 8,
+        spellChecker: false
+      }
     }
   },
   watch: {

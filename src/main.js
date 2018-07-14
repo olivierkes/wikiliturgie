@@ -40,6 +40,11 @@ import DataLoadingStatusCmp from "./components/Shared/DataLoadingStatus.vue"
 Vue.component("data-loading-status", DataLoadingStatusCmp)
 //////
 
+//// SimpleMDE (Markdown editor)
+import VueSimplemde from 'vue-simplemde'
+import 'simplemde/dist/simplemde.min.css'
+Vue.use(VueSimplemde)
+
 import firebase from "firebase"
 import { db } from '@/firebase'
 
