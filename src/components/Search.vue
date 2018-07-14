@@ -26,7 +26,8 @@
                        solo
                        show-count
                        :texts="searchedTexts"
-                       hide-empty></tag-bar>
+                       hide-empty
+                       dialog-button></tag-bar>
             </v-flex>
             <v-flex xs1>
               <v-btn flat

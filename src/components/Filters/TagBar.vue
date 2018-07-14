@@ -1,22 +1,25 @@
 <template>
-<v-combobox :items="computedTags"
-            v-model="internalSelected"
-            :label="label"
-            chips
-            small-chips
-            deletable-chips
-            single-line
-            hide-details
-            multiple
-            return-object
-            dense
-            prepend-icon="search"
-            :solo="solo"
-            :filter="filter"
-            :search-input.sync="search"
-            @input="input"
-            @keyup.enter="validates"
-            @change="change"> <template slot="no-data">
+<div>
+  <v-combobox :items="computedTags"
+              v-model="internalSelected"
+              :label="label"
+              chips
+              small-chips
+              deletable-chips
+              single-line
+              hide-details
+              multiple
+              return-object
+              dense
+              prepend-icon="search"
+              :append-outer-icon="dialogButton? 'settings' : ''"
+              @click:append-outer="showFilterDialog = true"
+              :solo="solo"
+              :filter="filter"
+              :search-input.sync="search"
+              @input="input"
+              @keyup.enter="validates"
+              @change="change"> <template slot="no-data">
         <v-card flat>
           <v-card-text v-if="allowsCustomText">
             Appuie sur <kbd>enter</kbd> pour rechercher le texte <v-chip small label>{{search}}</v-chip>
@@ -36,7 +39,7 @@
          </v-list-tile-content>
        </v-list-tile> -->
      </template> <template slot="item"
-            slot-scope="data">
+              slot-scope="data">
         <template v-if="typeof data.item !== 'object'">
           <v-list-tile-content v-text="data.item"></v-list-tile-content>
         </template> <template v-else>
@@ -49,7 +52,15 @@
             <v-list-tile-title v-if="!showCount" v-html="data.item.text" ></v-list-tile-title>
           </v-list-tile-content>
         </template> </template>
-</v-combobox>
+  </v-combobox> <b>Selected: </b>{{selected}}
+  <hr /><b>SelectedInput: </b> {{selectedInput}}
+  <hr /> <b>Value:</b> {{value}}
+  <hr /> <b>Tag Only: </b> {{tagOnly}}
+  <hr /> <b>Value tagIdsOnly:</b> {{tagIdsOnly}}
+  <filter-dialog v-model="tagIdsOnly"
+                 :show="showFilterDialog"
+                 @close="showFilterDialog = false"></filter-dialog>
+</div>
 </template>
 
 <script>
@@ -65,13 +76,15 @@ export default {
     "tagOnly": Boolean, // Returns array of tag's id only
     "showCount": Boolean, // Display the number of item for each tags. Requires "texts"
     "texts": Array, // The object counted, in their 'tags' prop
-    "hideEmpty": Boolean // Hide tags that have no texts
+    "hideEmpty": Boolean, // Hide tags that have no texts
+    "dialogButton": Boolean // Shows the button for dialog
   },
   data() {
     return {
       search: "",
       internalSelected: [],
-      selectedInput: this.value,
+      selectedInput: [],
+      showFilterDialog: false
     }
   },
   watch: {
@@ -81,6 +94,21 @@ export default {
   },
   computed: {
     tagObject() { return this.$store.getters["tags/tagObject"] },
+    tagIdsOnly: {
+      get() {
+        return this.selected.filter(t => t.type == "tag").map(t => t.id)
+      },
+      set(tagIds) {
+        var r = this.selectedInput.filter(s => s.type !== "tag")
+        this.selectedInput.forEach(t => {
+          // we add tags that are in the new value
+          if (t == "tag" && tagIds.some(id => id == t.id)) {
+            r.push(t)
+          }
+        })
+        this.selectedInput = r
+      }
+    },
     selected() {
       // Must return an array of tagObject
       if (this.tagOnly) {
@@ -160,10 +188,13 @@ export default {
     emit() {
       if (this.tagOnly) {
         // Returns array of tags ID only
-        this.$emit("input", this.selected.map(s => s.id))
+        this.$emit("input", this.tagIdsOnly)
       } else {
         this.$emit("input", this.selected)
       }
+    },
+    openDialog() {
+      console.log("DIAAALOG")
     }
   }
 };
