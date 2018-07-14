@@ -30,7 +30,8 @@
         <v-layout row
                   wrap>
           <v-flex xs12
-                  v-for="post in sortedBlogPosts">
+                  v-for="post in sortedBlogPosts"
+                  :key="post.id">
             <blog-post :id="post.id"
                        excerpt></blog-post>
           </v-flex>

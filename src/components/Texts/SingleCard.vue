@@ -20,6 +20,7 @@
               class="grey--text">{{ md.value }}</v-flex>
     </v-layout>
     <v-chip v-for="t in text.tags"
+            :key="t"
             small
             label>{{tags.find(tag => tag.id == t).name}}</v-chip>
   </v-card-text>
