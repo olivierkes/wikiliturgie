@@ -2,7 +2,7 @@
 <!-- @mouseover="overflow = true" @mouseleave="overflow=false" -->
 <v-card v-if="text"
         :hover="abstract && !overflow"
-        @dblclick="overflow=!overflow"
+        @click.native="overflow=!overflow"
         :flat="flat">
   <v-card-text :style="style">
     <!-- <p v-html="$options.filters.md(text.content.slice(0, 300))"></p> -->

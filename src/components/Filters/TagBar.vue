@@ -48,7 +48,8 @@
   </v-combobox>
   <filter-dialog v-model="selected"
                  :show="showFilterDialog"
-                 @close="showFilterDialog = false"></filter-dialog>
+                 @close="showFilterDialog = false"
+                 :include-authors="includeAuthors"></filter-dialog>
 </div>
 </template>
 

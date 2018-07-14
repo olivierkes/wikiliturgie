@@ -41,7 +41,7 @@
                       :label="group.name"></v-select>
           </v-flex>
           <!-- Authors -->
-          <v-flex xs6>
+          <v-flex xs6 v-if="includeAuthors">
             <v-toolbar dense
                        dark
                        color="primary">
@@ -71,7 +71,8 @@ import Vuex from "vuex"
 export default {
   props: {
     "value": Array,
-    "show": Boolean
+    "show": Boolean, // Is dialog visible
+    "includeAuthors": Boolean // Includes authors with tags
   },
   data() {
     return {
@@ -84,6 +85,9 @@ export default {
     },
     selected() {
       this.$emit("input", this.selected)
+    },
+    show() {
+      this.selected = this.value
     }
   },
   computed: { ...Vuex.mapGetters({

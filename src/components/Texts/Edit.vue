@@ -13,7 +13,7 @@
                         label="Titre"> </v-text-field>
         </v-flex>
         <v-flex xs12>
-          <v-textarea v-model="escapedContent"
+          <v-textarea v-model="tempText.content"
                       label="Contenu"
                       required
                       rows="25"></v-textarea>
@@ -72,6 +72,7 @@
                             <tag-bar v-model="tempText.tags"
                                      tag-only
                                      show-count
+                                     dialog-button
                                      :texts="texts"></tag-bar>
                           </v-flex>
                           <v-flex>
@@ -188,14 +189,6 @@ export default {
       authorByUid: "authors/authorByUid",
       user: "users/user"
     }),
-    escapedContent: {
-      get: function () {
-        return this.tempText.content.split("\\n").join("\n")
-      },
-      set: function (val) {
-        this.tempText.content = val
-      }
-    },
     iAmAuthor: {
       get: function () {
         if (!this.user) {
