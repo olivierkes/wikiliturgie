@@ -9,30 +9,26 @@
       <v-toolbar dark
                  dense
                  color="primary">
-        <v-btn icon
-               dark
-               @click.native="$emit('close')">
-          <v-icon>close</v-icon>
-        </v-btn>
         <v-toolbar-title>Filtres</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon
-               dark>
+               dark
+               @click.native="$emit('close')">
           <v-icon>check</v-icon>
         </v-btn>
       </v-toolbar>
       <v-container grid-list-lg>
         <v-layout wrap>
-          <v-flex xs12> <b>Value: </b>{{value}}
-            <hr /> <b>Selected tags:</b> {{selectedTags}} </v-flex>
+          <!-- Tags -->
           <v-flex xs6
-                  v-for="group in tagGroups">
+                  v-for="group in tagGroups"
+                  :key="group.id">
             <v-toolbar dense
                        dark
                        color="primary">
               <v-toolbar-title>{{ group.name }}</v-toolbar-title>
             </v-toolbar>
-            <v-select v-model="selectedTags"
+            <v-select v-model="selected"
                       :items="group.tags.map(tagId => tags.find(t => t.id == tagId))"
                       multiple
                       item-text="name"
@@ -43,6 +39,25 @@
                       solo
                       chips
                       :label="group.name"></v-select>
+          </v-flex>
+          <!-- Authors -->
+          <v-flex xs6>
+            <v-toolbar dense
+                       dark
+                       color="primary">
+              <v-toolbar-title>Auteurs</v-toolbar-title>
+            </v-toolbar>
+            <v-select v-model="selected"
+                      :items="authors"
+                      multiple
+                      item-text="name"
+                      item-value="id"
+                      dense
+                      small-chips
+                      deletable-chips
+                      solo
+                      chips
+                      label="Auteurs"></v-select>
           </v-flex>
         </v-layout>
       </v-container>
@@ -60,44 +75,22 @@ export default {
   },
   data() {
     return {
-      notifications: false,
-      sound: true,
-      widgets: false,
-      selectedTags: null
+      selected: null
     }
   },
   watch: {
-    value(newval, oldval) {
-      console.log("Value Changed:")
-      console.log(oldval)
-      console.log(newval)
-      if (!this.listOfTagsEquals(this.value, this.selectedTags)) {
-        this.selectedTags = this.value
-      }
+    value() {
+      this.selected = this.value
     },
-    selectedTags(newval, oldval) {
-      console.log("SELECTed tag changed:")
-      console.log(oldval)
-      console.log(newval)
-      if (!this.listOfTagsEquals(newval, oldval)) {
-        console.log("EMITTING!!")
-        this.$emit("input", this.computedTags)
-      }
+    selected() {
+      this.$emit("input", this.selected)
     }
   },
   computed: { ...Vuex.mapGetters({
       tags: "tags/tags",
       tagGroups: "tags/tagGroups",
-      tagObject: "tags/tagObject"
+      authors: "authors/authors"
     })
-  },
-  methods: {
-    listOfTagsEquals(a, b) {
-      console.log("EQUALS???", a.sort().join("") == b.sort().join(""))
-      console.log(a.sort().join(""))
-      console.log(b.sort().join(""))
-      return a.sort().join("") == b.sort().join("")
-    }
   }
 }
 </script>

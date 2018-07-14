@@ -20,23 +20,26 @@ function snackbar(text, {
 
 export { snackbar }
 
-// Filter texts  with given tagObject
-function filterTextsByTagObjects(texts, tagObjects) {
-  tagObjects.forEach(to => {
-    texts = texts.filter(txt => filterTextByTagObject(txt, to))
+// Filter texts  with given id (could be tag, author, ...)
+function filterTextsByIds(texts, ids) {
+  ids.forEach(id => {
+    texts = texts.filter(txt => filterTextById(txt, id))
   })
   return texts
 }
 
-function filterTextByTagObject(text, tagObject) {
-  if (tagObject.type == "text") {
+function filterTextById(text, id) {
+  if (text.tags.some(t => t == id)) {
+    // Tag
+    return true
+  } else if (text.author == id) {
+    // Author
+    return true
+  } else {
+    // Search text
     return JSON.stringify(text).toLowerCase()
-      .indexOf(tagObject.text.toLowerCase()) != -1
-  } else if (tagObject.type == "tag") {
-    return text.tags.some(t => t == tagObject.id)
-  } else if (tagObject.type == "author") {
-    return text.author == tagObject.id
+      .indexOf(id.toLowerCase()) != -1
   }
 }
 
-export { filterTextsByTagObjects, filterTextByTagObject }
+export { filterTextsByIds, filterTextById }

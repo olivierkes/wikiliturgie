@@ -12,7 +12,9 @@ const getters = {
   authors: state => state.authors,
   authorByUid: state => uid => state.authors.find(a => a.user == uid) || {},
   authorById: state => id => state.authors.find(a => a.id == id) || {},
-  dataLoaded: state => state.dataLoaded
+  dataLoaded: state => state.dataLoaded,
+  authorsIds: state => state.authors.map(a => a.id),
+  isAuthor: state => id => state.authors.some(a => a.id == id)
 }
 
 const mutations = {

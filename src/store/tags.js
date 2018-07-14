@@ -15,43 +15,12 @@ const state = {
 const getters = {
   tags: state => state.tags,
   tagGroups: state => state.tagGroups,
+  tagsIds: state => state.tags.map(t => t.id),
+  // Queries
   tagById: state => id => state.tags.find(t => t.id == id) || {},
-  organizedTags: (state, getters) => {
-    var items = []
-    getters.tagGroups.forEach(g => {
-      items.push({ header: g.name, groupId: g.id })
-      g.tags.forEach(tagID => {
-        var tag = getters.tags.find(t => t.id == tagID)
-        items.push({
-          text: tag.name,
-          group: g.name,
-          groupId: g.id,
-          type: "tag",
-          id: tag.id
-        })
-      })
-      // items.push({ divider: true, groupId: g.id})
-    })
-    return items
-  },
-  organizedTagsWithAuthors: (state, getters, rootState, rootGetters) => {
-    var items = getters.organizedTags.slice()
-    items.push({ header: "Auteur" })
-    var authors = rootGetters["authors/authors"]
-    authors.forEach(a => {
-      items.push({
-        text: a.name,
-        group: "Auteur",
-        type: "author",
-        id: a.id
-      })
-    })
-    return items
-  },
-  tagObject: (state, getters) => {
-    // Returns a tag object used in tab-bar and other filters
-    return id => getters.organizedTags.find(ot => ot.id == id)
-  },
+  groupById: state => id => state.tagGroups.find(g => g.id == id) || {},
+  groupByTagId: state => tagId => state.tagGroups.find(g => g.tags.some(t => t == tagId)),
+  isTag: state => id => state.tags.some(t => t.id == id),
   groupTagCount: (state, getters) => {
     // Returns a function (groupID => number of tags in group)
     return id => {

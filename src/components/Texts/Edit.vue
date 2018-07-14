@@ -70,13 +70,12 @@
                         <v-layout column>
                           <v-flex xs12>
                             <tag-bar v-model="tempText.tags"
-                                     :tags="organizedTags"
                                      tag-only
                                      show-count
                                      :texts="texts"></tag-bar>
                           </v-flex>
                           <v-flex>
-                            <chip-bar v-model="computedTags"></chip-bar>
+                            <chip-bar v-model="tempText.tags"></chip-bar>
                           </v-flex>
                           <v-flex>
                             <v-alert :value="true"
@@ -182,8 +181,6 @@ export default {
   computed: { ...Vuex.mapGetters({
       tags: "tags/tags",
       tagGroups: "tags/tagGroups",
-      organizedTags: "tags/organizedTags",
-      tagObject: "tags/tagObject",
       texts: "texts/texts",
       revisions: "texts/revisions",
       authors: "authors/authors",
@@ -257,18 +254,6 @@ export default {
       if (this.revisions && this.local_text) {
         var copy = this.copyOfCurrentText()
         return [copy].concat(this.revisions)
-      }
-    },
-    computedTags: {
-      get: function () {
-        if (this.tempText.tags) {
-          return this.tempText.tags.map(tagId => this.tagObject(tagId))
-        } else {
-          return []
-        }
-      },
-      set: function (val) {
-        this.tempText.tags = val.map(t => t.id)
       }
     },
     selectedAuthor: {

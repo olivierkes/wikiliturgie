@@ -16,11 +16,9 @@
       <v-layout column>
         <v-flex>
           <v-layout row>
-            <v-flex xs11
-                    sm10
-                    offset-sm1>
+            <v-flex xs12>
               <tag-bar v-model="filters"
-                       :tags="organizedTagsWithAuthors"
+                       include-authors
                        allows-custom-text
                        :label="tagBarLabel"
                        solo
@@ -28,13 +26,6 @@
                        :texts="searchedTexts"
                        hide-empty
                        dialog-button></tag-bar>
-            </v-flex>
-            <v-flex xs1>
-              <v-btn flat
-                     icon
-                     @click.native.stop="showFilterDialog = true">
-                <v-icon center>settings</v-icon>
-              </v-btn>
             </v-flex>
           </v-layout>
         </v-flex>
@@ -65,9 +56,6 @@
             </v-flex>
           </v-layout>
         </v-flex>
-        <filter-dialog v-model="filters"
-                       :show="showFilterDialog"
-                       @close="showFilterDialog = false"></filter-dialog>
       </v-layout>
     </v-flex>
     <v-flex fill-height>
@@ -81,28 +69,23 @@
 <script>
 import { db } from '@/firebase'
 import Vuex from "vuex"
-import { filterTextsByTagObjects } from "@/utils"
+import { filterTextsByIds } from "@/utils"
 export default {
   data() {
     return {
       searchText: null,
       image: "",
       filters: [],
-      showFilterDialog: false,
       viewSingleMode: false
     }
   },
   computed: { ...Vuex.mapGetters({
       tags: "tags/tags",
       tagGroups: "tags/tagGroups",
-      organizedTagsWithAuthors: "tags/organizedTagsWithAuthors",
       texts: "texts/texts"
     }),
     searchedTexts() {
-      return filterTextsByTagObjects(this.texts, this.filters)
-      // var texts = this.texts
-      // this.filters.forEach(f => filterTextsByTagObjects(texts, f))
-      // return texts
+      return filterTextsByIds(this.texts, this.filters)
     },
     tagBarLabel() {
       return "Rechercher parmis " + this.texts.length + " textes liturgiques…"
