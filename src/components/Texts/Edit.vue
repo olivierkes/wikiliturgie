@@ -64,10 +64,9 @@
                                     return-object
                                     dense> </v-combobox>
                         <!-- <v-alert :value="true"
-                                 type="error"><b>Tu dois indiquer un auteur:</b> Toi, un auteur de la liste, ou en créer un nouveau en entrant son nom.<br /><br />Si l'auteur est inconnu, choisis <code>Inconnu / Anonyme</code>.</v-alert> -->
-                      </v-flex>
+                                 type="error"><b>Tu dois indiquer un auteur:</b> Toi, un auteur de la liste, ou en créer un nouveau en entrant son nom.<br /><br />Si l'auteur est inconnu, choisis <code>Inconnu / Anonyme</code>.</v-alert> --></v-flex>
                       <v-flex>
-                        <h1 class="subheading orange--text">Tags <v-icon @click="help('tags')" color="blue lighten-3" style="float:right">help</v-icon></h1> </v-flex>
+                        <h1 class="subheading orange--text">Tags <v-icon @click="help('tags')" color="blue lighten-4" style="float:right">help</v-icon></h1> </v-flex>
                       <v-flex>
                         <v-layout column>
                           <v-flex xs12>
@@ -83,8 +82,8 @@
                           </v-flex>
                           <v-flex>
                             <v-alert :value="true"
-                                     type="warning"
-                                     v-if="local_text.tags.length < 2"><b>Entre si possible au moins 2 tags.</b> Pour la plupart des textes, il faut remplir au minimum les catégories <code>Moment de culte</code> et <code>Occasion</code>.</v-alert>
+                                     color="warning"
+                                     v-if="local_text.tags.length < 2"><v-icon @click="help('tags')" color="yellow darken-4" style="float:right">help</v-icon><b>Entre si possible au moins 2 tags.</b> Pour la plupart des textes, il faut remplir au minimum les catégories <code>Moment de culte</code> et <code>Occasion</code>.</v-alert>
                           </v-flex>
                         </v-layout>
                       </v-flex>
@@ -93,19 +92,37 @@
                       <v-flex>
                         <v-text-field v-model="tempText.bible_ref"
                                       slot="activator"
-                                      label="Texte(s) biblique(s)"></v-text-field>
+                                      label="Texte(s) biblique(s)"
+                                      append-icon="help"
+                                      @click:append="help('bible')"
+                                      class="help-icon"></v-text-field>
                       </v-flex>
                       <v-flex>
-                        <v-textarea v-model="tempText.comments"
-                                    label="Remarques et commentaires"
+                        <!-- Commentaires sur le texte -->
+                        <v-checkbox label="Remarques et commentaires"
                                     append-icon="help"
                                     @click:append="help('comments')"
-                                    auto-grow
-                                    rows="4"
-                                    class="help-icon"></v-textarea>
+                                    class="help-icon"
+                                    v-model="showComments"></v-checkbox>
+                        <v-textarea v-if="showComments || local_text.comments"
+                                    v-model="tempText.comments"
+                                    auto-grow box
+                                    rows="4"></v-textarea>
                       </v-flex>
                       <v-flex>
-                        <h1 class="subheading orange--text">License WikiLiturgie <v-icon @click="help('license')" color="blue lighten-3" style="float:right">help</v-icon></h1></v-flex>
+                        <!-- Message aux admins -->
+                        <v-checkbox label="Messages aux modérateurs"
+                                    append-icon="help"
+                                    @click:append="help('toAdmins')"
+                                    class="help-icon"
+                                    v-model="showToAdmins"></v-checkbox>
+                        <v-textarea v-if="showToAdmins || local_text.toAdmins"
+                                    v-model="tempText.toAdmins"
+                                    auto-grow box
+                                    rows="4"></v-textarea>
+                      </v-flex>
+                      <v-flex>
+                        <h1 class="subheading orange--text">License WikiLiturgie <v-icon @click="help('license')" color="blue lighten-4" style="float:right">help</v-icon></h1></v-flex>
                       <v-flex>
                         <p class="body-1 grey--text">Je certifie que l'auteur du texte accepte la licence WikiLiturgie:</p>
                         <v-switch :disabled="user==null"
@@ -182,7 +199,9 @@ export default {
         spellChecker: false,
         status: false,
         toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', "horizontal-rule", '|', 'preview', 'side-by-side', 'fullscreen', '|', 'guide']
-      }
+      },
+      showComments: false,
+      showToAdmins: false
     }
   },
   mounted() {
@@ -199,7 +218,8 @@ export default {
       authors: "authors/authors",
       authorById: "authors/authorById",
       authorByUid: "authors/authorByUid",
-      user: "users/user"
+      user: "users/user",
+      isAuthenticated: "users/isAuthenticated"
     }),
     iAmAuthor: {
       get: function () {
@@ -241,6 +261,10 @@ export default {
           var text = this.texts.find(t => t.id == this.id)
           if (text) {
             for (var k in text) this.$set(this.local_text, k, text[k])
+
+            if (text.comments) { this.showComments = true }
+            if (text.toAdmins) { this.showToAdmins = true }
+
             this.synced = true
           }
           // Return local text
@@ -288,6 +312,16 @@ export default {
     }
   },
   methods: {
+    validate() {
+      // Memo: things to validate
+      //
+      // Création: anonym | user | modo
+      // Édition / Suppression : user(own) | modo(all)
+      // License WL: user | modo
+      // To Admins: anonym(own) | user(all) | modo(all)
+      // -----
+      // Référence biblique
+    },
     saveText() {
       // Prepare object
       var obj = {
@@ -299,7 +333,8 @@ export default {
         bible_ref: this.tempText.bible_ref || "",
         comments: this.tempText.comments || "",
         license_wl: this.tempText.license_wl || false,
-        author: this.tempText.author || ""
+        author: this.tempText.author || "",
+        toAdmins: this.tempText.toAdmins || ""
       }
       if (obj.author == "me") {
         // We need to create an author for user
@@ -425,7 +460,7 @@ pour sélectionner en fonction du groupe.
 ## Que faire si je ne trouve pas de tags pertinents, ou si je voudrais en créer?
 
 Seuls les modérateurs peuvent créer des tags. Il est par contre *fortement recommandé*
-d'indiquer dans la case \`Note aux admins\` les tags manquants, ou même simplement
+d'indiquer dans la case \`Message aux modérateurs\` les tags manquants, ou même simplement
 « Je ne sais pas comment classer ce texte », et les gentils modérateurs feront
 le travail.
 `,
@@ -460,6 +495,53 @@ faire du texte.
 `,
           titleColor: "blue lighten-4",
         })
+      } else if (value == "toAdmins") {
+        dialog({
+          title: "Messages aux modérateurs",
+          text: `
+## À quoi ça sert?
+
+Vous pouvez utiliser ce champ pour communiquer aux modérateurs du site.
+
+Par exemple:
+
+- «&nbsp;Je ne sais pas comment classer ce texte&nbsp;»
+- «&nbsp;Il faudrait rajouter tel et tel tags&nbsp;»
+- «&nbsp;Je pense que l'auteur n'a pas donné son accord pour que ce texte soit ici&nbsp;»
+- «&nbsp;Je prétends être l'auteur de ce texte mais il ne m'est pas attribué&nbsp;»
+- etc.
+
+Les modérateurs seront signalés, et tâcheront de régler la situation au mieux.
+Cela peut prendre quelques temps, merci d'être patient.
+
+## Qui peut laisser un message?
+
+Seuls les utilisateurs enregistrés peuvent laisser un message sur les textes existants.
+En effet, il se peut que les modérateurs doivent contacter l'auteur du message, et il faut pour ceci
+une adresse e-mail.
+
+Un utilisateur anonyme peut laisser un message lors de la création d'un texte.
+`,
+          titleColor: "blue lighten-4",
+        })
+      } else if (value == "bible") {
+        dialog({
+          title: "Référence(s) bibliques",
+          text: `
+## À quoi ça sert?
+
+Permet d'indiquer la / les références bibliques en lien avec le texte.
+
+## Musique d'avenir
+
+À l'avenir, WikiLiturgie sera capable de lire et gérer les références bibliques,
+pour des recherches par exemple. Probablement grâce à [BCV Parser](https://github.com/openbibleinfo/Bible-Passage-Reference-Parser).
+
+En attendant, merci d'écrire la / les références sans ambiguité, pour pouvoir
+y revenir plus tard.
+`,
+          titleColor: "blue lighten-4",
+        })
       }
     }
   }
@@ -467,5 +549,7 @@ faire du texte.
 </script>
 
 <style>
-.help-icon .v-icon {color: #90caf9;}
+.help-icon .v-input__icon .v-icon {
+  color: #bbdefb;
+}
 </style>

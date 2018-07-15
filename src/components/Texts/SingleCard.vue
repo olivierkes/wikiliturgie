@@ -24,7 +24,8 @@
             small
             label>{{tags.find(tag => tag.id == t).name}}</v-chip>
   </v-card-text>
-  <v-card-actions :class="(!abstract || overflow)? '':'elevation-2'">
+  <v-card-actions v-if="text.id"
+                  :class="(!abstract || overflow)? '':'elevation-2'">
     <v-btn v-if="abstract"
            icon
            @click.native="overflow = !overflow">
