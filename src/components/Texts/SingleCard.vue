@@ -72,7 +72,7 @@ export default {
     toggleStar() {
       if (!this.userIsAuthenticated) { return }
       var stars = this.text.stars || []
-      var uid = this.user.uid
+      var uid = this.user.id
       if (stars.some(s => s == uid)) {
         // Item is starred, we must destar
         stars = stars.filter(s => s !== uid)
@@ -134,7 +134,7 @@ export default {
     },
     userStarred() {
       if (!this.userIsAuthenticated) { return false }
-      if (this.text.stars && this.text.stars.some(u => u == this.user.uid)) {
+      if (this.text.stars && this.text.stars.some(u => u == this.user.id)) {
         return true
       }
       return false

@@ -6,22 +6,29 @@
         <v-flex xs7>
           <h1>Profile</h1> </v-flex>
         <v-flex xs5>
-          <v-btn @click="signOut">
+          <v-btn @click="signOut"
+                 flat
+                 color="red">
             <v-icon>close</v-icon>Déconnection</v-btn>
         </v-flex>
       </v-layout>
       <v-flex xs12>
-        <v-layout row
-                  wrap>
-          <v-flex xs12
-                  sm6>
+        <v-tabs color="primary"
+                dark
+                center>
+          <v-tab href="#info">
+            <v-icon left>info</v-icon> &nbsp; Informations </v-tab>
+          <v-tab v-if="userRole == 'modo' || userRole == 'admin'"
+                 href="#modo">
+            <v-icon left>build</v-icon> &nbsp;
+            <v-badge color="red"><span slot="badge"
+                    v-if="textsWithMessages.length">{{textsWithMessages.length}}</span>Modération</v-badge>
+          </v-tab>
+          <v-tab v-if="userRole == 'admin'"
+                 href="#users">
+            <v-icon left>supervised_user_circle</v-icon> &nbsp; Utilisateurs </v-tab>
+          <v-tab-item id="info">
             <v-card>
-              <v-toolbar dense
-                         flat
-                         color="grey darken-1"
-                         dark>
-                <v-toolbar-title>Informations</v-toolbar-title>
-              </v-toolbar>
               <v-card-text>
                 <v-text-field label="Nom d'auteur"
                               v-model="userDisplayName"
@@ -36,22 +43,43 @@
                        @click="displayName=user.displayName">Annuler</v-btn>
               </v-card-actions>
             </v-card>
-          </v-flex>
-          <v-flex xs12
-                  sm6>
-            <v-card>
-              <v-toolbar dense
-                         flat
-                         color="grey darken-1"
-                         dark>
-                <v-toolbar-title>Debug</v-toolbar-title>
-              </v-toolbar>
-              <v-card-text>
-                <p> User: {{ user}} </p>
-              </v-card-text>
-            </v-card>
-          </v-flex>
-        </v-layout>
+          </v-tab-item>
+          <!-- Modération -->
+          <v-tab-item id="modo">
+            <v-container>
+              <v-layout row
+                        wrap>
+                <v-flex xs12
+                        sm6>
+                  <v-card>
+                    <v-toolbar dense
+                               color="grey"
+                               dark>
+                      <v-toolbar-title>Messages aux admins</v-toolbar-title>
+                    </v-toolbar>
+                    <v-card-text>
+                      <v-list>
+                        <v-list-tile v-for="txt in textsWithMessages"
+                                     :key="txt.id"
+                                     :to="'/text/' + txt.id">
+                          <v-list-tile-avatar> <img :src="avatar(txt.created_by)"> </v-list-tile-avatar>
+                          <v-list-tile-content>
+                            <v-list-tile-title>{{txt.toAdmins}}</v-list-tile-title>
+                            <v-list-tile-sub-title>{{txt.title || txt.id}}</v-list-tile-sub-title>
+                          </v-list-tile-content>
+                        </v-list-tile>
+                      </v-list>
+                    </v-card-text>
+                  </v-card>
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-tab-item>
+          <!-- Admin -->
+          <v-tab-item id="users">
+            <users></users>
+          </v-tab-item>
+        </v-tabs>
       </v-flex>
     </v-flex>
   </v-layout>
@@ -59,20 +87,27 @@
 </template>
 
 <script>
-import {snackbar} from "@/utils"
+import { snackbar } from "@/utils"
 import firebase from "firebase"
 import Vuex from "vuex"
 import { db } from "@/firebase"
+import users from "@/components/User/Users.vue"
 export default {
   data() {
     return {
       displayName: "",
-      loaded: false
+      loaded: false,
     }
   },
-  computed: {...Vuex.mapGetters({
+  components: {
+    users
+  },
+  computed: { ...Vuex.mapGetters({
       authors: "authors/authors",
-      user: "users/user"
+      user: "users/user",
+      userRole: "users/userRole",
+      texts: "texts/texts",
+      avatar: "users/avatar"
     }),
     userDisplayName: {
       get: function () {
@@ -83,6 +118,9 @@ export default {
         return this.displayName
       },
       set: function (val) { this.displayName = val }
+    },
+    textsWithMessages() {
+      return this.texts.filter(txt => txt.toAdmins)
     }
   },
   watch: {
@@ -97,15 +135,15 @@ export default {
       this.$store.dispatch("users/signOut")
     },
     saveDisplayName() {
+      // FIXME: unique source of truth should be the `users` collection
       if (this.displayName) {
-        this.user.updateProfile({
+        db.collection("users").doc(this.user.id).update({
           displayName: this.displayName
-        }).then(() => snackbar("Bonjour " + this.displayName+". Quel joli nom!"))
-
+        }).then(() => snackbar("Bonjour " + this.displayName + ". Quel joli nom!"))
         // If user is a author, we need to update that too
-        var author = this.authors.find(a => a.user == this.user.uid)
+        var author = this.authors.find(a => a.user == this.user.id)
         if (author) {
-          db.collection("authors").doc(author.id).update({name: this.displayName})
+          db.collection("authors").doc(author.id).update({ name: this.displayName })
         }
       } else {
         snackbar("Le nom ne peut pas être vide.")

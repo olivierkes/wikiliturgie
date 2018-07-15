@@ -21,7 +21,10 @@
       <v-list-tile to="/profile"
                    v-if="userIsAuthenticated">
         <v-list-tile-action>
-          <v-avatar size="36px"><img :src="avatarUrl" /></v-avatar>
+        <v-badge color="red"><span slot="badge"
+                v-if="notificationsForUser">{{notificationsForUser}}</span>
+          <v-avatar size="36px"><img :src="user.photoURL" /></v-avatar>
+        </v-badge>
         </v-list-tile-action>
         <v-list-tile-content> {{ user.displayName }} </v-list-tile-content>
       </v-list-tile>
@@ -50,7 +53,10 @@
       <v-btn flat
              to="/profile"
              v-if="userIsAuthenticated">
-        <v-avatar size="36px"><img :src="avatarUrl" /></v-avatar>
+             <v-badge color="red"><span slot="badge"
+                     v-if="notificationsForUser">{{notificationsForUser}}</span>
+        <v-avatar size="36px"><img :src="user.photoURL" /></v-avatar>
+      </v-badge>
       </v-btn>
     </v-toolbar-items>
   </v-toolbar>
@@ -79,13 +85,12 @@ export default {
   },
   computed: { ...Vuex.mapGetters({
       userIsAuthenticated: "users/isAuthenticated",
-      user: "users/user"
+      user: "users/user",
+      avatar: "users/avatar",
+      notificationsForUser: "users/notificationsForUser"
     }),
     dataLoaded() {
       return this.$store.getters.dataLoaded
-    },
-    avatarUrl() {
-      return this.$store.getters["users/user"]["providerData"][0]["photoURL"]
     },
     menuItems() {
       var res = [{
@@ -108,10 +113,6 @@ export default {
           icon: "dns",
           title: "Tags",
           link: "/tags"
-        }, {
-          icon: "supervised_user_circle",
-          title: "Utilisateurs",
-          link: "/users"
         }])
       }
     }

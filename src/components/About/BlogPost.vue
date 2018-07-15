@@ -108,7 +108,7 @@ export default {
         title: this.local_title,
         content: this.local_content,
         created_on: "",
-        created_by: this.user ? this.user.uid : ""
+        created_by: this.user ? this.user.id : ""
       }
       if (this.id && this.blogs && !this.isNew) {
         var post = this.blogs.find(b => b.id == this.id)
@@ -129,7 +129,7 @@ export default {
           content: this.local_content,
           imageUrl: this.local_imageUrl,
           updated_on: firebase.firestore.FieldValue.serverTimestamp(),
-          updated_by: this.user ? this.user.uid : "",
+          updated_by: this.user ? this.user.id : "",
         }).then(() => {
           this.isEditing = false
           snackbar("Le post a été modifié.")
@@ -141,7 +141,7 @@ export default {
           content: this.local_content,
           imageUrl: this.local_imageUrl,
           created_on: firebase.firestore.FieldValue.serverTimestamp(),
-          created_by: this.user ? this.user.uid : "",
+          created_by: this.user ? this.user.id : "",
         }).then(() => {
           this.isEditing = false
           this.$router.push("/blog/" + ref.id)

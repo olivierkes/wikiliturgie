@@ -248,8 +248,8 @@ export default {
       }
     },
     userAuthor() {
-      if (this.user && this.authors.some(a => a.user == this.user.uid)) {
-        return this.authorByUid(this.user.uid)
+      if (this.user && this.authors.some(a => a.user == this.user.id)) {
+        return this.authorByUid(this.user.id)
       } else {
         return null
       }
@@ -329,7 +329,7 @@ export default {
         content: this.tempText.content,
         created_on: firebase.firestore.FieldValue.serverTimestamp(),
         tags: this.tempText.tags,
-        created_by: this.user ? this.user.uid : "",
+        created_by: this.user ? this.user.id : "",
         bible_ref: this.tempText.bible_ref || "",
         comments: this.tempText.comments || "",
         license_wl: this.tempText.license_wl || false,
@@ -387,10 +387,10 @@ export default {
       var authorRef = db.collection("authors").doc()
       var obj = {
         name: name,
-        created_by: this.user ? this.user.uid : "",
+        created_by: this.user ? this.user.id : "",
       }
       if (isUser) {
-        obj.user = this.user.uid
+        obj.user = this.user.id
       }
       authorRef.set(obj).then(snackbar("L'auteur " + name + " a été crée."))
       return authorRef

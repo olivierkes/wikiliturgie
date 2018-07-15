@@ -1,22 +1,24 @@
 <template>
-<v-container grid-list-lg>
-  <v-layout column>
-    <v-flex xs12>
-      <h1>Gestion des utilisateurs</h1> </v-flex>
-    <v-flex xs12>
-      <v-data-table :headers="headers"
-                    :items="users"
-                    class="elevation-1"> <template slot="items"
-                  slot-scope="props">
+<v-flex>
+  <v-text-field solo
+                label="Filter les entrées"
+                clearable
+                v-model="filterText"
+                append-icon="search"
+                single-line
+                hide-details></v-text-field>
+  <v-data-table :headers="headers"
+                :items="users"
+                class="elevation-1"
+                :search="filterText"> <template slot="items"
+              slot-scope="props">
                   <td><v-avatar size="32"><img :src="props.item.photoURL" /></v-avatar></td>
                   <td>{{ props.item.displayName }}</td>
+                  <td>{{ props.item.email }}</td>
                   <td>{{ props.item.role }}</td>
                   <td>{{ props.item.id }}</td>
-
    </template> </v-data-table>
-    </v-flex>
-  </v-layout>
-</v-container>
+</v-flex>
 </template>
 
 <script>
@@ -28,23 +30,30 @@ export default {
         text: '',
         value: 'photoURL',
         sortable: false
-      },{
+      }, {
         text: 'Nom',
         value: 'displayName'
       }, {
+        text: 'Email',
+        value: 'email'
+      }, {
         text: "Rôle",
         value: "role"
-      },
-      {
-       text: "UID",
-       value: "id"
-     },
-   ],
+      }, {
+        text: "UID",
+        value: "id"
+      }, ],
+      filterText: "",
     }
   },
   computed: { ...Vuex.mapGetters({
       users: "users/users"
     }),
+  },
+  methods: {
+    filter(obj, txt) {
+      console.log(obj)
+    }
   }
 }
 </script>

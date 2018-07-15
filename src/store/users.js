@@ -9,6 +9,26 @@ const state = {
   dataLoaded: false
 }
 
+const getters = {
+  users: state => state.users,
+  dataLoaded: state => state.dataLoaded,
+  fbUser: state => state.currentUser,
+  user: (state, getters) => getters.userById(getters.fbUser.uid),
+  isAuthenticated: state => state.currentUser !== null && state.currentUser !== undefined,
+  userById: state => id => state.users.find(u => u.id == id) || {},
+  avatar: (state, getters) => id => getters.userById(id).photoURL,
+  userRole: (state, getters) => getters.user.role,
+  userRoleById: (state, getters) => id => getters.userById(id).role,
+  notificationsForUser: (state, getters, globalState, globalGetters) => {
+    // Returns the number of notifications
+    var r = 0
+    if (getters.userRole == "modo" || getters.userRole == "admin") {
+      r += globalGetters["texts/texts"].filter(txt => txt.toAdmins).length
+    }
+    return r
+  }
+}
+
 const mutations = {
   setUser(state, payload) {
     state.currentUser = payload
@@ -29,7 +49,8 @@ const actions = {
         db.collection("users").doc(payload.user.uid).set({
           role: "user",
           displayName: payload.user.displayName,
-          photoURL: payload.user.photoURL
+          photoURL: payload.user.photoURL,
+          email: payload.user.email
         })
       }
     }
@@ -51,15 +72,6 @@ const actions = {
       commit("setDataLoaded", true)
     })
   }),
-}
-
-const getters = {
-  users: state => state.users,
-  dataLoaded: state => state.dataLoaded,
-  user: state => state.currentUser,
-  isAuthenticated: state => state.currentUser !== null && state.currentUser !== undefined,
-  userById: state => id => state.users.find(u => u.id == id) || {},
-  avatar: (state, getters) => id => getters.userById(id).photoURL
 }
 
 export default {

@@ -36,8 +36,6 @@ export default {
     return {}
   },
   computed: { ...Vuex.mapGetters({
-      user: "users/user",
-      userIsAuthenticated: "users/isAuthenticated",
       authors: "authors/authors",
       authorById: "authors/authorById",
       tags: "tags/tags",

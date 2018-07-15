@@ -6,7 +6,6 @@ import Signin from "@/components/User/Signin"
 import AddText from "@/components/Texts/Add"
 import ViewText from "@/components/Texts/View"
 import ViewTags from "@/components/Tags/View"
-import Users from "@/components/User/Users"
 import Doc from "@/components/About/Doc"
 import Blog from "@/components/About/Blog"
 
@@ -39,11 +38,6 @@ export default new Router({
       path: "/profile",
       name: "Profile",
       component: Profile
-    },
-    {
-      path: "/users",
-      name: "Users",
-      component: Users
     },
     {
       path: "/signin",
