@@ -111,11 +111,7 @@ export default {
           link: "/signin"
         }])
       } else {
-        return res.concat([{
-          icon: "dns",
-          title: "Tags",
-          link: "/tags"
-        }])
+        return res
       }
     }
   }

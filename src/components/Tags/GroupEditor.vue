@@ -2,8 +2,6 @@
 <v-layout column
           v-show="groupId">
   <v-flex>
-    <h2>Groupe: {{currentGroupName}}</h2></v-flex>
-  <v-flex>
     <v-card>
       <v-list dense
               ref="sortableList">

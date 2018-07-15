@@ -6,13 +6,12 @@
             sm6>
       <v-layout column>
         <v-flex>
-          <h2>Groupes de tags</h2></v-flex>
-        <v-flex>
           <v-card>
             <v-list two-line>
               <v-list-tile v-for="g in groups"
                            :key="g.id"
-                           @click="currentGroupEdited = g.id">
+                           @click="currentGroupEdited = g.id"
+                           :class="currentGroupEdited == g.id? 'selected' : ''">
                 <v-list-tile-content>
                   <v-list-tile-title>{{g.name}} <span class="grey--text">({{groupTagCount(g.id)}})</span></v-list-tile-title>
                   <v-list-tile-sub-title>{{g.description}}</v-list-tile-sub-title>
@@ -179,3 +178,11 @@ export default {
   }
 }
 </script>
+
+<style>
+div.selected {
+  border-left: 6px blue solid;
+  border-radius: 5px;
+  background-color: #edefff !important;
+}
+</style>

@@ -29,14 +29,8 @@
                href="#modo">
           <v-icon left>build</v-icon> &nbsp;
           <v-badge color="red"><span slot="badge"
-                  v-if="textsWithMessages.length">{{textsWithMessages.length}}</span>Modération</v-badge>
+                  v-if="problematicTexts.length">{{problematicTexts.length}}</span>Modération</v-badge>
         </v-tab>
-        <v-tab v-if="userRole == 'modo' || userRole == 'admin'"
-               href="#modoTexts">
-          <v-icon left>list</v-icon> &nbsp; Textes </v-tab>
-        <v-tab v-if="userRole == 'admin'"
-               href="#users">
-          <v-icon left>supervised_user_circle</v-icon> &nbsp; Utilisateurs </v-tab>
         <!-- Info -->
         <v-tab-item id="info">
           <v-container>
@@ -82,7 +76,20 @@
         </v-tab-item>
         <!-- Modération -->
         <v-tab-item id="modo">
-          <v-container>
+          <v-tabs color="grey lighten-2"
+                  center
+                  fixed-tabs>
+            <!-- Tabs -->
+            <v-tab v-if="userRole == 'modo' || userRole == 'admin'"
+                   href="#modoTexts">
+              <v-icon left>list</v-icon> &nbsp; Textes </v-tab>
+              <v-tab v-if="userRole == 'modo' || userRole == 'admin'"
+                     href="#modoTags">
+                <v-icon left>dns</v-icon> &nbsp; Tags </v-tab>
+            <v-tab v-if="userRole == 'modo' || userRole == 'admin'"
+                   href="#modoUsers">
+              <v-icon left>supervised_user_circle</v-icon> &nbsp; Utilisateurs </v-tab>
+            <!-- <v-container>
             <v-layout row
                       wrap>
               <v-flex xs12
@@ -109,52 +116,57 @@
                 </v-card>
               </v-flex>
             </v-layout>
-          </v-container>
-        </v-tab-item>
-        <!-- Texts -->
-        <v-tab-item id="modoTexts">
-          <v-container>
-            <v-layout row
-                      wrap>
-              <v-flex xs1>
-                <v-btn flat
-                       icon
-                       :disabled="!listSelectedTextId"
-                       @click.stop="listSelectedTextId=null">
-                  <v-icon>clear</v-icon>
-                </v-btn>
-              </v-flex>
-              <v-flex xs11>
-                <tag-bar v-model="filters"
-                         include-authors
-                         allows-custom-text
-                         label="Rechercher..."
-                         solo
-                         show-count
-                         :texts="searchedTexts"
-                         hide-empty
-                         dialog-button></tag-bar>
-                <chip-bar v-model="filters"
-                          clearable></chip-bar>
-              </v-flex>
-              <v-flex xs12
-                      :sm5="listSelectedTextId">
-                <texts-list :texts="searchedTexts"
-                            v-model="listSelectedTextId"></texts-list>
-              </v-flex>
-              <v-flex v-if="listSelectedTextId"
-                      xs12
-                      sm7>
-                <!-- <text-card :text="textById(listSelectedTextId)"></text-card> -->
-                <text-edit :id="listSelectedTextId"
-                           metadata-only></text-edit>
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-tab-item>
-        <!-- Admin -->
-        <v-tab-item id="users">
-          <users></users>
+          </v-container> -->
+            <!-- Texts -->
+            <v-tab-item id="modoTexts">
+              <v-container>
+                <v-layout row
+                          wrap>
+                  <v-flex xs1>
+                    <v-btn flat
+                           icon
+                           :disabled="!listSelectedTextId"
+                           @click.stop="listSelectedTextId=null">
+                      <v-icon>clear</v-icon>
+                    </v-btn>
+                  </v-flex>
+                  <v-flex xs11>
+                    <tag-bar v-model="filters"
+                             include-authors
+                             allows-custom-text
+                             label="Rechercher..."
+                             solo
+                             show-count
+                             :texts="searchedTexts"
+                             hide-empty
+                             dialog-button></tag-bar>
+                    <chip-bar v-model="filters"
+                              clearable></chip-bar>
+                  </v-flex>
+                  <v-flex xs12
+                          :sm5="listSelectedTextId">
+                    <texts-list :texts="searchedTexts"
+                                v-model="listSelectedTextId"></texts-list>
+                  </v-flex>
+                  <v-flex v-if="listSelectedTextId"
+                          xs12
+                          sm7>
+                    <!-- <text-card :text="textById(listSelectedTextId)"></text-card> -->
+                    <text-edit :id="listSelectedTextId"
+                               metadata-only></text-edit>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-tab-item>
+            <!-- Tags -->
+            <v-tab-item id="modoTags">
+              <view-tags></view-tags>
+            </v-tab-item>
+            <!-- Admin -->
+            <v-tab-item id="modoUsers">
+              <users></users>
+            </v-tab-item>
+          </v-tabs>
         </v-tab-item>
       </v-tabs>
     </v-flex>
@@ -186,6 +198,7 @@ export default {
       user: "users/user",
       userRole: "users/userRole",
       texts: "texts/texts",
+      problematicTexts: "texts/problematicTexts",
       textById: "texts/textById",
       userCart: "users/userCart",
       avatar: "users/avatar"
@@ -199,9 +212,6 @@ export default {
         return this.displayName
       },
       set: function (val) { this.displayName = val }
-    },
-    textsWithMessages() {
-      return this.texts.filter(txt => txt.toAdmins)
     },
     textsInUserCart() {
       return this.userCart.map(t => this.textById(t))
