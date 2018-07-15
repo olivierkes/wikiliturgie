@@ -63,11 +63,11 @@
                                     :item-value="i => i.id"
                                     return-object
                                     dense> </v-combobox>
-                        <v-alert :value="true"
-                                 type="error"><b>Tu dois indiquer un auteur:</b> Toi, un auteur de la liste, ou en créer un nouveau en entrant son nom.<br /><br />Si l'auteur est inconnu, choisis <code>Inconnu / Anonyme</code>.</v-alert>
+                        <!-- <v-alert :value="true"
+                                 type="error"><b>Tu dois indiquer un auteur:</b> Toi, un auteur de la liste, ou en créer un nouveau en entrant son nom.<br /><br />Si l'auteur est inconnu, choisis <code>Inconnu / Anonyme</code>.</v-alert> -->
                       </v-flex>
                       <v-flex>
-                        <h1 class="subheading orange--text">Tags</h1></v-flex>
+                        <h1 class="subheading orange--text">Tags <v-icon @click="help('tags')" color="blue lighten-3" style="float:right">help</v-icon></h1> </v-flex>
                       <v-flex>
                         <v-layout column>
                           <v-flex xs12>
@@ -75,6 +75,7 @@
                                      tag-only
                                      show-count
                                      dialog-button
+                                     warning-less-than-two-tags
                                      :texts="texts"></tag-bar>
                           </v-flex>
                           <v-flex>
@@ -82,8 +83,8 @@
                           </v-flex>
                           <v-flex>
                             <v-alert :value="true"
-                                     type="warning"><b>Entre si possible au moins 2 tags.</b> Pour la plupart des textes, il faut remplir au minimum les catégories <code>moment de culte</code> et <code>occasion</code>.<br /><br />Si tu ne trouves pas de tag approprié, note le
-                              en commentaire et des admins ajusteront.</v-alert>
+                                     type="warning"
+                                     v-if="local_text.tags.length < 2"><b>Entre si possible au moins 2 tags.</b> Pour la plupart des textes, il faut remplir au minimum les catégories <code>Moment de culte</code> et <code>Occasion</code>.</v-alert>
                           </v-flex>
                         </v-layout>
                       </v-flex>
@@ -100,12 +101,13 @@
                                     append-icon="help"
                                     @click:append="help('comments')"
                                     auto-grow
-                                    rows="4"></v-textarea>
+                                    rows="4"
+                                    class="help-icon"></v-textarea>
                       </v-flex>
                       <v-flex>
-                        <h1 class="subheading orange--text">License WikiLiturgie</h1></v-flex>
+                        <h1 class="subheading orange--text">License WikiLiturgie <v-icon @click="help('license')" color="blue lighten-3" style="float:right">help</v-icon></h1></v-flex>
                       <v-flex>
-                        <p class="body-1 grey--text">Pour pouvoir être utilisé, le texte doit être placé sous la licence WikiLiturgie. Je certifie que l'auteur du texte l'accepte:</p>
+                        <p class="body-1 grey--text">Je certifie que l'auteur du texte accepte la licence WikiLiturgie:</p>
                         <v-switch :disabled="user==null"
                                   :label="tempText.license_wl? 'Oui': 'Non / je ne suis pas sûr'"
                                   v-model="tempText.license_wl"></v-switch>
@@ -395,8 +397,75 @@ Commentaires à propos du texte:
 Tout ce qui peut être utile et informatif.`,
           titleColor: "green lighten-4",
         })
+      } else if (value == "tags") {
+        dialog({
+          title: "Champs « Tags »",
+          text: `
+## À quoi ça sert?
+
+Les tags sont le système de classement principal de WikiLiturgie.
+**Un texte sans tags est un texte perdu**, qui ne sera jamais lu.
+Il est donc *fortement recommandé* d'indiquer autant de tags que possible.
+
+## Quels tags indiquer?
+
+Pour la plupart des textes liturgiques, il faudra indiquer au moins:
+
+- L'\`occasion\`
+- Le \`moment de culte\`
+
+Les tags indiqués doivent être significatifs. Par exemple, si un texte pourrait
+être adapté à n'importe quel moment de l'année liturgique, on ne coche pas tous
+les tags, mais on laisse tout vide.
+
+Tu peux sélectionner les tags dans la liste, ou cliquer sur l'icône
+<i aria-hidden="true" class="v-icon v-icon--link material-icons">settings</i>
+pour sélectionner en fonction du groupe.
+
+## Que faire si je ne trouve pas de tags pertinents, ou si je voudrais en créer?
+
+Seuls les modérateurs peuvent créer des tags. Il est par contre *fortement recommandé*
+d'indiquer dans la case \`Note aux admins\` les tags manquants, ou même simplement
+« Je ne sais pas comment classer ce texte », et les gentils modérateurs feront
+le travail.
+`,
+          titleColor: "blue lighten-4",
+        })
+      } else if (value == "license") {
+        dialog({
+          title: "License WikiLiturgie",
+          text: `
+## À quoi ça sert?
+
+Pour pouvoir être utilisé, le texte doit être placé sous la licence WikiLiturgie.
+Elle permet aux utilisateurs d'adapter le texte et de l'utiliser dans un culte
+sans être en violation du droit d'auteur. Voir l'aide pour plus de détails.
+
+## Que faire si je ne suis pas l'auteur du texte ?
+
+Vous pouvez accepter la license si:
+
+- L'auteur du texte vous en a donné l'accord
+- L'auteur est mort depuis plus de 70 ans (le texte est dans le domaine public)
+
+## Que faire si je ne veux pas?
+
+Si tu ne veux pas que ton texte soit utilisé par d'autres,
+alors il vaut mieux ne pas le mettre ici.
+
+## Et si je ne suis pas sûr?
+
+Laisse la case sur \`Non / je ne suis pas sûr\` et les admins verront quoi
+faire du texte.
+`,
+          titleColor: "blue lighten-4",
+        })
       }
     }
   }
 }
 </script>
+
+<style>
+.help-icon .v-icon {color: #90caf9;}
+</style>

@@ -49,7 +49,8 @@
   <filter-dialog v-model="selected"
                  :show="showFilterDialog"
                  @close="showFilterDialog = false"
-                 :include-authors="includeAuthors"></filter-dialog>
+                 :include-authors="includeAuthors"
+                 :warningLessThanTwoTags="warningLessThanTwoTags"></filter-dialog>
 </div>
 </template>
 
@@ -67,7 +68,8 @@ export default {
     "texts": Array, // The object counted, in their 'tags' prop
     "hideEmpty": Boolean, // Hide tags that have no texts
     "dialogButton": Boolean, // Shows the button for dialog
-    "includeAuthors": Boolean // Includes authors with tags
+    "includeAuthors": Boolean, // Includes authors with tags
+    "warning-less-than-two-tags": Boolean // Shows a warning in dialog if less than 2 tags are selected
   },
   data() {
     return {

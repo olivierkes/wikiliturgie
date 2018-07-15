@@ -19,6 +19,12 @@
       </v-toolbar>
       <v-container grid-list-lg>
         <v-layout wrap>
+          <!-- Warning -->
+          <v-flex xs12>
+            <v-alert :value="true"
+                     type="warning"
+                     v-if="warningLessThanTwoTags && !(selected && selected.length >= 2)"><b>Entre si possible au moins 2 tags.</b> Pour la plupart des textes, il faut remplir au minimum les catégories <code>Moment de culte</code> et <code>Occasion</code>.</v-alert>
+                   </v-flex>
           <!-- Tags -->
           <v-flex xs6
                   v-for="group in tagGroups"
@@ -72,7 +78,8 @@ export default {
   props: {
     "value": Array,
     "show": Boolean, // Is dialog visible
-    "includeAuthors": Boolean // Includes authors with tags
+    "includeAuthors": Boolean, // Includes authors with tags
+    "warningLessThanTwoTags": Boolean // Shows a warning if less than 2 tags are selected
   },
   data() {
     return {
