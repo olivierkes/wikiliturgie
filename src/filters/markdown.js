@@ -2,11 +2,11 @@
 
 import marked from 'marked'
 marked.setOptions({
-  gfm: true,
-  breaks: true
+  gfm: true
 })
 
-export default (mdContent) => {
+export default (mdContent, breaks = true) => {
   // return markdown.toHTML(mdContent, "Maruku")
+  marked.setOptions({ breaks: breaks })
   return marked(mdContent)
 }

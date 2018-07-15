@@ -96,7 +96,7 @@
                       </v-flex>
                       <v-flex>
                         <v-textarea v-model="tempText.comments"
-                                    label="Remarques"
+                                    label="Remarques et commentaires"
                                     append-icon="help"
                                     @click:append="help('comments')"
                                     auto-grow
@@ -148,7 +148,7 @@
 import { db } from '@/firebase'
 import Vuex from "vuex"
 import firebase from 'firebase/app'
-import { snackbar } from "@/utils"
+import { snackbar, dialog } from "@/utils"
 import revisions from "@/components/Texts/Revisions/Revisions.vue"
 import SimpleMDE from "simplemde"
 export default {
@@ -382,7 +382,19 @@ export default {
     },
     help(value) {
       if (value == "comments") {
-        snackbar("Commentaires à propos du texte: son origine, sa source, une remarque sur son utilisation, etc. Tout ce qui peut être utile et informatif.", { timeout: 5000, multiLine: true, position: "top", background: "info", color: "" })
+        dialog({
+          title: "Champs « Remarques & Commentaires »",
+          text: `
+Commentaires à propos du texte:
+
+- Son origine
+- Sa référence exacte
+- Des conseil pour son utilisations cutltuelle
+- etc.
+
+Tout ce qui peut être utile et informatif.`,
+          titleColor: "green lighten-4",
+        })
       }
     }
   }

@@ -2,12 +2,16 @@ import Vue from 'vue'
 
 const state = {
   snackbar_visible: false,
-  snackbar: {}
+  snackbar: {},
+  dialog_visible: false,
+  dialog: {}
 }
 
 const getters = {
   snackbar_visible: state => state.snackbar_visible,
   snackbar: state => state.snackbar,
+  dialog_visible: state => state.dialog_visible,
+  dialog: state => state.dialog,
 }
 
 const mutations = {
@@ -19,12 +23,23 @@ const mutations = {
       state.snackbar_text = ""
       state.snackbar_visible = false
     }
+  },
+  dialog(state, dialog) {
+    if (dialog) {
+      state.dialog = dialog
+      state.dialog_visible = true
+    } else {
+      state.dialog_visible = false
+    }
   }
 }
 
 const actions = {
   snackbar({ commit }, snackbar) {
     commit("snackbar", snackbar)
+  },
+  dialog({ commit }, dialog) {
+    commit("dialog", dialog)
   }
 }
 
