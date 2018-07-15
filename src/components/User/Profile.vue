@@ -16,9 +16,13 @@
         <v-tabs color="primary"
                 dark
                 center>
+          <!-- Tabs -->
           <v-tab href="#info">
             <v-icon left>info</v-icon> &nbsp; Informations </v-tab>
-          <v-tab v-if="userRole == 'modo' || userRole == 'admin'"
+            <v-tab href="#cart">
+              <v-icon left>shopping_cart</v-icon> &nbsp; <v-badge color="green"><span slot="badge"
+                      v-if="userCart.length">{{userCart.length}}</span>Panier</v-badge> </v-tab>
+            <v-tab v-if="userRole == 'modo' || userRole == 'admin'"
                  href="#modo">
             <v-icon left>build</v-icon> &nbsp;
             <v-badge color="red"><span slot="badge"
@@ -27,6 +31,7 @@
           <v-tab v-if="userRole == 'admin'"
                  href="#users">
             <v-icon left>supervised_user_circle</v-icon> &nbsp; Utilisateurs </v-tab>
+          <!-- Info -->
           <v-tab-item id="info">
             <v-card>
               <v-card-text>
@@ -43,6 +48,10 @@
                        @click="displayName=user.displayName">Annuler</v-btn>
               </v-card-actions>
             </v-card>
+          </v-tab-item>
+          <!-- Panier -->
+          <v-tab-item id="cart">
+            <texts-viewer :texts="textsInUserCart" ></texts-viewer>
           </v-tab-item>
           <!-- Modération -->
           <v-tab-item id="modo">
@@ -107,6 +116,8 @@ export default {
       user: "users/user",
       userRole: "users/userRole",
       texts: "texts/texts",
+      textById: "texts/textById",
+      userCart: "users/userCart",
       avatar: "users/avatar"
     }),
     userDisplayName: {
@@ -121,6 +132,9 @@ export default {
     },
     textsWithMessages() {
       return this.texts.filter(txt => txt.toAdmins)
+    },
+    textsInUserCart() {
+      return this.userCart.map(t => this.textById(t))
     }
   },
   watch: {

@@ -11,6 +11,7 @@ const state = {
 
 const getters = {
   texts: state => state.texts,
+  textById: state => id => state.texts.find(t => t.id == id),
   revisions: state => state.revisions,
   dataLoaded: state => state.dataLoaded
 }

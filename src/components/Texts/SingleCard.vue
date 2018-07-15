@@ -28,7 +28,7 @@
                   :class="(!abstract || overflow)? '':'elevation-2'">
     <v-btn v-if="abstract"
            icon
-           @click.native="overflow = !overflow">
+           @click.native.stop="overflow = !overflow">
       <v-icon>{{ overflow ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</v-icon>
     </v-btn>
     <v-spacer></v-spacer>
@@ -43,6 +43,12 @@
         <v-icon :color="userStarred ? 'yellow' : 'grey'"
                 @click="toggleStar"
                 slot="activator">star</v-icon> <span>{{starCountDisplay}} étoile{{starCount > 1 ? "s":""}}</span> </v-tooltip>
+    </v-btn>
+    <v-btn v-if="userIsAuthenticated"
+            flat
+           icon
+           @click.stop="toggleCart">
+      <v-icon :color="textInCart? 'green' : 'grey'">shopping_cart</v-icon>
     </v-btn>
     <v-btn flat
            icon
@@ -83,13 +89,28 @@ export default {
       // update Text object
       this.text.stars = stars
       db.collection("texts").doc(this.text.id).update(this.text)
+    },
+    toggleCart() {
+      if (!this.userIsAuthenticated) { return }
+      var cart = this.userCart
+      if (this.textInCart) {
+        // Remove
+        cart = cart.filter(t => t !== this.text.id)
+      } else {
+        // Add
+        cart.push(this.text.id)
+      }
+      db.collection("users").doc(this.user.id).update({
+        cart: cart
+      })
     }
   },
   computed: { ...Vuex.mapGetters({
       user: "users/user",
       userIsAuthenticated: "users/isAuthenticated",
       authors: "authors/authors",
-      tags: "tags/tags"
+      tags: "tags/tags",
+      userCart: "users/userCart"
     }),
     style() {
       return {
@@ -138,6 +159,10 @@ export default {
         return true
       }
       return false
+    },
+    textInCart() {
+      if (!this.userIsAuthenticated) { return false}
+      return this.userCart.some(t => t == this.text.id)
     }
   }
 }

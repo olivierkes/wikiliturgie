@@ -19,11 +19,16 @@ const getters = {
   avatar: (state, getters) => id => getters.userById(id).photoURL,
   userRole: (state, getters) => getters.user.role,
   userRoleById: (state, getters) => id => getters.userById(id).role,
+  userCart: (state, getters) => getters.user ? getters.user.cart || [] : [],
   notificationsForUser: (state, getters, globalState, globalGetters) => {
     // Returns the number of notifications
     var r = 0
     if (getters.userRole == "modo" || getters.userRole == "admin") {
+      // Texts with messages to admin
       r += globalGetters["texts/texts"].filter(txt => txt.toAdmins).length
+    } else {
+      // Texts in carts
+      r += getters.userCart.length
     }
     return r
   }

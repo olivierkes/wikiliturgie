@@ -53,7 +53,8 @@
       <v-btn flat
              to="/profile"
              v-if="userIsAuthenticated">
-             <v-badge color="red"><span slot="badge"
+             <v-badge :color="userRole == 'admin' || userRole == 'modo'? 'red' : 'green'">
+               <span slot="badge"
                      v-if="notificationsForUser">{{notificationsForUser}}</span>
         <v-avatar size="36px"><img :src="user.photoURL" /></v-avatar>
       </v-badge>
@@ -86,6 +87,7 @@ export default {
   computed: { ...Vuex.mapGetters({
       userIsAuthenticated: "users/isAuthenticated",
       user: "users/user",
+      userRole: "users/userRole",
       avatar: "users/avatar",
       notificationsForUser: "users/notificationsForUser"
     }),
