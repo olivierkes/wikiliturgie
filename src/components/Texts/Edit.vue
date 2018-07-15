@@ -1,13 +1,14 @@
 <template>
-<v-container grid-list-lg
+<v-container grid-list-md
              v-if="tempText">
   <v-layout row
             wrap>
     <v-flex xs12
-            sm7>
+            sm7
+            v-if="!metadataOnly">
       <v-layout column>
-        <v-flex xs12>
-          <h1>{{ this.id ? "Modifier un texte" : "Ajouter un texte"}}</h1> </v-flex>
+        <!-- <v-flex xs12>
+          <h1>{{ this.id ? "Modifier un texte" : "Ajouter un texte"}}</h1> </v-flex> -->
         <v-flex xs12>
           <v-text-field v-model="tempText.title"
                         label="Titre"> </v-text-field>
@@ -23,14 +24,15 @@
       </v-layout>
     </v-flex>
     <v-flex xs12
-            sm5>
+            :sm5="!metadataOnly">
       <v-layout column>
         <v-flex>
           <v-btn flat
                  color="primary"
                  :disabled="!tempText.content"
                  @click="saveText">{{ this.id ? "Modifier" : "Créer" }}</v-btn>
-          <v-btn flat
+          <v-btn v-if="!metadataOnly"
+                 flat
                  color="grey"
                  @click="$router.push('/')">Annuler</v-btn>
           <v-btn flat
@@ -83,7 +85,10 @@
                           <v-flex>
                             <v-alert :value="true"
                                      color="warning"
-                                     v-if="local_text.tags.length < 2"><v-icon @click="help('tags')" color="yellow darken-4" style="float:right">help</v-icon><b>Entre si possible au moins 2 tags.</b> Pour la plupart des textes, il faut remplir au minimum les catégories <code>Moment de culte</code> et <code>Occasion</code>.</v-alert>
+                                     v-if="local_text.tags.length < 2">
+                              <v-icon @click="help('tags')"
+                                      color="yellow darken-4"
+                                      style="float:right">help</v-icon><b>Entre si possible au moins 2 tags.</b> Pour la plupart des textes, il faut remplir au minimum les catégories <code>Moment de culte</code> et <code>Occasion</code>.</v-alert>
                           </v-flex>
                         </v-layout>
                       </v-flex>
@@ -106,7 +111,8 @@
                                     v-model="showComments"></v-checkbox>
                         <v-textarea v-if="showComments || local_text.comments"
                                     v-model="tempText.comments"
-                                    auto-grow box
+                                    auto-grow
+                                    box
                                     rows="4"></v-textarea>
                       </v-flex>
                       <v-flex>
@@ -118,7 +124,8 @@
                                     v-model="showToAdmins"></v-checkbox>
                         <v-textarea v-if="showToAdmins || local_text.toAdmins"
                                     v-model="tempText.toAdmins"
-                                    auto-grow box
+                                    auto-grow
+                                    box
                                     rows="4"></v-textarea>
                       </v-flex>
                       <v-flex>
@@ -171,7 +178,10 @@ import { snackbar, dialog } from "@/utils"
 import revisions from "@/components/Texts/Revisions/Revisions.vue"
 import SimpleMDE from "simplemde"
 export default {
-  props: ["id"],
+  props: {
+    "id": String,
+    "metadataOnly": Boolean // Shows only metadata panel
+  },
   components: {
     revisions
   },
@@ -202,6 +212,23 @@ export default {
       },
       showComments: false,
       showToAdmins: false
+    }
+  },
+  watch: {
+    id() {
+      this.local_text = {
+        title: "", // String
+        content: "", // String
+        bible_ref: "", // String
+        comments: "", // String
+        toAdmins: "",
+        author: "", // ID (String)
+        license_wl: true, // Boolean
+        created_on: "",
+        created_by: "",
+        tags: []
+      }
+      this.synced = false
     }
   },
   mounted() {
@@ -261,10 +288,8 @@ export default {
           var text = this.texts.find(t => t.id == this.id)
           if (text) {
             for (var k in text) this.$set(this.local_text, k, text[k])
-
-            if (text.comments) { this.showComments = true }
-            if (text.toAdmins) { this.showToAdmins = true }
-
+            this.showComments = text.comments ? true : false
+            this.showToAdmins = text.toAdmins ? true : false
             this.synced = true
           }
           // Return local text

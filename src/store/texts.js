@@ -13,7 +13,14 @@ const getters = {
   texts: state => state.texts,
   textById: state => id => state.texts.find(t => t.id == id),
   revisions: state => state.revisions,
-  dataLoaded: state => state.dataLoaded
+  dataLoaded: state => state.dataLoaded,
+  problematicTexts: state => state.texts.filter(txt => {
+    // Message to admin
+    if (txt.toAdmins) { return true }
+    // Not enough tags
+    if (!txt.tags || txt.tags.length < 2) { return true }
+  }),
+  isTextProblematic: (state, getters) => id => getters.problematicTexts.some(t => t.id == id)
 }
 
 const mutations = {

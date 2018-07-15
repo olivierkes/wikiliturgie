@@ -22,6 +22,8 @@ import EditTextCmp from "./components/Texts/Edit.vue"
 Vue.component("text-edit", EditTextCmp)
 import TextsViewerCmp from "./components/Texts/Viewer.vue"
 Vue.component("texts-viewer", TextsViewerCmp)
+import TextsListCmp from "./components/Texts/List.vue"
+Vue.component("texts-list", TextsListCmp)
 import TextViewerCmp from "./components/Texts/SingleCard.vue"
 Vue.component("text-card", TextViewerCmp)
 import TagBarCmp from "./components/Filters/TagBar.vue"

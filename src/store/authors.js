@@ -14,7 +14,15 @@ const getters = {
   authorById: state => id => state.authors.find(a => a.id == id) || {},
   dataLoaded: state => state.dataLoaded,
   authorsIds: state => state.authors.map(a => a.id),
-  isAuthor: state => id => state.authors.some(a => a.id == id)
+  isAuthor: state => id => state.authors.some(a => a.id == id),
+  authorNameById: (state, getters, globalState, globalGetters) => id => {
+    var author = getters.authorById(id)
+    if (author.user) {
+      return globalGetters["users/userById"](author.user).displayName
+    } else {
+      return author.name
+    }
+  }
 }
 
 const mutations = {

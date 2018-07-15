@@ -24,8 +24,8 @@ const getters = {
     // Returns the number of notifications
     var r = 0
     if (getters.userRole == "modo" || getters.userRole == "admin") {
-      // Texts with messages to admin
-      r += globalGetters["texts/texts"].filter(txt => txt.toAdmins).length
+      // Texts with problems (not enough tags, message to admins)
+      r += globalGetters["texts/problematicTexts"].length
     } else {
       // Texts in carts
       r += getters.userCart.length
