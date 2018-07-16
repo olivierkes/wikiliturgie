@@ -1,6 +1,6 @@
 <template>
 <v-container grid-list-md
-             v-if="tempText">
+             v-if="local_text">
   <v-layout row
             wrap>
     <v-flex xs12
@@ -10,15 +10,15 @@
         <!-- <v-flex xs12>
           <h1>{{ this.id ? "Modifier un texte" : "Ajouter un texte"}}</h1> </v-flex> -->
         <v-flex xs12>
-          <v-text-field v-model="tempText.title"
+          <v-text-field v-model="local_text.title"
                         label="Titre"> </v-text-field>
         </v-flex>
         <v-flex xs12>
-          <!-- <v-textarea v-model="tempText.content"
+          <!-- <v-textarea v-model="local_text.content"
                       label="Contenu"
                       required
                       rows="25"></v-textarea> -->
-          <markdown-editor v-model="tempText.content"
+          <markdown-editor v-model="local_text.content"
                            :configs="simpleMDEConfig"></markdown-editor>
         </v-flex>
       </v-layout>
@@ -29,7 +29,7 @@
         <v-flex>
           <v-btn flat
                  color="primary"
-                 :disabled="!tempText.content"
+                 :disabled="!local_text.content"
                  @click="saveText">{{ this.id ? "Modifier" : "Créer" }}</v-btn>
           <v-btn v-if="!metadataOnly"
                  flat
@@ -72,7 +72,7 @@
                       <v-flex>
                         <v-layout column>
                           <v-flex xs12>
-                            <tag-bar v-model="tempText.tags"
+                            <tag-bar v-model="local_text.tags"
                                      tag-only
                                      show-count
                                      dialog-button
@@ -80,7 +80,7 @@
                                      :texts="texts"></tag-bar>
                           </v-flex>
                           <v-flex>
-                            <chip-bar v-model="tempText.tags"></chip-bar>
+                            <chip-bar v-model="local_text.tags"></chip-bar>
                           </v-flex>
                           <v-flex>
                             <v-alert :value="true"
@@ -95,7 +95,7 @@
                       <v-flex>
                         <h1 class="subheading orange--text">Autres</h1></v-flex>
                       <v-flex>
-                        <v-text-field v-model="tempText.bible_ref"
+                        <v-text-field v-model="local_text.bible_ref"
                                       slot="activator"
                                       label="Texte(s) biblique(s)"
                                       append-icon="help"
@@ -110,7 +110,7 @@
                                     class="help-icon"
                                     v-model="showComments"></v-checkbox>
                         <v-textarea v-if="showComments || local_text.comments"
-                                    v-model="tempText.comments"
+                                    v-model="local_text.comments"
                                     auto-grow
                                     box
                                     rows="4"></v-textarea>
@@ -123,7 +123,7 @@
                                     class="help-icon"
                                     v-model="showToAdmins"></v-checkbox>
                         <v-textarea v-if="showToAdmins || local_text.toAdmins"
-                                    v-model="tempText.toAdmins"
+                                    v-model="local_text.toAdmins"
                                     auto-grow
                                     box
                                     rows="4"></v-textarea>
@@ -133,10 +133,10 @@
                       <v-flex>
                         <p class="body-1 grey--text">Je certifie que l'auteur du texte accepte la licence WikiLiturgie:</p>
                         <v-switch :disabled="user==null"
-                                  :label="tempText.license_wl? 'Oui': 'Non / je ne suis pas sûr'"
-                                  v-model="tempText.license_wl"></v-switch>
+                                  :label="local_text.license_wl? 'Oui': 'Non / je ne suis pas sûr'"
+                                  v-model="local_text.license_wl"></v-switch>
                         <p class="body-1 grey--text"
-                           v-if="!tempText.license_wl">Dans ce cas, le texte sera enregistré mais signalé aux administrateurs pour vérifier la situation.</p>
+                           v-if="!local_text.license_wl">Dans ce cas, le texte sera enregistré mais signalé aux administrateurs pour vérifier la situation.</p>
                       </v-flex>
                     </v-layout>
                   </v-card-text>
@@ -144,7 +144,7 @@
               </v-tab-item>
               <!-- Aperçu -->
               <v-tab-item id="tab-2">
-                <text-card :text="tempText"></text-card>
+                <text-card :text="local_text"></text-card>
               </v-tab-item>
               <!-- Révisions -->
               <v-tab-item id="tab-3">
@@ -188,7 +188,7 @@ export default {
   data() {
     return {
       // Text object props
-      local_text: {
+      default_local_text: {
         title: "", // String
         content: "", // String
         bible_ref: "", // String
@@ -200,6 +200,7 @@ export default {
         created_by: "",
         tags: []
       },
+      local_text: null,
       // View props
       confirmDialog: false,
       synced: false, // used to perform sync only once
@@ -216,25 +217,12 @@ export default {
   },
   watch: {
     id() {
-      this.local_text = {
-        title: "", // String
-        content: "", // String
-        bible_ref: "", // String
-        comments: "", // String
-        toAdmins: "",
-        author: "", // ID (String)
-        license_wl: true, // Boolean
-        created_on: "",
-        created_by: "",
-        tags: []
-      }
-      this.synced = false
+      this.loadText()
     }
   },
   mounted() {
-    this.$nextTick(function () {
-      // We bind revisions for the current text
-      if (this.id) { this.$store.dispatch("texts/bindRevisionsForText", this.id) }
+    this.$nextTick(() => {
+      this.loadText()
     })
   },
   computed: { ...Vuex.mapGetters({
@@ -254,23 +242,23 @@ export default {
           return false
         } else if (this.userAuthor) {
           // User exists as author
-          return this.tempText.author == this.userAuthor.id
+          return this.local_text.author == this.userAuthor.id
         } else {
           // I don't exist as author
-          return this.tempText.author == "me"
+          return this.local_text.author == "me"
         }
       },
       set: function (val) {
         if (!this.user) { return } else if (val) {
           if (this.userAuthor) {
             // User is Author
-            this.tempText.author = this.userAuthor.id
+            this.local_text.author = this.userAuthor.id
           } else {
             // User is not yet author
-            this.tempText.author = "me"
+            this.local_text.author = "me"
           }
         } else {
-          this.tempText.author = ""
+          this.local_text.author = ""
         }
       }
     },
@@ -279,28 +267,6 @@ export default {
         return this.authorByUid(this.user.id)
       } else {
         return null
-      }
-    },
-    tempText: {
-      get: function () {
-        if (this.id && !this.synced) {
-          // Load values as a local copy
-          var text = this.texts.find(t => t.id == this.id)
-          if (text) {
-            for (var k in text) this.$set(this.local_text, k, text[k])
-            this.showComments = text.comments ? true : false
-            this.showToAdmins = text.toAdmins ? true : false
-            this.synced = true
-          }
-          // Return local text
-          return this.local_text
-        } else {
-          return this.local_text
-        }
-      },
-      set: function (val) {
-        console.log("SETTING TEMP TEXT")
-        console.log(val)
       }
     },
     computedRevisions() {
@@ -312,12 +278,12 @@ export default {
     },
     selectedAuthor: {
       get: function () {
-        if (this.tempText.author) {
-          var author = this.authorById(this.tempText.author)
+        if (this.local_text.author) {
+          var author = this.authorById(this.local_text.author)
           if (author) {
             return author
           } else {
-            return this.tempText.author
+            return this.local_text.author
           }
         }
       },
@@ -326,17 +292,31 @@ export default {
         // don't know why...
         var oldVal = this.selectedAuthor
         if (newVal && typeof (newVal) == "object") {
-          this.tempText.author = newVal.id
+          this.local_text.author = newVal.id
         } else if (typeof (newVal) == "string" && typeof (oldVal) == "object" && oldVal.name == newVal) {
           // this.selectedAuthor = oldVal
-          this.tempText.author = oldVal.id
+          this.local_text.author = oldVal.id
         } else {
-          this.tempText.author = newVal
+          this.local_text.author = newVal
         }
       }
     }
   },
   methods: {
+    loadText() {
+      this.local_text = Object.assign({}, this.default_local_text)
+      if (this.id) {
+        // Load values as a local copy
+        var text = this.texts.find(t => t.id == this.id)
+        if (text) {
+          for (var k in text) this.$set(this.local_text, k, text[k])
+          this.showComments = text.comments ? true : false
+          this.showToAdmins = text.toAdmins ? true : false
+        }
+        // We bind revisions for the current text
+        this.$store.dispatch("texts/bindRevisionsForText", this.id)
+      }
+    },
     validate() {
       // Memo: things to validate
       //
@@ -350,16 +330,16 @@ export default {
     saveText() {
       // Prepare object
       var obj = {
-        title: this.tempText.title,
-        content: this.tempText.content,
+        title: this.local_text.title,
+        content: this.local_text.content,
         created_on: firebase.firestore.FieldValue.serverTimestamp(),
-        tags: this.tempText.tags,
+        tags: this.local_text.tags,
         created_by: this.user ? this.user.id : "",
-        bible_ref: this.tempText.bible_ref || "",
-        comments: this.tempText.comments || "",
-        license_wl: this.tempText.license_wl || false,
-        author: this.tempText.author || "",
-        toAdmins: this.tempText.toAdmins || ""
+        bible_ref: this.local_text.bible_ref || "",
+        comments: this.local_text.comments || "",
+        license_wl: this.local_text.license_wl || false,
+        author: this.local_text.author || "",
+        toAdmins: this.local_text.toAdmins || ""
       }
       if (obj.author == "me") {
         // We need to create an author for user
@@ -392,7 +372,7 @@ export default {
           () => db.collection("texts").doc(this.id).update(obj).then(
             () => snackbar("Le texte a été mis à jour.")))
       }
-      this.tempText.author = obj.author
+      this.local_text.author = obj.author
     },
     removeText() {
       this.confirmDialog = true
@@ -439,7 +419,7 @@ export default {
           () => db.collection("texts").doc(this.id).collection("revisions").doc(revision.id).delete().then(
             () => {
               snackbar("Le texte a été restauré.")
-              this.synced = false
+              this.loadTextFromId()
             })))
     },
     help(value) {
