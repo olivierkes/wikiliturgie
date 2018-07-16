@@ -13,6 +13,7 @@ const getters = {
   texts: state => state.texts,
   textById: state => id => state.texts.find(t => t.id == id),
   revisions: state => state.revisions,
+  revisionById: state => id => state.revisions.find(r => r.id == id),
   dataLoaded: state => state.dataLoaded,
   problematicTexts: state => state.texts.filter(txt => {
     // Message to admin

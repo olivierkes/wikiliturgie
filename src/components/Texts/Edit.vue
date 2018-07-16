@@ -198,6 +198,8 @@ export default {
         license_wl: true, // Boolean
         created_on: "",
         created_by: "",
+        edited_on: "",
+        edited_by: "",
         tags: []
       },
       local_text: null,
@@ -229,7 +231,9 @@ export default {
       tags: "tags/tags",
       tagGroups: "tags/tagGroups",
       texts: "texts/texts",
+      textById: "texts/textById",
       revisions: "texts/revisions",
+      revisionById: "texts/revisionById",
       authors: "authors/authors",
       authorById: "authors/authorById",
       authorByUid: "authors/authorByUid",
@@ -332,14 +336,16 @@ export default {
       var obj = {
         title: this.local_text.title,
         content: this.local_text.content,
-        created_on: firebase.firestore.FieldValue.serverTimestamp(),
+        created_on: this.local_text.created_on,
+        created_by: this.local_text.created_by,
+        edited_on: firebase.firestore.FieldValue.serverTimestamp(),
+        edited_by: this.user ? this.user.id : "",
         tags: this.local_text.tags,
-        created_by: this.user ? this.user.id : "",
-        bible_ref: this.local_text.bible_ref || "",
-        comments: this.local_text.comments || "",
-        license_wl: this.local_text.license_wl || false,
-        author: this.local_text.author || "",
-        toAdmins: this.local_text.toAdmins || ""
+        bible_ref: this.local_text.bible_ref,
+        comments: this.local_text.comments,
+        license_wl: this.local_text.license_wl,
+        author: this.local_text.author,
+        toAdmins: this.local_text.toAdmins
       }
       if (obj.author == "me") {
         // We need to create an author for user
@@ -361,6 +367,9 @@ export default {
       // Saving object
       if (!this.id) {
         // Creating text
+        obj.created_on = firebase.firestore.FieldValue.serverTimestamp()
+        obj.created_by = this.user ? this.user.id : ""
+
         db.collection("texts").add(obj).then(() => {
           snackbar("Le texte a été crée.")
           this.$router.push("/")
@@ -401,7 +410,7 @@ export default {
       return authorRef
     },
     copyOfCurrentText() {
-      var text = this.texts.find(t => t.id == this.id)
+      var text = this.textById(this.id)
       var obj = {}
       if (text) {
         for (var k in text) this.$set(obj, k, text[k])
@@ -411,8 +420,8 @@ export default {
     restoreRevision(revId) {
       // 1. current text becomes a revisions
       // 2. current revision updates text
-      var revision = this.revisions.find(r => r.id == revId)
-      revision.created_on = firebase.firestore.FieldValue.serverTimestamp()
+      var revision = this.revisionById(revId)
+      revision.edited_on = firebase.firestore.FieldValue.serverTimestamp()
       var text = this.copyOfCurrentText()
       db.collection("texts").doc(this.id).collection("revisions").add(text).then(
         () => db.collection("texts").doc(this.id).update(revision).then(
