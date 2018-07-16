@@ -11,7 +11,7 @@
                             <v-avatar size="32" slot="activator">
                               <img :src="avatar(props.item.created_by)" />
                               </v-avatar>
-                            <span>{{userById(props.item.created_by).displayName}}</span>
+                            <span>{{userById(props.item.created_by).displayName || "Anonyme"}}</span>
                           </v-tooltip></td>
                         <td>{{ authorNameById(props.item.author) }}</td>
                         <td class="text-xs-center">{{ props.item.tags.length }}</td>

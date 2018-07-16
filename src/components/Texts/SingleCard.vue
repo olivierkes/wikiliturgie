@@ -21,10 +21,12 @@
       <v-flex xs8
               class="grey--text">{{ md.value }}</v-flex>
     </v-layout>
-    <v-chip v-for="t in text.tags"
-            :key="t"
-            small
-            label>{{tags.find(tag => tag.id == t).name}}</v-chip>
+    <v-tooltip top
+               v-for="t in text.tags">
+      <v-chip :key="t"
+              small
+              label
+              slot="activator">{{tagById(t).name}}</v-chip> <span>{{groupByTagId(t).name}}</span></v-tooltip>
   </v-card-text>
   <v-card-actions v-if="text.id"
                   :class="(!abstract || overflow)? '':'elevation-2'">
@@ -137,6 +139,8 @@ export default {
       userIsAuthenticated: "users/isAuthenticated",
       authors: "authors/authors",
       tags: "tags/tags",
+      tagById: "tags/tagById",
+      groupByTagId: "tags/groupByTagId",
       userCart: "users/userCart",
       avatar: "users/avatar",
       userById: "users/userById",
