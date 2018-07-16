@@ -419,7 +419,7 @@ export default {
           () => db.collection("texts").doc(this.id).collection("revisions").doc(revision.id).delete().then(
             () => {
               snackbar("Le texte a été restauré.")
-              this.loadTextFromId()
+              this.loadText()
             })))
     },
     help(value) {
