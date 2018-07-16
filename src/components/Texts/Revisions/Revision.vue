@@ -3,7 +3,7 @@
   <v-card-text>
     <h4 v-if="diff('title')"
         v-html="diff('title')"></h4>
-    <p v-html="diff('content')"></p>
+    <p v-html="diff('content').split('\n').join('<br />')"></p>
     <v-divider v-if="metadata.length"></v-divider>
     <v-layout row
               wrap
@@ -48,6 +48,8 @@ export default {
           var val = ""
           if (key == "author") {
             val = this.textAuthor(this.now)
+          } else if (key == "license_wl") {
+            val = this.now.license_wl ? "Oui" : "Non / Je sais pas"
           } else {
             val = this.now[key]
           }
@@ -59,13 +61,17 @@ export default {
             before = this.textAuthor(this.before) || ""
             after = this.textAuthor(this.now) || ""
             if (before != after) {
-            return "<span class='removed'>" + before + "</span> <span class='added'>" + after + "</span>"}
-            else {
+              return "<span class='removed'>" + before + "</span> <span class='added'>" + after + "</span>"
+            } else {
               return "<span class='unchanged'>" + after + "</span>"
             }
           } else {
             before = this.before[key] || ""
             after = this.now[key] || ""
+          }
+          if (key == "license_wl") {
+            before = before ? "Oui" : "Non / Je sais pas"
+            after = after ? "Oui" : "Non / Je sais pas"
           }
           return this.$options.filters.diff(before, after)
         }
@@ -89,6 +95,18 @@ export default {
         md.push({
           title: "Remarques",
           key: "comments"
+        })
+      }
+      if (this.now.toAdmins) {
+        md.push({
+          title: "Message aux admins",
+          key: "toAdmins",
+        })
+      }
+      if (this.now.license_wl !== null) {
+        md.push({
+          title: "License",
+          key: "license_wl"
         })
       }
       return md
@@ -136,6 +154,15 @@ export default {
 </script>
 
 <style lang="css">
+
+.added, .removed {
+  -webkit-box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
+  box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
+  padding: 4px;
+  margin: 2px;
+  border-radius: 2px;
+}
+
 .added {
   color: #3a883d;
   background: #edffee;
@@ -144,6 +171,7 @@ export default {
 .removed {
   color: #b30000;
   background: #fadad7;
+  text-decoration: line-through;
 }
 
 .unchanged {
