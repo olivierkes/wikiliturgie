@@ -4,7 +4,8 @@ const state = {
   snackbar_visible: false,
   snackbar: {},
   dialog_visible: false,
-  dialog: {}
+  dialog: {},
+  loader: false,
 }
 
 const getters = {
@@ -12,6 +13,7 @@ const getters = {
   snackbar: state => state.snackbar,
   dialog_visible: state => state.dialog_visible,
   dialog: state => state.dialog,
+  loader: state => state.loader
 }
 
 const mutations = {
@@ -31,6 +33,9 @@ const mutations = {
     } else {
       state.dialog_visible = false
     }
+  },
+  loader(state, visible) {
+    state.loader = visible
   }
 }
 
@@ -40,6 +45,9 @@ const actions = {
   },
   dialog({ commit }, dialog) {
     commit("dialog", dialog)
+  },
+  loader({ commit }, visible) {
+    commit("loader", visible)
   }
 }
 

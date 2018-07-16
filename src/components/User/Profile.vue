@@ -29,7 +29,7 @@
                href="#modo">
           <v-icon left>build</v-icon> &nbsp;
           <v-badge color="red"><span slot="badge"
-                  v-if="problematicTexts.length">{{problematicTexts.length}}</span>Modération</v-badge>
+                  v-if="numberOfTextProblems">{{numberOfTextProblems}}</span>Modération</v-badge>
         </v-tab>
         <!-- Info -->
         <v-tab-item id="info">
@@ -83,9 +83,9 @@
             <v-tab v-if="userRole == 'modo' || userRole == 'admin'"
                    href="#modoTexts">
               <v-icon left>list</v-icon> &nbsp; Textes </v-tab>
-              <v-tab v-if="userRole == 'modo' || userRole == 'admin'"
-                     href="#modoTags">
-                <v-icon left>dns</v-icon> &nbsp; Tags </v-tab>
+            <v-tab v-if="userRole == 'modo' || userRole == 'admin'"
+                   href="#modoTags">
+              <v-icon left>dns</v-icon> &nbsp; Tags </v-tab>
             <v-tab v-if="userRole == 'modo' || userRole == 'admin'"
                    href="#modoUsers">
               <v-icon left>supervised_user_circle</v-icon> &nbsp; Utilisateurs </v-tab>
@@ -122,15 +122,9 @@
               <v-container>
                 <v-layout row
                           wrap>
-                  <v-flex xs1>
-                    <v-btn flat
-                           icon
-                           :disabled="!listSelectedTextId"
-                           @click.stop="listSelectedTextId=null">
-                      <v-icon>clear</v-icon>
-                    </v-btn>
-                  </v-flex>
-                  <v-flex xs11>
+                  <v-flex xs11
+                          sm10
+                          offset-sm1>
                     <tag-bar v-model="filters"
                              include-authors
                              allows-custom-text
@@ -142,6 +136,14 @@
                              dialog-button></tag-bar>
                     <chip-bar v-model="filters"
                               clearable></chip-bar>
+                  </v-flex>
+                  <v-flex xs1>
+                    <v-btn flat
+                           icon
+                           :disabled="!listSelectedTextId"
+                           @click.stop="listSelectedTextId=null">
+                      <v-icon>clear</v-icon>
+                    </v-btn>
                   </v-flex>
                   <v-flex xs12
                           :sm5="listSelectedTextId">
@@ -176,7 +178,7 @@
 </template>
 
 <script>
-import { snackbar, filterTextsByIds } from "@/utils"
+import { snackbar, filterTextsByIds, loader } from "@/utils"
 import firebase from "firebase"
 import Vuex from "vuex"
 import { db } from "@/firebase"
@@ -198,7 +200,7 @@ export default {
       user: "users/user",
       userRole: "users/userRole",
       texts: "texts/texts",
-      problematicTexts: "texts/problematicTexts",
+      numberOfTextProblems: "texts/numberOfTextProblems",
       textById: "texts/textById",
       userCart: "users/userCart",
       avatar: "users/avatar"
@@ -234,13 +236,18 @@ export default {
     saveDisplayName() {
       // FIXME: unique source of truth should be the `users` collection
       if (this.displayName) {
+        loader(true)
         db.collection("users").doc(this.user.id).update({
           displayName: this.displayName
-        }).then(() => snackbar("Bonjour " + this.displayName + ". Quel joli nom!"))
+        }).then(() => {
+          loader()
+          snackbar("Bonjour " + this.displayName + ". Quel joli nom!")
+        })
         // If user is a author, we need to update that too
         var author = this.authors.find(a => a.user == this.user.id)
         if (author) {
-          db.collection("authors").doc(author.id).update({ name: this.displayName })
+          loader(true)
+          db.collection("authors").doc(author.id).update({ name: this.displayName }).then(() => {loader()})
         }
       } else {
         snackbar("Le nom ne peut pas être vide.")

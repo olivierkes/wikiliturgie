@@ -134,7 +134,7 @@
 <script>
 import Vuex from "vuex"
 import { db } from "@/firebase"
-import { snackbar } from "@/utils"
+import { snackbar, loader } from "@/utils"
 // import Sortable from 'sortablejs'
 // var sortable
 import draggable from 'vuedraggable'
@@ -188,6 +188,7 @@ export default {
       },
       set(val) {
         this.loadingChildrenOrder = true
+        loder(true)
         db.runTransaction(transaction => {
           // This code may get re-run multiple times if there are conflicts.
           var p = Promise.resolve()
@@ -197,8 +198,10 @@ export default {
             })
           })
         }).then(function () {
+          loader()
           snackbar("L'ordre a bien été mis à jour.")
         }).catch(function (error) {
+          loader()
           snackbar("Error ! Voir la console...")
           console.log("Transaction failed: ", error)
         })
@@ -237,12 +240,16 @@ export default {
         snackbar("Le nom ne peut pas être vide")
         return
       }
+      loader(true)
       db.collection("docs").add({
         parent: this.item.id,
         name: this.newDocName,
         content: "",
         weight: 100
-      }).then(snackbar("Le document '" + this.newDocName + "' a été crée."))
+      }).then(() => {
+        loader()
+        snackbar("Le document '" + this.newDocName + "' a été crée.")
+      })
       this.newDocName = ""
       // this.isEditing = false
     },
@@ -251,10 +258,12 @@ export default {
         snackbar("Le titre ne peut pas être vide, le pauve.")
         return
       } else {
+        loader(true)
         db.collection("docs").doc(this.item.id).update({
           name: this.name,
           content: this.content
         }).then(() => {
+          loader()
           snackbar("Enregistré!")
         })
       }
@@ -265,7 +274,9 @@ export default {
     },
     deleteDoc() {
       if (!this.children.length && this.item.parent) {
+        loader(true)
         db.collection("docs").doc(this.item.id).delete().then(() => {
+          loader()
           snackbar("L'élément a été supprimé")
         })
         this.isEditing = false

@@ -65,7 +65,7 @@
 import Vuex from "vuex"
 import { db } from "@/firebase"
 import firebase from "firebase"
-import { snackbar } from "@/utils"
+import { snackbar, loader } from "@/utils"
 export default {
   props: {
     id: String,
@@ -124,6 +124,7 @@ export default {
   methods: {
     save() {
       if (!this.isNew) {
+        loader(true)
         db.collection("blogs").doc(this.id).update({
           title: this.local_title,
           content: this.local_content,
@@ -132,9 +133,11 @@ export default {
           updated_by: this.user ? this.user.id : "",
         }).then(() => {
           this.isEditing = false
+          loader()
           snackbar("Le post a été modifié.")
         })
       } else {
+        loader(true)
         var ref = db.collection("blogs").doc()
         ref.set({
           title: this.local_title,
@@ -143,6 +146,7 @@ export default {
           created_on: firebase.firestore.FieldValue.serverTimestamp(),
           created_by: this.user ? this.user.id : "",
         }).then(() => {
+          loader()
           this.isEditing = false
           this.$router.push("/blog/" + ref.id)
           snackbar("Le post a été crée.")
@@ -150,7 +154,9 @@ export default {
       }
     },
     remove() {
+      loader(true)
       db.collection("blogs").doc(this.id).delete().then(() => {
+        loader()
         this.$router.push("/blog")
         this.isEditing = false
         snackbar("Le post a été supprimé.")

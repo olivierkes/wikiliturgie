@@ -35,7 +35,7 @@
 import Vuex from "vuex"
 import revision from "@/components/Texts/Revisions/Revision"
 import { db } from "@/firebase"
-import { snackbar } from "@/utils"
+import { snackbar, loader } from "@/utils"
 export default {
   props: ["revisions", "textId"],
   components: {
@@ -53,8 +53,10 @@ export default {
   },
   methods: {
     removeRevision(rev) {
+      loader(true)
       var ref = db.collection("texts").doc(this.textId).collection("revisions").doc(rev.id)
       ref.delete().then(() => {
+        loader()
         snackbar("La modification a été supprimée de l'historique.")
       })
     }

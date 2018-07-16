@@ -105,13 +105,15 @@ export default {
           id: g.id,
           type: "group"
         })
-        g.tags.forEach(tagId => {
-          r.push({
-            text: this.tagById(tagId).name,
-            value: tagId,
-            count: filterTextsByIds(this.texts, [tagId]).length
+        if (g.tags) {
+          g.tags.forEach(tagId => {
+            r.push({
+              text: this.tagById(tagId).name,
+              value: tagId,
+              count: filterTextsByIds(this.texts, [tagId]).length
+            })
           })
-        })
+        }
       })
       // Authors
       if (this.includeAuthors) {
@@ -131,7 +133,7 @@ export default {
         // Hide empty items
         r = r.filter(item => item.count == undefined || item.count > 0)
         // Hide empty headers (meaning: header followed by header, or at the bottom)
-        r = r.filter((item, idx, array) => !(item.header && (!array[idx+1] || array[idx+1].header)))
+        r = r.filter((item, idx, array) => !(item.header && (!array[idx + 1] || array[idx + 1].header)))
       }
       return r
     }
@@ -165,7 +167,7 @@ export default {
           var filtered = this.groupById(item.id).tags.filter(tagId => this.filter(this.tagById(tagId).name, queryText, this.tagById(tagId).name))
         } else if (item.type == "author") {
           // Author
-          var filtered = this.authors.filter( a => this.filter(a.name, queryText, a.name))
+          var filtered = this.authors.filter(a => this.filter(a.name, queryText, a.name))
         }
         return filtered.length != 0
       }

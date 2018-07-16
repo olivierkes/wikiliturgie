@@ -34,7 +34,7 @@
           <v-btn v-if="!metadataOnly"
                  flat
                  color="grey"
-                 @click="$router.push('/')">Annuler</v-btn>
+                 @click="$router.push('/')"> Annuler</v-btn>
           <v-btn flat
                  color="red"
                  v-if="id"
@@ -174,7 +174,7 @@
 import { db } from '@/firebase'
 import Vuex from "vuex"
 import firebase from 'firebase/app'
-import { snackbar, dialog } from "@/utils"
+import { snackbar, dialog, loader } from "@/utils"
 import revisions from "@/components/Texts/Revisions/Revisions.vue"
 import SimpleMDE from "simplemde"
 export default {
@@ -369,17 +369,22 @@ export default {
         // Creating text
         obj.created_on = firebase.firestore.FieldValue.serverTimestamp()
         obj.created_by = this.user ? this.user.id : ""
-
+        loader(true)
         db.collection("texts").add(obj).then(() => {
           snackbar("Le texte a été crée.")
+          loader()
           this.$router.push("/")
         })
       } else {
         // Editing text, so we add a revisions
         var old_obj = this.copyOfCurrentText()
+        loader(true)
         db.collection("texts").doc(this.id).collection("revisions").add(old_obj).then(
           () => db.collection("texts").doc(this.id).update(obj).then(
-            () => snackbar("Le texte a été mis à jour.")))
+            () => {
+              snackbar("Le texte a été mis à jour.")
+              loader()
+            }))
       }
       this.local_text.author = obj.author
     },
@@ -387,12 +392,14 @@ export default {
       this.confirmDialog = true
     },
     confirmRemoveText() {
+      loader(true)
       // Remove revisions
       this.revisions.forEach(r => {
         db.collection("texts").doc(this.id).collection("revisions").doc(r.id).delete()
       })
       // Remove text
       db.collection("texts").doc(this.id).delete().then(() => {
+        loader()
         snackbar("Le texte a bien été supprimé.")
         this.$router.push("/")
       })
@@ -406,7 +413,11 @@ export default {
       if (isUser) {
         obj.user = this.user.id
       }
-      authorRef.set(obj).then(snackbar("L'auteur " + name + " a été crée."))
+      loader(true)
+      authorRef.set(obj).then(() => {
+        snackbar("L'auteur " + name + " a été crée.")
+        loader()
+      })
       return authorRef
     },
     copyOfCurrentText() {
@@ -423,10 +434,12 @@ export default {
       var revision = this.revisionById(revId)
       revision.edited_on = firebase.firestore.FieldValue.serverTimestamp()
       var text = this.copyOfCurrentText()
+      loader(true)
       db.collection("texts").doc(this.id).collection("revisions").add(text).then(
         () => db.collection("texts").doc(this.id).update(revision).then(
           () => db.collection("texts").doc(this.id).collection("revisions").doc(revision.id).delete().then(
             () => {
+              loader()
               snackbar("Le texte a été restauré.")
               this.loadText()
             })))

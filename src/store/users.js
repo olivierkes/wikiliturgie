@@ -13,7 +13,7 @@ const getters = {
   users: state => state.users,
   dataLoaded: state => state.dataLoaded,
   fbUser: state => state.currentUser,
-  user: (state, getters) => getters.userById(getters.fbUser.uid),
+  user: (state, getters) => getters.fbUser ? getters.userById(getters.fbUser.uid) : null,
   isAuthenticated: state => state.currentUser !== null && state.currentUser !== undefined,
   userById: state => id => state.users.find(u => u.id == id) || {},
   avatar: (state, getters) => id => getters.userById(id).photoURL,
@@ -25,7 +25,7 @@ const getters = {
     var r = 0
     if (getters.userRole == "modo" || getters.userRole == "admin") {
       // Texts with problems (not enough tags, message to admins)
-      r += globalGetters["texts/problematicTexts"].length
+      r += globalGetters["texts/numberOfTextProblems"]
     } else {
       // Texts in carts
       r += getters.userCart.length

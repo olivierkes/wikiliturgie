@@ -113,14 +113,14 @@ export default {
     },
     diffTags() {
       var res = []
-      if (!this.before) {
+      if (!this.before && this.now.tags) {
         this.now.tags.forEach(t => {
           res.push({
             name: this.tagName(t),
             color: "green"
           })
         })
-      } else {
+      } else if (this.now.tags && this.before.tags) {
         this.now.tags.forEach(t => {
           res.push({
             name: this.tagName(t),

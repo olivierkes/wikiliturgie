@@ -15,13 +15,23 @@ const getters = {
   revisions: state => state.revisions,
   revisionById: state => id => state.revisions.find(r => r.id == id),
   dataLoaded: state => state.dataLoaded,
-  problematicTexts: state => state.texts.filter(txt => {
+  problemsByTextId: (state, getters) => id => {
+    var txt = getters.textById(id)
+    var r = []
     // Message to admin
-    if (txt.toAdmins) { return true }
+    if (txt.toAdmins) { r.push("admin flag") }
     // Not enough tags
-    if (!txt.tags || txt.tags.length < 2) { return true }
-  }),
-  isTextProblematic: (state, getters) => id => getters.problematicTexts.some(t => t.id == id)
+    if (!txt.tags || txt.tags.length < 2) { r.push("moins de 2 tags") }
+    // License WL pas signée
+    if (!txt.license_wl) { r.push("license WL pas acceptée") }
+    return r
+  },
+  numberOfTextProblems: (state, getters) => {
+    var r = 0
+    state.texts.forEach(t => r += getters.problemsByTextId(t.id).length)
+    return r
+  },
+  isTextProblematic: (state, getters) => id => getters.problemsByTextId(id).length > 0
 }
 
 const mutations = {

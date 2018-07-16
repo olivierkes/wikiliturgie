@@ -102,7 +102,7 @@ import { db } from '@/firebase'
 import firebase from 'firebase/app'
 import Sortable from 'sortablejs'
 import Vuex from "vuex"
-import { snackbar } from "@/utils"
+import { snackbar, loader } from "@/utils"
 export default {
   props: ["groupId"],
   data() {
@@ -168,22 +168,25 @@ export default {
     addOrEditTag() {
       if (this.tagEdited) {
         // We are editing
+        loader(true)
         db.collection("tags").doc(this.tagEdited).update({
           name: this.tagName.trim(),
           description: this.tagDescription.trim()
         }).then((data) => {
+          loader()
           snackbar("Le tag a bien été modifié.")
         })
         this.cancelEditTag()
       } else if (this.tagName !== "") {
         // We are creating a new group
         var tagRef = db.collection("tags").doc()
-        // db.collection("tags").add({
+        loader(true)
         tagRef.set({
           name: this.tagName.trim(),
           description: this.tagDescription.trim(),
           created: firebase.firestore.FieldValue.serverTimestamp()
-        }).then((data) => {
+        }).then(() => {
+          loader()
           snackbar("Le tag a bien été crée.")
         })
         var tags = this.group.tags || []
@@ -206,11 +209,13 @@ export default {
         return
       }
       // Remove tag
+      loader(true)
       db.collection("tags").doc(this.tagEdited).delete()
       // Remove reference from group
       var tags = this.group.tags
       tags.splice(tags.indexOf(this.tagEdited), 1)
       db.collection("tagGroups").doc(this.groupId).update({ tags: tags }).then((data) => {
+        loader()
         snackbar("Le tag a bien été supprimé.")
       })
       this.cancelEditTag()
@@ -222,7 +227,9 @@ export default {
     dragReorder({ to, from, oldIndex, newIndex }) {
       const movedItem = this.group.tags.splice(oldIndex, 1)[0]
       this.group.tags.splice(newIndex, 0, movedItem)
+      loader(true)
       db.collection("tagGroups").doc(this.groupId).update({ tags: this.group.tags }).then((data) => {
+        loader()
         snackbar("Le nouvel ordre a été sauvé.")
       })
     }

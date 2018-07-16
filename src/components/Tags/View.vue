@@ -98,7 +98,7 @@
 <script>
 import { db } from '@/firebase'
 import firebase from 'firebase/app'
-import { snackbar } from "@/utils"
+import { snackbar, loader } from "@/utils"
 import Vuex from "vuex"
 export default {
   data() {
@@ -144,18 +144,26 @@ export default {
     addOrEditGroup() {
       if (this.groupEdited) {
         // We are editing
+        loader(true)
         db.collection("tagGroups").doc(this.groupEdited).update({
           name: this.groupName.trim(),
           description: this.groupDescription.trim()
-        }).then(snackbar("Le groupe a été mis à jour."))
+        }).then(() => {
+          loader()
+          snackbar("Le groupe a été mis à jour.")
+        })
         this.cancelEditGroup()
       } else if (this.groupName !== "") {
         // We are creating a new group
+        loader(true)
         db.collection("tagGroups").add({
           name: this.groupName.trim(),
           description: this.groupDescription.trim(),
           created: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(snackbar("Le groupe a bien été crée."))
+        }).then(() => {
+          loader()
+          snackbar("Le groupe a bien été crée.")
+        })
         this.cancelEditGroup()
       }
     },
@@ -169,7 +177,11 @@ export default {
         snackbar("Le groupe ne peux pas être supprimé, il contient des tags. Merci bonsoir.")
         return
       }
-      db.collection("tagGroups").doc(this.groupEdited).delete().then(snackbar("Le groupe a bien été supprimé."))
+      loader(true)
+      db.collection("tagGroups").doc(this.groupEdited).delete().then(() => {
+        loader()
+        snackbar("Le groupe a bien été supprimé.")
+      })
       this.cancelEditGroup()
     },
     removeGroupCancel() {

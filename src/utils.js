@@ -47,6 +47,12 @@ function dialog({
 
 export { dialog }
 
+//////////////////// LOADER ///////////////////////
+
+function loader(visible) { store.dispatch("components/loader", visible) }
+
+export { loader }
+
 //////////////// FILTER FUNCTIONS ///////////////////////
 
 // Filter texts  with given id (could be tag, author, ...)
