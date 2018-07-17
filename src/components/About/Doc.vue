@@ -45,7 +45,8 @@
       <v-slide-x-transition>
         <v-card>
           <v-card-text v-if="!isEditing"
-                       v-html="$options.filters.md(item.content)"> </v-card-text>
+                       v-html="$options.filters.md(item.content)"
+                       class="text-card"> </v-card-text>
         </v-card>
       </v-slide-x-transition>
       <v-slide-x-transition>

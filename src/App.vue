@@ -62,7 +62,7 @@
     </v-toolbar-items>
   </v-toolbar>
   <v-content>
-    <v-divider></v-divider>
+    <v-divider style="position:fixed; z-index: 3;"></v-divider>
     <v-progress-linear v-if="loader" :indeterminate="true" class="mt-0" height="4" style="position: fixed; z-index: 3;"></v-progress-linear>
     <data-loading-status v-if="!dataLoaded"></data-loading-status>
     <router-view v-if="dataLoaded"></router-view>

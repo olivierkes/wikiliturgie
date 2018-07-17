@@ -26,7 +26,7 @@
                      v-if="warningLessThanTwoTags && !(selected && selected.length >= 2)"><b>Entre si possible au moins 2 tags.</b> Pour la plupart des textes, il faut remplir au minimum les catégories <code>Moment de culte</code> et <code>Occasion</code>.</v-alert>
           </v-flex>
           <!-- Tags -->
-          <v-flex xs6
+          <v-flex xs12 sm6
                   v-for="group in tagGroups"
                   :key="group.id">
             <v-toolbar dense
@@ -48,7 +48,7 @@
                       :label="group.name"></v-select>
           </v-flex>
           <!-- Authors -->
-          <v-flex xs6
+          <v-flex xs12 sm6
                   v-if="includeAuthors">
             <v-toolbar dense
                        dark
