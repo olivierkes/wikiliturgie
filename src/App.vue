@@ -1,6 +1,6 @@
 <template>
 <v-app>
-  <v-navigation-drawer clipped
+  <!-- <v-navigation-drawer clipped
                        v-model="leftDrawer"
                        app
                        v-if="$vuetify.breakpoint.smAndDown">
@@ -16,7 +16,6 @@
           <v-list-tile-title v-text="item.title"></v-list-tile-title>
         </v-list-tile-content>
       </v-list-tile>
-      <!-- Profile -->
       <v-subheader v-if="userIsAuthenticated">Profile</v-subheader>
       <v-list-tile to="/profile"
                    v-if="userIsAuthenticated">
@@ -29,7 +28,7 @@
         <v-list-tile-content> {{ user.displayName }} </v-list-tile-content>
       </v-list-tile>
     </v-list>
-  </v-navigation-drawer>
+  </v-navigation-drawer> -->
   <v-toolbar app
              clipped-left
              clipped-right
@@ -38,20 +37,22 @@
              dense
              scroll-toolbar-off-screen
              :scroll-threshold="77">
-    <v-toolbar-side-icon v-if="$vuetify.breakpoint.xs"
-                         @click.stop="leftDrawer = !leftDrawer"></v-toolbar-side-icon>
+    <!-- <v-toolbar-side-icon v-if="$vuetify.breakpoint.xs"
+                         @click.stop="leftDrawer = !leftDrawer"></v-toolbar-side-icon> -->
     <v-toolbar-title>
       <router-link to="/"
                    tag="span"
                    style="cursor: pointer">{{ title }}</router-link>
     </v-toolbar-title>
     <v-spacer></v-spacer>
-    <v-toolbar-items v-if="!$vuetify.breakpoint.xs">
+    <!-- v-if="!$vuetify.breakpoint.xs" -->
+    <v-toolbar-items >
       <v-btn flat
              v-for="(item, i) in menuItems"
              :key="i"
+             :icon="$vuetify.breakpoint.xs"
              :to="item.link">
-        <v-icon left>{{ item.icon }}</v-icon>{{ item.title }}</v-btn>
+        <v-icon :left="!$vuetify.breakpoint.xs">{{ item.icon }}</v-icon>{{ !$vuetify.breakpoint.xs? item.title : '' }}</v-btn>
       <v-btn flat
              to="/profile"
              v-if="userIsAuthenticated">
@@ -81,7 +82,7 @@ export default {
     return {
       leftDrawer: false,
       fixed: false,
-      title: 'WikiLiturgie'
+      title: 'WikiLiturgie α'
     }
   },
   computed: { ...Vuex.mapGetters({

@@ -22,11 +22,11 @@
               @change="change">
     <!-- No data template --><template slot="no-data">
         <v-card flat>
-          <v-card-text v-if="allowsCustomText">
+          <v-card-text v-if="allowsCustomText && search">
             Appuie sur <kbd>enter</kbd> pour rechercher le texte <v-chip small label>{{search}}</v-chip>
           </v-card-text>
           <v-card-text v-if="!allowsCustomText">
-            Aucun élément ne correspond à "<strong>{{ search }}</strong>"
+            Aucun élément ne correspond à <v-chip small label>{{ search }}</v-chip>
           </v-card-text>
         </v-card>
      </template>

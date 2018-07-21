@@ -134,7 +134,7 @@
   </v-card-text>
   <div v-if="isCardExpandable"
        @click="expanded = !expanded"
-       class="overlay text-xs-center white--text headline font-weight-black"> {{expanded ? "-" : "+"}}</div>
+       :class="'card-overlay text-xs-center' + (expanded ? ' expanded' : '')"> <span class="display-1 font-weight-black">{{expanded ? "-" : "+"}}</span></div>
 </v-card>
 </template>
 
@@ -292,12 +292,25 @@ export default {
   background: linear-gradient(transparent, #0000003d);
 } */
 
-div.overlay {
+div.card-overlay {
   position: absolute;
   width: 100%;
-  height: 32px;
-  margin-top: -32px;
-  background-color: #0000000d;
+  height: 64px;
+  margin-top: -64px;
+  background: linear-gradient(#ffffff00, white);
+  z-index: 4;
+  cursor: pointer;
+}
+
+div.card-overlay.expanded {
+  background: transparent;
+}
+
+div.card-overlay span {
+  position: absolute;
+  bottom: 1px;
+  color: white;
+  text-shadow: 1px 1px 5px #0000004d;
 }
 
 div.two-col {
