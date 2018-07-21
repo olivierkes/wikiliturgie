@@ -1,15 +1,13 @@
 <template>
-<!-- @mouseover="overflow = true" @mouseleave="overflow=false" -->
 <v-card v-if="text"
-        :hover="abstract && !overflow"
+        :hover="isCardExpandable"
         @click.native="overflow=!overflow"
         :flat="flat"
         class="text-card">
   <v-toolbar v-if="text.title"
              flat>
     <h1 class="grey--text  subheading ">{{text.title}}</h1> </v-toolbar>
-  <v-card-text :style="style">
-    <!-- <p v-html="$options.filters.md(text.content.slice(0, 300))"></p> -->
+  <v-card-text :style="style" ref="cardText" v-resize="updateCardHeight">
     <p v-html="$options.filters.md(text.content)"></p>
     <v-divider></v-divider>
     <v-layout row
@@ -29,8 +27,8 @@
               slot="activator">{{tagById(t).name}}</v-chip> <span>{{groupByTagId(t).name}}</span></v-tooltip>
   </v-card-text>
   <v-card-actions v-if="text.id"
-                  :class="(!abstract || overflow)? '':'elevation-2'">
-    <v-btn v-if="abstract"
+                  :class="isCardExpandable? '':'elevation-2'">
+    <v-btn v-if="abstract && isCardExpandable"
            icon
            @click.native.stop="overflow = !overflow">
       <v-icon>{{ overflow ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</v-icon>
@@ -95,9 +93,14 @@ export default {
   data() {
     return {
       overflow: false,
+      cardHeight: 0,
+      abstractHeight: 300,
     }
   },
   methods: {
+    updateCardHeight() {
+      this.cardHeight = this.$refs.cardText.clientHeight
+    },
     toggleStar() {
       if (!this.userIsAuthenticated) { return }
       var stars = this.text.stars || []
@@ -146,9 +149,12 @@ export default {
       userById: "users/userById",
       problemsByTextId: "texts/problemsByTextId"
     }),
+    isCardExpandable() {
+      return this.cardHeight >= this.abstractHeight
+    },
     style() {
       return {
-        height: (!this.abstract || this.overflow) ? "" : "300px",
+        maxHeight: (!this.abstract || this.overflow) ? "" : this.abstractHeight + "px",
         overflowY: "hidden"
       }
     },

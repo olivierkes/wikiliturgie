@@ -21,7 +21,7 @@
       <v-list-tile to="/profile"
                    v-if="userIsAuthenticated">
         <v-list-tile-action>
-        <v-badge color="red"><span slot="badge"
+        <v-badge color="red" overlap><span slot="badge"
                 v-if="notificationsForUser">{{notificationsForUser}}</span>
           <v-avatar size="36px"><img :src="user.photoURL" /></v-avatar>
         </v-badge>
@@ -35,7 +35,9 @@
              clipped-right
              class="grey lighten-5"
              flat
-             dense>
+             dense
+             scroll-toolbar-off-screen
+             :scroll-threshold="77">
     <v-toolbar-side-icon v-if="$vuetify.breakpoint.xs"
                          @click.stop="leftDrawer = !leftDrawer"></v-toolbar-side-icon>
     <v-toolbar-title>
@@ -53,17 +55,16 @@
       <v-btn flat
              to="/profile"
              v-if="userIsAuthenticated">
-             <v-badge :color="userRole == 'admin' || userRole == 'modo'? 'red' : 'green'">
+             <v-badge overlap :color="userRole == 'admin' || userRole == 'modo'? 'red' : 'green'">
                <span slot="badge"
                      v-if="notificationsForUser">{{notificationsForUser}}</span>
-        <v-avatar size="36px"><img :src="user.photoURL" /></v-avatar>
+        <v-avatar size="32px"><img :src="user.photoURL" /></v-avatar>
       </v-badge>
       </v-btn>
     </v-toolbar-items>
+    <v-progress-linear v-if="loader" slot="extension" :indeterminate="true" class="mt-0 mb-0" height="4" style="z-index: 3;"></v-progress-linear>
   </v-toolbar>
   <v-content>
-    <v-divider style="position:fixed; z-index: 3;"></v-divider>
-    <v-progress-linear v-if="loader" :indeterminate="true" class="mt-0" height="4" style="position: fixed; z-index: 3;"></v-progress-linear>
     <data-loading-status v-if="!dataLoaded"></data-loading-status>
     <router-view v-if="dataLoaded"></router-view>
   </v-content>
@@ -123,4 +124,10 @@ export default {
 <style>
   /* SimpleMDE: https://github.com/F-loat/vue-simplemde */
   @import '~simplemde-theme-base/dist/simplemde-theme-base.min.css';
+
+  .v-toolbar__extension {
+    height: auto !important;
+    padding: 0;
+  }
+  main.v-content { padding: 48px 0px 32px !important;}
 </style>
