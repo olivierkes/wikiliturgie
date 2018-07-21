@@ -15,6 +15,12 @@ const getters = {
   revisions: state => state.revisions,
   revisionById: state => id => state.revisions.find(r => r.id == id),
   dataLoaded: state => state.dataLoaded,
+  starCountById: (state, getters) => id => getters.textById(id).stars ? getters.textById(id).stars.length : 0,
+  cartCountById: (state, getters, globalState, globalGetters) => id => {
+    var r = 0
+    globalGetters["users/users"].forEach(u => r += u.cart && u.cart.some(t => t == id) ? 1 : 0)
+    return r
+  },
   problemsByTextId: (state, getters) => id => {
     var txt = getters.textById(id)
     var r = []
@@ -31,7 +37,8 @@ const getters = {
     state.texts.forEach(t => r += getters.problemsByTextId(t.id).length)
     return r
   },
-  isTextProblematic: (state, getters) => id => getters.problemsByTextId(id).length > 0
+  isTextProblematic: (state, getters) => id => getters.problemsByTextId(id).length > 0,
+
 }
 
 const mutations = {

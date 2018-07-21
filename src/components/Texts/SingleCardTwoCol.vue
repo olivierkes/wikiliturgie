@@ -2,7 +2,8 @@
 <v-card v-if="text"
         class="text-card mb-2">
   <v-toolbar dense
-             flat @click.stop="expanded = ! expanded">
+             flat
+             @click.stop="expanded = ! expanded">
     <v-toolbar-items v-if="isCardExpandable">
       <v-btn flat
              icon
@@ -15,24 +16,27 @@
     <v-spacer></v-spacer>
     <v-toolbar-items>
       <!-- Stars -->
+      <v-btn flat icon v-if="!userIsAuthenticated && starCountById(text.id)" @click.stop>
       <v-tooltip top>
-        <v-icon v-if="!userIsAuthenticated && starCount"
-                :color="starCount > 0 ? 'yellow' : 'grey'"
-                slot="activator">star </v-icon> <span>{{starCount}} étoile{{starCount > 1 ? "s":""}}</span> </v-tooltip>
+        <v-icon :color="starCountById(text.id) > 0 ? 'yellow' : 'grey'"
+                slot="activator">star </v-icon> <span>{{starCountById(text.id)}} étoile{{starCountById(text.id) > 1 ? "s":""}}</span> </v-tooltip>
+                </v-btn>
       <v-btn v-if="userIsAuthenticated"
              flat
              icon>
         <v-tooltip top>
           <v-icon :color="userStarred ? 'yellow' : 'grey'"
                   @click.stop="toggleStar"
-                  slot="activator">star</v-icon> <span>{{starCountDisplay}} étoile{{starCount > 1 ? "s":""}}</span> </v-tooltip>
+                  slot="activator">star</v-icon> <span>{{starCountById(text.id)}} étoile{{starCountById(text.id) > 1 ? "s":""}}</span> </v-tooltip>
       </v-btn>
       <!-- Cart -->
       <v-btn v-if="userIsAuthenticated"
              flat
              icon
              @click.stop="toggleCart">
-        <v-icon :color="textInCart? 'green' : 'grey'">shopping_cart</v-icon>
+        <v-tooltip top>
+          <v-icon :color="textInCart? 'green' : 'grey'"
+                  slot="activator">shopping_cart</v-icon> <span>Le texte est dans {{cartCountById(text.id)}} panier(s).</span> </v-tooltip>
       </v-btn>
       <!-- Problematic text -->
       <v-btn icon
@@ -130,8 +134,7 @@
   </v-card-text>
   <div v-if="isCardExpandable"
        @click="expanded = !expanded"
-       class="overlay text-xs-center white--text headline font-weight-black">
-     {{expanded ? "-" : "+"}}</div>
+       class="overlay text-xs-center white--text headline font-weight-black"> {{expanded ? "-" : "+"}}</div>
 </v-card>
 </template>
 
@@ -160,7 +163,9 @@ export default {
       userCart: "users/userCart",
       avatar: "users/avatar",
       userById: "users/userById",
-      problemsByTextId: "texts/problemsByTextId"
+      problemsByTextId: "texts/problemsByTextId",
+      starCountById: "texts/starCountById",
+      cartCountById: "texts/cartCountById"
     }),
     style() {
       return {
@@ -216,12 +221,6 @@ export default {
       return null
     },
     // Stars
-    starCount() {
-      return this.text.stars ? this.text.stars.length : 0
-    },
-    starCountDisplay() {
-      return this.starCount ? this.starCount : "0"
-    },
     userStarred() {
       if (!this.userIsAuthenticated) { return false }
       if (this.text.stars && this.text.stars.some(u => u == this.user.id)) {
@@ -239,7 +238,7 @@ export default {
   },
   methods: {
     updateCardHeight() {
-      this.cardHeight = this.$refs.cardText.clientHeight
+      this.cardHeight = this.$refs.cardText ? this.$refs.cardText.clientHeight : 0
     },
     toggleStar() {
       if (!this.userIsAuthenticated) { return }

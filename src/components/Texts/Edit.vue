@@ -238,7 +238,8 @@ export default {
       authorById: "authors/authorById",
       authorByUid: "authors/authorByUid",
       user: "users/user",
-      isAuthenticated: "users/isAuthenticated"
+      isAuthenticated: "users/isAuthenticated",
+      cartCountById: "texts/cartCountById"
     }),
     iAmAuthor: {
       get: function () {
@@ -389,9 +390,18 @@ export default {
       this.local_text.author = obj.author
     },
     removeText() {
+      if (this.cartCountById(this.id)) {
+        dialog({
+          title: "Problème",
+          text: `Ce texte est dans le panier de ` + this.cartCountById(this.id) + ` utilisateur(s).
+                Tu ne peux pas le supprimer.`
+        })
+        return
+      }
       this.confirmDialog = true
     },
     confirmRemoveText() {
+
       loader(true)
       // Remove revisions
       this.revisions.forEach(r => {

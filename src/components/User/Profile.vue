@@ -82,7 +82,9 @@
             <!-- Tabs -->
             <v-tab v-if="userRole == 'modo' || userRole == 'admin'"
                    href="#modoTexts">
-              <v-icon left>list</v-icon> &nbsp; Textes </v-tab>
+              <v-badge color="red"><span slot="badge"
+                      v-if="numberOfTextProblems">{{numberOfTextProblems}}</span>
+              <v-icon left>list</v-icon> &nbsp; Textes </v-badge></v-tab>
             <v-tab v-if="userRole == 'modo' || userRole == 'admin'"
                    href="#modoTags">
               <v-icon left>dns</v-icon> &nbsp; Tags </v-tab>
@@ -247,7 +249,7 @@ export default {
         var author = this.authors.find(a => a.user == this.user.id)
         if (author) {
           loader(true)
-          db.collection("authors").doc(author.id).update({ name: this.displayName }).then(() => {loader()})
+          db.collection("authors").doc(author.id).update({ name: this.displayName }).then(() => { loader() })
         }
       } else {
         snackbar("Le nom ne peut pas être vide.")

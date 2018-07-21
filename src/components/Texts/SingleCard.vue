@@ -5,8 +5,9 @@
         :flat="flat"
         class="text-card">
   <v-toolbar v-if="text.title"
-             flat>
-    <h1 class="grey--text  subheading ">{{text.title}}</h1> </v-toolbar>
+             flat
+             dense>
+    <h1 class="subheading font-weight-light">{{text.title}}</h1> </v-toolbar>
   <v-card-text :style="style" ref="cardText" v-resize="updateCardHeight">
     <p v-html="$options.filters.md(text.content)"></p>
     <v-divider></v-divider>
@@ -36,16 +37,16 @@
     <v-spacer></v-spacer>
     <!-- Stars -->
     <v-tooltip top>
-      <v-icon v-if="!userIsAuthenticated && starCount"
-              :color="starCount > 0 ? 'yellow' : 'grey'"
-              slot="activator">star </v-icon> <span>{{starCount}} étoile{{starCount > 1 ? "s":""}}</span> </v-tooltip>
+      <v-icon v-if="!userIsAuthenticated && starCountById(text.id)"
+              :color="starCountById(text.id) > 0 ? 'yellow' : 'grey'"
+              slot="activator">star </v-icon> <span>{{starCountById(text.id)}} étoile{{starCountById(text.id) > 1 ? "s":""}}</span> </v-tooltip>
     <v-btn v-if="userIsAuthenticated"
            flat
            icon>
       <v-tooltip top>
         <v-icon :color="userStarred ? 'yellow' : 'grey'"
                 @click.stop="toggleStar"
-                slot="activator">star</v-icon> <span>{{starCountDisplay}} étoile{{starCount > 1 ? "s":""}}</span> </v-tooltip>
+                slot="activator">star</v-icon> <span>{{starCountById(text.id)}} étoile{{starCountById(text.id) > 1 ? "s":""}}</span> </v-tooltip>
     </v-btn>
     <!-- Cart -->
     <v-btn v-if="userIsAuthenticated"
@@ -150,7 +151,8 @@ export default {
       userCart: "users/userCart",
       avatar: "users/avatar",
       userById: "users/userById",
-      problemsByTextId: "texts/problemsByTextId"
+      problemsByTextId: "texts/problemsByTextId",
+      starCountById: "texts/starCountById"
     }),
     isCardExpandable() {
       return this.cardHeight >= this.abstractHeight
@@ -190,12 +192,6 @@ export default {
       return null
     },
     // Stars
-    starCount() {
-      return this.text.stars ? this.text.stars.length : 0
-    },
-    starCountDisplay() {
-      return this.starCount ? this.starCount : "0"
-    },
     userStarred() {
       if (!this.userIsAuthenticated) { return false }
       if (this.text.stars && this.text.stars.some(u => u == this.user.id)) {
