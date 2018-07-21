@@ -97,6 +97,9 @@ export default {
       abstractHeight: 300,
     }
   },
+  updated() {
+    this.updateCardHeight()
+  },
   methods: {
     updateCardHeight() {
       this.cardHeight = this.$refs.cardText.clientHeight

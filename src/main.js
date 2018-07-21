@@ -26,6 +26,8 @@ import TextsListCmp from "./components/Texts/List.vue"
 Vue.component("texts-list", TextsListCmp)
 import TextViewerCmp from "./components/Texts/SingleCard.vue"
 Vue.component("text-card", TextViewerCmp)
+import TextViewerTwoColCmp from "./components/Texts/SingleCardTwoCol.vue"
+Vue.component("text-card-two-col", TextViewerTwoColCmp)
 import ViewTagsCmp from "@/components/Tags/View"
 Vue.component("view-tags", ViewTagsCmp)
 import TagBarCmp from "./components/Filters/TagBar.vue"

@@ -10,57 +10,25 @@
          to="/text/add">
     <v-icon>add</v-icon>
   </v-btn>
-  <v-layout column>
-    <!-- style="position: sticky; top: 50px; z-index: 10;" -->
-    <v-flex>
-      <v-layout column>
-        <v-flex>
-          <v-layout row>
-            <v-flex xs12>
-              <tag-bar v-model="filters"
-                       include-authors
-                       allows-custom-text
-                       :label="tagBarLabel"
-                       solo
-                       show-count
-                       :texts="searchedTexts"
-                       hide-empty
-                       dialog-button></tag-bar>
-            </v-flex>
-          </v-layout>
-        </v-flex>
-        <v-flex>
-          <v-layout row
-                    wrap>
-            <!-- Chip bar -->
-            <v-flex xs12
-                    md9>
-              <chip-bar v-model="filters"
-                        clearable></chip-bar>
-            </v-flex>
-            <v-flex xs12
-                    md3>
-              <v-icon small>keyboard_arrow_left</v-icon> <span class="grey--text"
-                    style="font-size:small;">{{searchedTexts.length}} textes</span>
-              <v-icon small>keyboard_arrow_right</v-icon>
-              <v-btn icon
-                     small
-                     disabled>
-                <v-icon small>sort_by_alpha</v-icon>
-              </v-btn>
-              <v-btn icon
-                     small
-                     @click="viewSingleMode = !viewSingleMode">
-                <v-icon small>{{ viewSingleMode ? "view_module" : "view_carousel" }}</v-icon>
-              </v-btn>
-            </v-flex>
-          </v-layout>
-        </v-flex>
-      </v-layout>
+  <v-layout row wrap>
+    <v-flex xs12>
+      <tag-bar v-model="filters"
+               include-authors
+               allows-custom-text
+               :label="tagBarLabel"
+               solo
+               show-count
+               :texts="searchedTexts"
+               hide-empty
+               dialog-button></tag-bar>
     </v-flex>
-    <v-flex fill-height>
-      <texts-viewer :texts="searchedTexts"
-                    :single-mode="viewSingleMode"></texts-viewer>
+    <!-- Chip bar -->
+    <v-flex xs12>
+      <chip-bar v-model="filters"
+                clearable></chip-bar>
+    </v-flex>
+    <v-flex fill-height xs12>
+      <texts-viewer :texts="searchedTexts"></texts-viewer>
     </v-flex>
   </v-layout>
 </v-container>
@@ -75,8 +43,7 @@ export default {
     return {
       searchText: null,
       image: "",
-      filters: [],
-      viewSingleMode: false
+      filters: []
     }
   },
   computed: { ...Vuex.mapGetters({
