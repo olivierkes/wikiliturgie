@@ -128,15 +128,21 @@
                                     box
                                     rows="4"></v-textarea>
                       </v-flex>
+                      <!-- Licence -->
                       <v-flex>
-                        <h1 class="subheading orange--text">License WikiLiturgie <v-icon @click="help('license')" color="blue lighten-4" style="float:right">help</v-icon></h1></v-flex>
+                        <h1 class="subheading orange--text">Licence WikiLiturgie <v-icon @click="help('licence')" color="blue lighten-4" style="float:right">help</v-icon></h1></v-flex>
                       <v-flex>
-                        <p class="body-1 grey--text">Je certifie que l'auteur du texte accepte la licence WikiLiturgie:</p>
-                        <v-switch :disabled="user==null"
-                                  :label="local_text.license_wl? 'Oui': 'Non / je ne suis pas sûr'"
-                                  v-model="local_text.license_wl"></v-switch>
-                        <p class="body-1 grey--text"
-                           v-if="!local_text.license_wl">Dans ce cas, le texte sera enregistré mais signalé aux administrateurs pour vérifier la situation.</p>
+                        <p class="body-1 grey--text">Je certifie que l'auteur du texte accepte la licence suivante:</p>
+                        <v-select :disabled="!isAuthenticated"
+                                  solo
+                                  :items="licenceOptions"
+                                  v-model="local_text.licence"></v-select>
+                        <v-alert v-if="!isAuthenticated"
+                                 type="warning"
+                                 :value="true">Il faut être loggé pour pouvoir choisir une licence.</v-alert>
+                        <v-alert v-if="local_text.licence == ''"
+                                 type="warning"
+                                 :value="true">Dans ce cas, le texte sera enregistré mais signalé aux administrateurs pour vérifier la situation.</v-alert>
                       </v-flex>
                     </v-layout>
                   </v-card-text>
@@ -195,7 +201,7 @@ export default {
         comments: "", // String
         toAdmins: "",
         author: "", // ID (String)
-        license_wl: true, // Boolean
+        licence: "wl",
         created_on: "",
         created_by: "",
         edited_on: "",
@@ -214,7 +220,17 @@ export default {
         toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', "horizontal-rule", '|', 'preview', 'side-by-side', 'fullscreen', '|', 'guide']
       },
       showComments: false,
-      showToAdmins: false
+      showToAdmins: false,
+      licenceOptions: [{
+        text: 'WikiLiturgie',
+        value: 'wl'
+      }, {
+        text: 'Domaine public',
+        value: 'dp'
+      }, {
+        text: 'Je ne sais pas',
+        value: ''
+      }, ]
     }
   },
   watch: {
@@ -327,7 +343,7 @@ export default {
       //
       // Création: anonym | user | modo
       // Édition / Suppression : user(own) | modo(all)
-      // License WL: user | modo
+      // Licence WL: user | modo
       // To Admins: anonym(own) | user(all) | modo(all)
       // -----
       // Référence biblique
@@ -344,7 +360,7 @@ export default {
         tags: this.local_text.tags,
         bible_ref: this.local_text.bible_ref,
         comments: this.local_text.comments,
-        license_wl: this.local_text.license_wl,
+        licence: this.local_text.licence,
         author: this.local_text.author,
         toAdmins: this.local_text.toAdmins
       }
@@ -401,7 +417,6 @@ export default {
       this.confirmDialog = true
     },
     confirmRemoveText() {
-
       loader(true)
       // Remove revisions
       this.revisions.forEach(r => {
@@ -503,27 +518,32 @@ le travail.
 `,
           titleColor: "blue lighten-4",
         })
-      } else if (value == "license") {
+      } else if (value == "licence") {
         dialog({
-          title: "License WikiLiturgie",
+          title: "Licence WikiLiturgie",
           text: `
 ## À quoi ça sert?
 
-Pour pouvoir être utilisé, le texte doit être placé sous la licence WikiLiturgie.
-Elle permet aux utilisateurs d'adapter le texte et de l'utiliser dans un culte
-sans être en violation du droit d'auteur. Voir l'aide pour plus de détails.
+Pour pouvoir être utilisé, le texte doit être placé sous la licence \`WikiLiturgie\`,
+ou dans le \`domaine public\`. C'est ce qui permet aux utilisateurs d'adapter le texte
+et de l'utiliser dans un culte sans être en violation du droit d'auteur.
+Voir l'aide pour plus de détails.
+
+## Quelle différence entre licence WikiLiturgie et domaine public?
+
+Avec la licence WikiLiturgie, si ce texte est utilisé par quelqu'un, il devra
+en **citer la source** — à part si c'est à l'oral, par exemple dans un culte.
+
+Pour un texte dans le domaine public, il n'y a pas d'obligation de citer la source.
 
 ## Que faire si je ne suis pas l'auteur du texte ?
 
-Vous pouvez accepter la license si:
+- Tu peux accepter la licence \`WikiLiturgie\` ou \`domaine public\` si l'auteur
+du texte t'en a donné l'accord explicite.
 
-- L'auteur du texte vous en a donné l'accord
-- L'auteur est mort depuis plus de 70 ans (le texte est dans le domaine public)
-
-## Que faire si je ne veux pas?
-
-Si tu ne veux pas que ton texte soit utilisé par d'autres,
-alors il vaut mieux ne pas le mettre ici.
+- Tu peux indiquer \`domaine public\` si l'auteur est mort depuis plus de 70 ans
+(le texte est déjà dans le domaine public). Attention: si le texte est une traduction,
+alors il faut que le traducteur soit mort depuis plus de 70 ans.
 
 ## Et si je ne suis pas sûr?
 

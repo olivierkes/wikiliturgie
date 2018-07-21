@@ -5,7 +5,8 @@
     <v-card-title :class="'headline ' + dialog.titleColor"> {{dialog.title}} </v-card-title>
     <v-card-text v-if="!dialog.markdown"> {{dialog.text}} </v-card-text>
     <v-card-text v-if="dialog.markdown"
-                 v-html="$options.filters.md(dialog.text, false)"></v-card-text>
+                 v-html="$options.filters.md(dialog.text, false)"
+                 class="text-card"></v-card-text>
     <v-divider></v-divider>
     <v-card-actions>
       <v-spacer></v-spacer>

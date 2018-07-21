@@ -28,8 +28,8 @@ const getters = {
     if (txt.toAdmins) { r.push("admin flag") }
     // Not enough tags
     if (!txt.tags || txt.tags.length < 2) { r.push("moins de 2 tags") }
-    // License WL pas signée
-    if (!txt.license_wl) { r.push("license WL pas acceptée") }
+    // Licence WL pas signée
+    if (!txt.licence) { r.push("problème de licence") }
     return r
   },
   numberOfTextProblems: (state, getters) => {

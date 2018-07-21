@@ -48,8 +48,8 @@ export default {
           var val = ""
           if (key == "author") {
             val = this.textAuthor(this.now)
-          } else if (key == "license_wl") {
-            val = this.now.license_wl ? "Oui" : "Non / Je sais pas"
+          } else if (key == "licence") {
+            val = this.readableLicence(this.now.licence)
           } else {
             val = this.now[key]
           }
@@ -69,9 +69,9 @@ export default {
             before = this.before[key] || ""
             after = this.now[key] || ""
           }
-          if (key == "license_wl") {
-            before = before ? "Oui" : "Non / Je sais pas"
-            after = after ? "Oui" : "Non / Je sais pas"
+          if (key == "licence") {
+            before = this.readableLicence(before)
+            after = this.readableLicence(after)
           }
           return this.$options.filters.diff(before, after)
         }
@@ -103,10 +103,10 @@ export default {
           key: "toAdmins",
         })
       }
-      if (this.now.license_wl !== null) {
+      if (this.now.licence !== null) {
         md.push({
-          title: "License",
-          key: "license_wl"
+          title: "Licence",
+          key: "licence"
         })
       }
       return md
@@ -148,6 +148,9 @@ export default {
     },
     tagName(tagId) {
       return this.tagById(tagId).name
+    },
+    readableLicence(licence) {
+      return licence == "wl" ? "WikiLiturgie" : licence == "dp" ? "Domaine public" : "Je ne sais pas"
     }
   }
 }

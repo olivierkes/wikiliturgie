@@ -23,10 +23,10 @@
                         <td class="text-xs-center">{{ starCountById(props.item.id) }}</td>
                         <!-- Cart -->
                         <td class="text-xs-center">{{ cartCountById(props.item.id) }}</td>
-                        <!-- License -->
+                        <!-- Licence -->
                         <td class="text-xs-left">
-                          <v-icon v-if="!props.item.license_wl" color="warning" class="ml-0">warning</v-icon>
-                          <v-checkbox v-if="props.item.license_wl" disabled v-model="props.item.license_wl"></v-checkbox>
+                          <v-icon v-if="!props.item.licence" color="warning" class="ml-0">warning</v-icon>
+                          <v-checkbox v-if="props.item.licence" disabled v-model="props.item.licence" :label="props.item.licence"></v-checkbox>
                         </td>
                         <!-- Message to admin -->
                         <td class="text-xs-left">
@@ -71,8 +71,8 @@ export default {
         text: "Panier",
         value: "cart"
       }, {
-        text: "License",
-        value: "license"
+        text: "Licence",
+        value: "licence"
       }, {
         text: "Message",
         value: "toAdmins"

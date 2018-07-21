@@ -70,8 +70,6 @@
   </v-content>
   <snackbar></snackbar>
   <custom-dialog></custom-dialog>
-  <v-footer :fixed="fixed"
-            app> <span>&copy; 2017</span> </v-footer>
 </v-app>
 </template>
 
