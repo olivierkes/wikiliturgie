@@ -46,6 +46,8 @@ import DialogCmp from "./components/Shared/Dialog.vue"
 Vue.component("custom-dialog", DialogCmp)
 import DataLoadingStatusCmp from "./components/Shared/DataLoadingStatus.vue"
 Vue.component("data-loading-status", DataLoadingStatusCmp)
+import DynamicContentCmp from "./components/Shared/DynamicContent.vue"
+Vue.component("dynamic-content", DynamicContentCmp)
 //////
 
 //// SimpleMDE (Markdown editor)

@@ -44,9 +44,12 @@
             sm8>
       <v-slide-x-transition>
         <v-card>
+          <!-- v-html="$options.filters.md(item.content)" -->
           <v-card-text v-if="!isEditing"
-                       v-html="$options.filters.md(item.content)"
-                       class="text-card"> </v-card-text>
+                       class="text-card">
+            <div ref="content"></div>
+            <dynamic-content :content="$options.filters.md(item.content)"></dynamic-content>
+          </v-card-text>
         </v-card>
       </v-slide-x-transition>
       <v-slide-x-transition>
@@ -134,10 +137,12 @@
 
 <script>
 import Vuex from "vuex"
+import Vue from "vue"
 import { db } from "@/firebase"
 import { snackbar, loader } from "@/utils"
 // import Sortable from 'sortablejs'
 // var sortable
+
 import draggable from 'vuedraggable'
 export default {
   props: ["id"],
