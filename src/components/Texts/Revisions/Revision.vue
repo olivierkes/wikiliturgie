@@ -85,13 +85,13 @@ export default {
           key: "author"
         })
       }
-      if (this.now.bible_ref) {
+      if (this.now.bible_ref || this.before.bible_ref) {
         md.push({
           title: "Référence biblique",
           key: "bible_ref"
         })
       }
-      if (this.now.comments) {
+      if (this.now.comments || this.before.comments) {
         md.push({
           title: "Remarques",
           key: "comments"

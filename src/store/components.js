@@ -6,6 +6,7 @@ const state = {
   dialog_visible: false,
   dialog: {},
   loader: false,
+  backgroundImage: false,
 }
 
 const getters = {
@@ -13,7 +14,8 @@ const getters = {
   snackbar: state => state.snackbar,
   dialog_visible: state => state.dialog_visible,
   dialog: state => state.dialog,
-  loader: state => state.loader
+  loader: state => state.loader,
+  backgroundImage: state => state.backgroundImage // holds whether we have a background image
 }
 
 const mutations = {
@@ -36,6 +38,9 @@ const mutations = {
   },
   loader(state, visible) {
     state.loader = visible
+  },
+  backgroundImage(state, value) {
+    state.backgroundImage = value
   }
 }
 
@@ -48,6 +53,12 @@ const actions = {
   },
   loader({ commit }, visible) {
     commit("loader", visible)
+  },
+  backgroundImage({ commit }, value) {
+    // Sets whether there is a background image for other components do adapts.
+    // Mainly the mail navbar.
+    // "dark" if the image is dark, and "light" if the image is light.
+    commit("backgroundImage", value)
   }
 }
 

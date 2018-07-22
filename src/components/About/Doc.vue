@@ -172,7 +172,7 @@ export default {
   },
   computed: { ...Vuex.mapGetters({
       docs: "about/docs",
-      userIsAuthenticated: "users/isAuthenticated",
+      userIsAuthenticated: "users/userIsAuthenticated",
     }),
     item() {
       if (!this.id) {

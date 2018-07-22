@@ -11,7 +11,7 @@
               multiple
               return-object
               dense
-              prepend-icon="search"
+              prepend-inner-icon="search"
               :append-outer-icon="dialogButton? 'settings' : ''"
               @click:append-outer="showFilterDialog = true"
               :solo="solo"

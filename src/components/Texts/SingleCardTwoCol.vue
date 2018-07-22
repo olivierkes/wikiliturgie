@@ -16,11 +16,14 @@
     <v-spacer></v-spacer>
     <v-toolbar-items>
       <!-- Stars -->
-      <v-btn flat icon v-if="!userIsAuthenticated && starCountById(text.id)" @click.stop>
-      <v-tooltip top>
-        <v-icon :color="starCountById(text.id) > 0 ? 'yellow' : 'grey'"
-                slot="activator">star </v-icon> <span>{{starCountById(text.id)}} étoile{{starCountById(text.id) > 1 ? "s":""}}</span> </v-tooltip>
-                </v-btn>
+      <v-btn flat
+             icon
+             v-if="!userIsAuthenticated && starCountById(text.id)"
+             @click.stop>
+        <v-tooltip top>
+          <v-icon :color="starCountById(text.id) > 0 ? 'yellow' : 'grey'"
+                  slot="activator">star </v-icon> <span>{{starCountById(text.id)}} étoile{{starCountById(text.id) > 1 ? "s":""}}</span> </v-tooltip>
+      </v-btn>
       <v-btn v-if="userIsAuthenticated"
              flat
              icon>
@@ -150,12 +153,12 @@ export default {
   data() {
     return {
       cardHeight: 0,
-      expanded: false,
+      expanded: false
     }
   },
   computed: { ...Vuex.mapGetters({
       user: "users/user",
-      userIsAuthenticated: "users/isAuthenticated",
+      userIsAuthenticated: "users/userIsAuthenticated",
       authors: "authors/authors",
       tags: "tags/tags",
       tagById: "tags/tagById",
@@ -312,6 +315,11 @@ div.card-overlay span {
   color: white;
   text-shadow: 1px 1px 5px #0000004d;
 }
+
+div.card-overlay:hover span {
+text-shadow: 1px 1px 8px #000000aa;
+}
+
 
 div.two-col {
   column-count: 2;

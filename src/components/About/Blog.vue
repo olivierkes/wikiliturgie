@@ -52,7 +52,7 @@ export default {
   },
   computed: { ...Vuex.mapGetters({
       blogs: "about/blogs",
-      userIsAuthenticated: "users/isAuthenticated"
+      userIsAuthenticated: "users/userIsAuthenticated"
     }),
     sortedBlogPosts() {
       return this.blogs.slice().sort((a, b) => a.created_on < b.created_on)

@@ -133,11 +133,11 @@
                         <h1 class="subheading orange--text">Licence WikiLiturgie <v-icon @click="help('licence')" color="blue lighten-4" style="float:right">help</v-icon></h1></v-flex>
                       <v-flex>
                         <p class="body-1 grey--text">Je certifie que l'auteur du texte accepte la licence suivante:</p>
-                        <v-select :disabled="!isAuthenticated"
+                        <v-select :disabled="!userIsAuthenticated"
                                   solo
                                   :items="licenceOptions"
                                   v-model="local_text.licence"></v-select>
-                        <v-alert v-if="!isAuthenticated"
+                        <v-alert v-if="!userIsAuthenticated"
                                  type="warning"
                                  :value="true">Il faut être loggé pour pouvoir choisir une licence.</v-alert>
                         <v-alert v-if="local_text.licence == ''"
@@ -254,7 +254,7 @@ export default {
       authorById: "authors/authorById",
       authorByUid: "authors/authorByUid",
       user: "users/user",
-      isAuthenticated: "users/isAuthenticated",
+      userIsAuthenticated: "users/userIsAuthenticated",
       cartCountById: "texts/cartCountById"
     }),
     iAmAuthor: {

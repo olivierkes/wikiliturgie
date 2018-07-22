@@ -1,7 +1,8 @@
 <template>
 <v-container grid-list-md
              fill-height>
-  <v-btn fixed
+  <v-btn v-if="userIsAuthenticated"
+         fixed
          dark
          fab
          bottom
@@ -16,7 +17,7 @@
             row
             fill-height
             align-center>
-    <v-flex xs12>
+    <v-flex xs12 sm8 offset-sm2 lg6 offset-lg3 xl4 offset-xl4>
       <p style="position: relative; width: 100%"
          class="text-xs-center white--text headline font-weight-thin"> Rechercher parmi {{texts.length}} textes litugiques </p>
       <tag-bar v-model="filters"
@@ -72,10 +73,21 @@ export default {
       filters: []
     }
   },
+  watch: {
+    centeredSearch: {
+      immediate: true,
+      handler() {
+        // Tells other components that there is an image.
+        // Dark because current image is dark.
+        this.$store.dispatch("components/backgroundImage", this.centeredSearch ? "dark" : false)
+      }
+    }
+  },
   computed: { ...Vuex.mapGetters({
       tags: "tags/tags",
       tagGroups: "tags/tagGroups",
-      texts: "texts/texts"
+      texts: "texts/texts",
+      userIsAuthenticated: "users/userIsAuthenticated"
     }),
     centeredSearch() {
       return this.filters.length == 0

@@ -1,52 +1,21 @@
 <template>
 <v-app>
-  <!-- <v-navigation-drawer clipped
-                       v-model="leftDrawer"
-                       app
-                       v-if="$vuetify.breakpoint.smAndDown">
-    <v-list>
-      <v-list-tile value="true"
-                   v-for="(item, i) in menuItems"
-                   :key="i"
-                   :to="item.link">
-        <v-list-tile-action>
-          <v-icon v-html="item.icon"></v-icon>
-        </v-list-tile-action>
-        <v-list-tile-content>
-          <v-list-tile-title v-text="item.title"></v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
-      <v-subheader v-if="userIsAuthenticated">Profile</v-subheader>
-      <v-list-tile to="/profile"
-                   v-if="userIsAuthenticated">
-        <v-list-tile-action>
-        <v-badge color="red" overlap><span slot="badge"
-                v-if="notificationsForUser">{{notificationsForUser}}</span>
-          <v-avatar size="36px"><img :src="user.photoURL" /></v-avatar>
-        </v-badge>
-        </v-list-tile-action>
-        <v-list-tile-content> {{ user.displayName }} </v-list-tile-content>
-      </v-list-tile>
-    </v-list>
-  </v-navigation-drawer> -->
   <v-toolbar app
              clipped-left
              clipped-right
              class="grey lighten-5"
              flat
              dense
+             :dark="backgroundImage=='dark'"
              scroll-toolbar-off-screen
              :scroll-threshold="77">
-    <!-- <v-toolbar-side-icon v-if="$vuetify.breakpoint.xs"
-                         @click.stop="leftDrawer = !leftDrawer"></v-toolbar-side-icon> -->
     <v-toolbar-title>
       <router-link to="/"
                    tag="span"
                    style="cursor: pointer">{{ title }}</router-link>
     </v-toolbar-title>
     <v-spacer></v-spacer>
-    <!-- v-if="!$vuetify.breakpoint.xs" -->
-    <v-toolbar-items >
+    <v-toolbar-items>
       <v-btn flat
              v-for="(item, i) in menuItems"
              :key="i"
@@ -56,14 +25,19 @@
       <v-btn flat
              to="/profile"
              v-if="userIsAuthenticated">
-             <v-badge overlap :color="userRole == 'admin' || userRole == 'modo'? 'red' : 'green'">
-               <span slot="badge"
-                     v-if="notificationsForUser">{{notificationsForUser}}</span>
-        <v-avatar size="32px"><img :src="user.photoURL" /></v-avatar>
-      </v-badge>
+        <v-badge overlap
+                 :color="userRole == 'admin' || userRole == 'modo'? 'red' : 'green'"> <span slot="badge"
+                v-if="notificationsForUser">{{notificationsForUser}}</span>
+          <v-avatar size="32px"><img :src="user.photoURL" /></v-avatar>
+        </v-badge>
       </v-btn>
     </v-toolbar-items>
-    <v-progress-linear v-if="loader" slot="extension" :indeterminate="true" class="mt-0 mb-0" height="4" style="z-index: 3;"></v-progress-linear>
+    <v-progress-linear v-if="loader"
+                       slot="extension"
+                       :indeterminate="true"
+                       class="mt-0 mb-0"
+                       height="4"
+                       style="z-index: 3;"></v-progress-linear>
   </v-toolbar>
   <v-content>
     <data-loading-status v-if="!dataLoaded"></data-loading-status>
@@ -82,16 +56,17 @@ export default {
     return {
       leftDrawer: false,
       fixed: false,
-      title: 'WikiLiturgie α'
+      title: 'WikiLiturgie'
     }
   },
   computed: { ...Vuex.mapGetters({
-      userIsAuthenticated: "users/isAuthenticated",
+      userIsAuthenticated: "users/userIsAuthenticated",
       user: "users/user",
       userRole: "users/userRole",
       avatar: "users/avatar",
       notificationsForUser: "users/notificationsForUser",
-      loader: "components/loader"
+      loader: "components/loader",
+      backgroundImage: "components/backgroundImage"
     }),
     dataLoaded() {
       return this.$store.getters.dataLoaded
@@ -101,11 +76,11 @@ export default {
         icon: "help",
         title: "Aide",
         link: "/doc"
-      },{
+      }, {
         icon: "info",
         title: "Blog",
         link: "/blog"
-      },]
+      }, ]
       if (!this.userIsAuthenticated) {
         return res.concat([{
           icon: "person",
@@ -121,12 +96,20 @@ export default {
 </script>
 
 <style>
-  /* SimpleMDE: https://github.com/F-loat/vue-simplemde */
-  @import '~simplemde-theme-base/dist/simplemde-theme-base.min.css';
+/* SimpleMDE: https://github.com/F-loat/vue-simplemde */
 
-  .v-toolbar__extension {
-    height: auto !important;
-    padding: 0;
-  }
-  main.v-content { padding: 48px 0px 32px !important;}
+@import '~simplemde-theme-base/dist/simplemde-theme-base.min.css';
+.v-toolbar__extension {
+  height: auto !important;
+  padding: 0;
+}
+
+main.v-content {
+  padding: 48px 0px 32px !important;
+}
+
+div.application--wrap > nav.v-toolbar.v-toolbar--fixed {
+  background-color: #ffffff33 !important;
+}
+
 </style>

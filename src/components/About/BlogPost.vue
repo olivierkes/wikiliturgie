@@ -99,7 +99,7 @@ export default {
   computed: { ...Vuex.mapGetters({
       blogs: "about/blogs",
       user: "users/user",
-      userIsAuthenticated: "users/isAuthenticated",
+      userIsAuthenticated: "users/userIsAuthenticated",
       avatar: "users/avatar",
       userById: "users/userById"
     }),

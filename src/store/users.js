@@ -14,7 +14,7 @@ const getters = {
   dataLoaded: state => state.dataLoaded,
   fbUser: state => state.currentUser,
   user: (state, getters) => getters.fbUser ? getters.userById(getters.fbUser.uid) : null,
-  isAuthenticated: state => state.currentUser !== null && state.currentUser !== undefined,
+  userIsAuthenticated: state => state.currentUser !== null && state.currentUser !== undefined,
   userById: state => id => state.users.find(u => u.id == id) || {},
   avatar: (state, getters) => id => getters.userById(id).photoURL,
   userRole: (state, getters) => getters.user.role,
