@@ -30,21 +30,46 @@
             <v-icon>cancel</v-icon>
           </v-btn>
         </v-toolbar>
-        <!-- Breadcrumbs -->
-        <v-breadcrumbs v-if="itemPath.length > 1">
-          <v-icon slot="divider">forward</v-icon>
-          <v-breadcrumbs-item v-for="(p, i) in itemPath"
-                              :to="isEditing? '' : '/doc/' + p.id"
-                              :key="i"> {{ p.name }} </v-breadcrumbs-item>
-        </v-breadcrumbs>
+        <v-card-actions>
+          <!-- Breadcrumbs -->
+          <v-breadcrumbs v-if="itemPath.length > 0">
+            <v-icon slot="divider">forward</v-icon>
+            <v-breadcrumbs-item v-for="(p, i) in itemPath"
+                                :to="isEditing? '' : '/doc/' + p.id"
+                                :key="i"> {{ p.name }} </v-breadcrumbs-item>
+          </v-breadcrumbs>
+          <v-icon v-if="children.length && showMenu"
+                  small
+                  class="py-3"
+                  style="margin-right: 12px;">forward</v-icon>
+          <div v-if="children.length && showMenu"
+               v-for="(c, i) in sortByWeight(children)"
+               :key="i"> <span v-if="i > 0"
+                  class="mx-2">/</span>
+            <router-link :to="isEditing? '' : '/doc/' + c.id"
+                         style="text-decoration: none;">{{ c.name }}</router-link>
+          </div>
+          <v-menu v-if="children.length && false"
+                  open-on-hover
+                  bottom
+                  offset-y> <a slot="activator"> Sous-éléments </a>
+            <v-list dense>
+              <v-list-tile v-for="(c, i) in sortByWeight(children)"
+                           :key="i"
+                           :to="isEditing? '' : '/doc/' + c.id">
+                <v-list-tile-title>{{c.name}}</v-list-tile-title>
+              </v-list-tile>
+            </v-list>
+          </v-menu>
+        </v-card-actions>
       </v-card>
     </v-flex>
     <!-- Content -->
     <v-flex xs12
             sm8>
       <v-slide-x-transition>
+        <!-- Display -->
         <v-card>
-          <!-- v-html="$options.filters.md(item.content)" -->
           <v-card-text v-if="!isEditing"
                        class="text-card">
             <div ref="content"></div>
@@ -53,13 +78,11 @@
         </v-card>
       </v-slide-x-transition>
       <v-slide-x-transition>
+        <!-- Editing -->
         <v-card v-if="isEditing">
           <v-card-text>
             <v-text-field label="Titre"
                           v-model="name"></v-text-field>
-            <!-- <v-textarea autoGrow
-                        label="Contenu"
-                        v-model="content"></v-textarea> -->
             <markdown-editor v-model="content"
                              :configs="simpleMDEConfig"></markdown-editor>
           </v-card-text>
@@ -82,7 +105,7 @@
     <v-slide-y-transition>
       <v-flex xs12
               sm4
-              v-if="showMenu && children.length || isEditing">
+              v-if="isEditing">
         <v-card>
           <v-toolbar color="grey darken-1"
                      dark
@@ -91,9 +114,16 @@
                      flat> <span>
                         Sous éléments
                       </span></v-toolbar>
-          <v-progress-circular v-if="loadingChildrenOrder"
-                               indeterminate
-                               color="primary"></v-progress-circular>
+          <div v-if="loadingChildrenOrder"
+               class="overlay">
+            <v-layout row
+                      fill-height
+                      align-center
+                      justify-center>
+              <v-progress-circular indeterminate
+                                   color="primary"></v-progress-circular>
+            </v-layout>
+          </div>
           <v-list v-if="!loadingChildrenOrder">
             <draggable v-model="children"
                        ref="sortableList"
@@ -142,7 +172,6 @@ import { db } from "@/firebase"
 import { snackbar, loader } from "@/utils"
 // import Sortable from 'sortablejs'
 // var sortable
-
 import draggable from 'vuedraggable'
 export default {
   props: ["id"],
@@ -183,7 +212,12 @@ export default {
       if (!this.id) {
         return this.rootItem
       } else {
-        return this.docs.find(d => d.id == this.id)
+        var match = this.docs.find(d => d.name.toLowerCase() == this.id.toLowerCase())
+        if (match) {
+          return match
+        } else {
+          return this.docs.find(d => d.id == this.id)
+        }
       }
     },
     children: {
@@ -194,7 +228,7 @@ export default {
       },
       set(val) {
         this.loadingChildrenOrder = true
-        loder(true)
+        loader(true)
         db.runTransaction(transaction => {
           // This code may get re-run multiple times if there are conflicts.
           var p = Promise.resolve()
@@ -299,3 +333,14 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+div.overlay {
+  width: 100%;
+  height: 100%;
+  background: #ffffff !important;
+  position: absolute;
+  top: 0;
+  z-index: 10;
+}
+</style>

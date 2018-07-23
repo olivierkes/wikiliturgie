@@ -110,7 +110,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style >
+<style scoped>
 div.overlay {
   /* background-image: url(https://mygracebase.com/wp-content/uploads/2016/08/church-location.jpg); */
   /* background-image: url(https://pixabay.com/get/e83db40c21f1013ed1534705fb094197e477e3d004b0144297f1c671afe8b3/arches-1853950_1920.jpg); */
