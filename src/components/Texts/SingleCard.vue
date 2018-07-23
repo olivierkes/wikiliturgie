@@ -2,13 +2,15 @@
 <v-card v-if="text"
         :hover="isCardExpandable"
         @click.native="overflow=!overflow"
-        :flat="flat"
-        class="text-card">
+        :flat="flat">
   <v-toolbar v-if="text.title"
              flat
              dense>
     <h1 class="subheading font-weight-light">{{text.title}}</h1> </v-toolbar>
-  <v-card-text :style="style" ref="cardText" v-resize="updateCardHeight">
+  <v-card-text :style="style"
+               ref="cardText"
+               v-resize="updateCardHeight"
+               class="text-card">
     <p v-html="$options.filters.md(text.content)"></p>
     <v-divider></v-divider>
     <v-layout row
@@ -212,9 +214,133 @@ export default {
   max-width: 100%;
 }
 
-.text-card ul,
+/* TYPOGRAPHY */
+
+.text-card blockquote,
+.text-card dl,
+.text-card figure,
+.text-card form,
+.text-card ol,
+.text-card p,
+.text-card pre,
+.text-card table,
+.text-card ul {
+  margin-bottom: 1rem;
+}
+
+.text-card h1,
+.text-card h2,
+.text-card h3,
+.text-card h4,
+.text-card h5,
+.text-card h6 {
+  margin-bottom: 1rem;
+  font-weight: lighter;
+}
+
+.text-card p {
+  margin-top: 0;
+}
+
+.text-card a {
+  text-decoration: none;
+}
+.text-card a[href*='//'] {
+  padding-right: 15px;
+  background: linear-gradient(transparent, transparent), url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22%3E %3Cpath fill=%22%23fff%22 stroke=%22%2336c%22 d=%22M1.5 4.518h5.982V10.5H1.5z%22/%3E %3Cpath fill=%22%2336c%22 d=%22M5.765 1H11v5.39L9.427 7.937l-1.31-1.31L5.393 9.35l-2.69-2.688 2.81-2.808L4.2 2.544z%22/%3E %3Cpath fill=%22%23fff%22 d=%22M9.995 2.004l.022 4.885L8.2 5.07 5.32 7.95 4.09 6.723l2.882-2.88-1.85-1.852z%22/%3E %3C/svg%3E") no-repeat right;
+}
+
+.text-card a[href*='//']:after {}
+
+/* BLOCS */
+
+.text-card blockquote {
+  border-left: 0.3rem solid #d1d1d1;
+  margin-left: 0;
+  margin-right: 0;
+  padding: .5rem 1rem;
+  color: #606c76;
+}
+
+.text-card blockquote *:last-child {
+  margin-bottom: 0;
+}
+
+.text-card code {
+  font-weight: normal;
+}
+
+.text-card pre {
+  background: #f4f5f6;
+  border-left: 0.3rem solid #888;
+  overflow-y: hidden;
+}
+
+.text-card pre>code {
+  border-radius: 0;
+  display: block;
+  padding: 1rem 1.5rem;
+  white-space: pre;
+  color: grey;
+}
+
+.text-card pre>code:after,
+.text-card pre>code:before {
+  content: "";
+  letter-spacing: 0px;
+}
+
+/* LISTES */
+
+.text-card dd,
+.text-card dt,
+.text-card li {
+  margin-bottom: .3rem;
+}
+
+.text-card dl,
+.text-card ol,
+.text-card ul {
+  list-style: none;
+  margin-top: 0;
+  padding-left: 0;
+}
+
+.text-card ul {
+  list-style: circle inside;
+}
+
 .text-card ol {
-  padding-top: 10px;
-  padding-bottom: 15px;
+  list-style: decimal inside;
+}
+
+/* TABLES */
+
+.text-card table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.text-card table td,
+.text-card table th {
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  padding: 8px;
+}
+
+.text-card table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.text-card table tr:hover {
+  background-color: #ddd;
+}
+
+.text-card table th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #aaa;
+  color: white;
 }
 </style>

@@ -8,8 +8,9 @@ import router from "./router"
 Vue.config.productionTip = false
 
 ///// Filters
-import MarkdownFilter from "@/filters/markdown"
-Vue.filter("md", MarkdownFilter)
+import { markdown, mdTOC } from "@/filters/markdown"
+Vue.filter("md", markdown)
+Vue.filter("mdTOC", mdTOC)
 import DateFilter from "@/filters/date"
 Vue.filter("date", DateFilter)
 import DiffFilter from "@/filters/diff"

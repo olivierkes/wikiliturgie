@@ -1,6 +1,6 @@
 <template>
 <v-card v-if="text"
-        class="text-card mb-2">
+        class="mb-2">
   <v-toolbar dense
              flat
              @click.stop="expanded = ! expanded">
@@ -69,7 +69,8 @@
   <!-- CONTENT -->
   <v-card-text :style="style"
                ref="cardText"
-               v-resize="updateCardHeight">
+               v-resize="updateCardHeight"
+               class="text-card">
     <v-layout row
               wrap>
       <!-- Two column text -->

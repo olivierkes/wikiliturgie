@@ -3,7 +3,8 @@
   <v-layout row
             wrap
             v-if="item"
-            justify-center>
+            justify-center
+            align-start>
     <v-flex xs12>
       <v-card>
         <!-- Toolbar -->
@@ -14,7 +15,7 @@
           <v-spacer></v-spacer>
           <v-btn icon
                  @click.native="showMenu = ! showMenu"
-                 v-if="children.length && breakpoint.xsOnly && !isEditing">
+                 v-if="false && children.length && breakpoint.xsOnly && !isEditing">
             <v-icon>menu</v-icon>
           </v-btn>
           <!-- Edit btn -->
@@ -38,11 +39,11 @@
                                 :to="isEditing? '' : '/doc/' + p.id"
                                 :key="i"> {{ p.name }} </v-breadcrumbs-item>
           </v-breadcrumbs>
-          <v-icon v-if="children.length && showMenu"
+          <v-icon v-if="children.length"
                   small
                   class="py-3"
                   style="margin-right: 12px;">forward</v-icon>
-          <div v-if="children.length && showMenu"
+          <div v-if="children.length"
                v-for="(c, i) in sortByWeight(children)"
                :key="i"> <span v-if="i > 0"
                   class="mx-2">/</span>
@@ -80,11 +81,25 @@
       <v-slide-x-transition>
         <!-- Editing -->
         <v-card v-if="isEditing">
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn flat
+                   color="green"
+                   @click.native="saveEdit">Enregistrer</v-btn>
+            <v-btn flat
+                   color="red"
+                   @click.native="deleteDoc">Supprimer</v-btn>
+            <v-btn flat
+                   color="grey"
+                   @click.native="cancelEdit">Annuler</v-btn>
+          </v-card-actions>
           <v-card-text>
             <v-text-field label="Titre"
                           v-model="name"></v-text-field>
             <markdown-editor v-model="content"
                              :configs="simpleMDEConfig"></markdown-editor>
+            <v-switch label="Montrer la table des matières?"
+                      v-model="toc"></v-switch>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -101,66 +116,95 @@
         </v-card>
       </v-slide-x-transition>
     </v-flex>
-    <!-- Menu -->
-    <v-slide-y-transition>
-      <v-flex xs12
-              sm4
-              v-if="isEditing">
-        <v-card>
-          <v-toolbar color="grey darken-1"
-                     dark
-                     dense
-                     height="32"
-                     flat> <span>
-                        Sous éléments
+    <!-- Sidebar -->
+    <v-flex xs12
+            sm4>
+      <v-slide-y-transition>
+        <v-layout column
+                  justify-start>
+          <!-- Menu -->
+          <v-slide-y-transition>
+            <v-flex xs12
+                    sm4
+                    v-if="isEditing">
+              <v-card>
+                <v-toolbar color="grey darken-1"
+                           dark
+                           dense
+                           height="32"
+                           flat> <span>
+                                Sous éléments
+                              </span></v-toolbar>
+                <div v-if="loadingChildrenOrder"
+                     class="overlay">
+                  <v-layout row
+                            fill-height
+                            align-center
+                            justify-center>
+                    <v-progress-circular indeterminate
+                                         color="primary"></v-progress-circular>
+                  </v-layout>
+                </div>
+                <v-list v-if="!loadingChildrenOrder">
+                  <draggable v-model="children"
+                             ref="sortableList"
+                             :options="{handle:'.sortHandle'}">
+                    <!-- @end="dragReorder" -->
+                    <v-list-tile v-for="(c, i) in sortByWeight(children)"
+                                 :key="i"
+                                 :to="isEditing? '' : '/doc/' + c.id"
+                                 :id="c.id">
+                      <v-list-tile-action v-if="isEditing">
+                        <v-btn style="cursor: move"
+                               icon
+                               class="sortHandle">
+                          <v-icon>drag_handle</v-icon>
+                        </v-btn>
+                      </v-list-tile-action>
+                      <v-list-tile-title>{{c.name}}</v-list-tile-title>
+                    </v-list-tile>
+                  </draggable>
+                </v-list>
+                <v-card-text v-if="isEditing">
+                  <v-layout row
+                            wrap>
+                    <v-flex xs12
+                            sm12>
+                      <v-text-field label="Ajouter une rubrique"
+                                    v-model="newDocName"
+                                    single-line
+                                    append-outer-icon="add"
+                                    @click:append-outer="addNewDoc"
+                                    @keyup.enter="addNewDoc"></v-text-field>
+                    </v-flex>
+                  </v-layout>
+                </v-card-text>
+              </v-card>
+            </v-flex>
+          </v-slide-y-transition>
+          <!-- Table of content -->
+          <v-slide-y-transition>
+            <v-flex xs12
+                    sm4
+                    v-if="isEditing && toc || !isEditing && item.toc">
+              <v-card>
+                <v-toolbar color="grey darken-1"
+                           dark
+                           dense
+                           height="32"
+                           flat> <span>
+                        Table des matières
                       </span></v-toolbar>
-          <div v-if="loadingChildrenOrder"
-               class="overlay">
-            <v-layout row
-                      fill-height
-                      align-center
-                      justify-center>
-              <v-progress-circular indeterminate
-                                   color="primary"></v-progress-circular>
-            </v-layout>
-          </div>
-          <v-list v-if="!loadingChildrenOrder">
-            <draggable v-model="children"
-                       ref="sortableList"
-                       :options="{handle:'.sortHandle'}">
-              <!-- @end="dragReorder" -->
-              <v-list-tile v-for="(c, i) in sortByWeight(children)"
-                           :key="i"
-                           :to="isEditing? '' : '/doc/' + c.id"
-                           :id="c.id">
-                <v-list-tile-action v-if="isEditing">
-                  <v-btn style="cursor: move"
-                         icon
-                         class="sortHandle">
-                    <v-icon>drag_handle</v-icon>
-                  </v-btn>
-                </v-list-tile-action>
-                <v-list-tile-title>{{c.name}}</v-list-tile-title>
-              </v-list-tile>
-            </draggable>
-          </v-list>
-          <v-card-text v-if="isEditing">
-            <v-layout row
-                      wrap>
-              <v-flex xs12
-                      sm12>
-                <v-text-field label="Ajouter une rubrique"
-                              v-model="newDocName"
-                              single-line
-                              append-outer-icon="add"
-                              @click:append-outer="addNewDoc"
-                              @keyup.enter="addNewDoc"></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-card-text>
-        </v-card>
-      </v-flex>
-    </v-slide-y-transition>
+                <v-card-text class="table-of-content">
+                  <p v-for="(o, i) in mdTOC"> <a @click="scrollMeTo(o.slug)"
+                       :class="'level-' + o.level">{{o.title}}</a> </p>
+                </v-card-text>
+              </v-card>
+            </v-flex>
+          </v-slide-y-transition>
+        </v-layout>
+      </v-slide-y-transition>
+    </v-flex>
   </v-layout>
 </v-container>
 </template>
@@ -173,6 +217,7 @@ import { snackbar, loader } from "@/utils"
 // import Sortable from 'sortablejs'
 // var sortable
 import draggable from 'vuedraggable'
+var toc = require('markdown-toc')
 export default {
   props: ["id"],
   components: {
@@ -185,6 +230,7 @@ export default {
       newDocName: "",
       name: "",
       content: "",
+      toc: false,
       loadingChildrenOrder: false,
       simpleMDEConfig: {
         tabSize: 8,
@@ -201,6 +247,7 @@ export default {
       if (this.isEditing) {
         this.content = this.item.content
         this.name = this.item.name
+        this.toc = this.item.toc || false
       }
     }
   },
@@ -266,6 +313,13 @@ export default {
     },
     breakpoint() {
       return this.$vuetify.breakpoint
+    },
+    mdTOC() {
+      if (!this.isEditing) {
+        return this.$options.filters.mdTOC(this.item.content)
+      } else {
+        return this.$options.filters.mdTOC(this.content)
+      }
     }
   },
   methods: {
@@ -301,7 +355,8 @@ export default {
         loader(true)
         db.collection("docs").doc(this.item.id).update({
           name: this.name,
-          content: this.content
+          content: this.content,
+          toc: this.toc
         }).then(() => {
           loader()
           snackbar("Enregistré!")
@@ -324,6 +379,11 @@ export default {
       } else {
         snackbar("Tu ne peux pas supprimer un doc qui a des enfants. C'est cruel.")
       }
+    },
+    scrollMeTo(refName) {
+      var element = document.getElementById(refName)
+      var top = element.offsetTop
+      window.scrollTo(0, top)
     }
   },
   mounted() {
@@ -342,5 +402,33 @@ div.overlay {
   position: absolute;
   top: 0;
   z-index: 10;
+}
+
+.table-of-content p {
+  margin-bottom: 10px
+}
+
+.table-of-content a.level-1 {
+  padding-left: 0px
+}
+
+.table-of-content a.level-2 {
+  padding-left: 15px
+}
+
+.table-of-content a.level-3 {
+  padding-left: 30px
+}
+
+.table-of-content a.level-4 {
+  padding-left: 45px
+}
+
+.table-of-content a.level-5 {
+  padding-left: 60px
+}
+
+.table-of-content a.level-6 {
+  padding-left: 75px
 }
 </style>
