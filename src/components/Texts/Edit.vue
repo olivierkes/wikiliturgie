@@ -25,7 +25,8 @@
                            :configs="simpleMDEConfig"></markdown-editor>
           <!-- Viewing -->
           <div v-if="!userCanEdit"
-               v-html="$options.filters.md(local_text.content)"> </div>
+               v-html="$options.filters.md(local_text.content)"
+               class="text-card"> </div>
         </v-flex>
       </v-layout>
     </v-flex>

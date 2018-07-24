@@ -43,7 +43,7 @@
       </v-btn>
       <!-- Problematic text -->
       <v-btn icon
-             v-if="problemsByTextId(text.id).length"
+             v-if="userIsAuthenticated && problemsByTextId(text.id).length"
              @click.stop="">
         <v-tooltip top>
           <v-icon color="amber lighten-3"
@@ -190,7 +190,7 @@ export default {
       }
     },
     isCardExpandable() {
-      return this.cardHeight >= this.abstractHeight
+      return this.abstract && this.cardHeight >= this.abstractHeight
     },
     metadata() {
       var md = []

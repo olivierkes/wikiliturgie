@@ -2,13 +2,27 @@
 <v-container fill-height
              pa-1
              grid-list-lg>
-  <v-layout row
+  <v-layout v-if="!$vuetify.breakpoint.smAndDown"
+            row
             wrap>
     <v-flex xs12
-            sm8 offset-sm2
+            sm8
+            offset-sm2
             v-for="(text, key) in texts"
             :key="key">
-      <text-card-two-col :text="text" abstract></text-card-two-col>
+      <text-card-two-col :text="text"
+                         abstract></text-card-two-col>
+    </v-flex>
+  </v-layout>
+  <v-layout v-if="$vuetify.breakpoint.smAndDown"
+            row
+            wrap>
+    <v-pagination v-model="textNumber"
+                  circle
+                  :length="texts.length"></v-pagination>
+    <v-flex xs12>
+      <text-card-two-col :text="texts[textNumber-1]"
+                         v-touch="swipe"></text-card-two-col>
     </v-flex>
   </v-layout>
 </v-container>
@@ -17,26 +31,34 @@
 <script>
 export default {
   props: {
-    texts: Array
+    texts: Array,
   },
   data() {
     return {
-      page: 1
+      textNumber: 1
     }
   },
   watch: {
-    texts() { this.page = 1 }
+    texts() { this.textNumber = 1 }
   },
   created: function () {
     window.addEventListener('keyup', this.nextText)
+  },
+  computed: {
+    swipe() {
+      return {
+        left: () => this.textNumber = Math.min(this.texts.length, this.textNumber + 1),
+        right: () => this.textNumber = Math.max(1, this.textNumber - 1)
+      }
+    }
   },
   methods: {
     nextText(event) {
       if (event.altKey || event.ctrlKey) { return }
       if (event.key == "ArrowRight") {
-        this.page = Math.min(this.texts.length, this.page + 1)
+        this.textNumber = Math.min(this.texts.length, this.textNumber + 1)
       } else if (event.key == "ArrowLeft") {
-        this.page = Math.max(1, this.page - 1)
+        this.textNumber = Math.max(1, this.textNumber - 1)
       }
     }
   }

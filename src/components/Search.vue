@@ -12,7 +12,7 @@
     <v-icon>add</v-icon>
   </v-btn>
   <div class="overlay"
-       :style="{opacity: centeredSearch ? 1 : 0}"></div>
+       :style="{display: centeredSearch ? 'block' : 'none'}"></div>
   <v-layout v-if="centeredSearch"
             row
             fill-height
