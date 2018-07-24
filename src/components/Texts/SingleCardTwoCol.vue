@@ -301,9 +301,16 @@ div.card-overlay {
   width: 100%;
   height: 64px;
   margin-top: -64px;
-  background: linear-gradient(#ffffff00, white);
   z-index: 4;
   cursor: pointer;
+}
+
+.theme--light div.card-overlay {
+  background: linear-gradient(#ffffff00, white);
+}
+
+.theme--dark div.card-overlay {
+  background: linear-gradient(#42424200, #424242);
 }
 
 div.card-overlay.expanded {
@@ -313,14 +320,25 @@ div.card-overlay.expanded {
 div.card-overlay span {
   position: absolute;
   bottom: 1px;
+}
+
+.theme--light div.card-overlay span {
   color: white;
   text-shadow: 1px 1px 5px #0000004d;
 }
 
-div.card-overlay:hover span {
-text-shadow: 1px 1px 8px #000000aa;
+.theme--light div.card-overlay:hover span {
+  text-shadow: 1px 1px 8px #000000aa;
 }
 
+.theme--dark div.card-overlay span {
+  color: #424242;
+  text-shadow: 1px 1px 5px #ffffff6d;
+}
+
+.theme--dark div.card-overlay:hover span {
+  text-shadow: 1px 1px 8px #ffffffaa;
+}
 
 div.two-col {
   column-count: 2;

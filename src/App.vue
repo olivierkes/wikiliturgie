@@ -3,12 +3,12 @@
   <v-toolbar app
              clipped-left
              clipped-right
-             class="grey lighten-5"
              flat
              dense
              :dark="backgroundImage=='dark'"
              scroll-toolbar-off-screen
-             :scroll-threshold="77">
+             :scroll-threshold="77"
+             :class="backgroundImage ? 'bg' : ''">
     <v-toolbar-title>
       <router-link to="/"
                    tag="span"
@@ -44,6 +44,7 @@
     <keep-alive include="Search">
       <router-view v-if="dataLoaded"></router-view>
     </keep-alive>
+    <v-divider></v-divider>
   </v-content>
   <snackbar></snackbar>
   <custom-dialog></custom-dialog>
@@ -110,7 +111,15 @@ main.v-content {
   padding: 48px 0px 32px !important;
 }
 
-div.application--wrap>nav.v-toolbar.v-toolbar--fixed {
+
+.theme--light div.application--wrap>nav.v-toolbar.v-toolbar--fixed {
+  border-bottom: thin solid #0000001f !important;
+}
+.theme--dark div.application--wrap>nav.v-toolbar.v-toolbar--fixed {
+  border-bottom: thin solid #ffffff1f !important;
+}
+
+div.application--wrap>nav.v-toolbar.v-toolbar--fixed.bg {
   background-color: #ffffff33 !important;
 }
 </style>

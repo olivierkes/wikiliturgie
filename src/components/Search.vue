@@ -84,6 +84,14 @@ export default {
       }
     }
   },
+  deactivated() {
+    // Component is kept alive. Se if we switch out we need we need to
+    // remove the background image
+    this.$store.dispatch("components/backgroundImage", false)
+  },
+  activated() {
+    this.$store.dispatch("components/backgroundImage", this.centeredSearch ? "dark" : false)
+  },
   computed: { ...Vuex.mapGetters({
       tags: "tags/tags",
       tagGroups: "tags/tagGroups",

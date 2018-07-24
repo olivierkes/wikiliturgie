@@ -64,7 +64,7 @@
           </v-container>
         </v-tab-item>
         <!-- Panier -->
-        <v-tab-item id="cart">
+        <v-tab-item id="cart" lazy>
           <v-container>
             <v-layout row
                       wrap>
