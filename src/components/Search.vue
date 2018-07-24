@@ -66,6 +66,7 @@ import { db } from '@/firebase'
 import Vuex from "vuex"
 import { filterTextsByIds } from "@/utils"
 export default {
+  name: "Search",
   data() {
     return {
       searchText: null,

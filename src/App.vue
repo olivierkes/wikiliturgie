@@ -41,7 +41,9 @@
   </v-toolbar>
   <v-content>
     <data-loading-status v-if="!dataLoaded"></data-loading-status>
-    <router-view v-if="dataLoaded"></router-view>
+    <keep-alive include="Search">
+      <router-view v-if="dataLoaded"></router-view>
+    </keep-alive>
   </v-content>
   <snackbar></snackbar>
   <custom-dialog></custom-dialog>
@@ -108,8 +110,7 @@ main.v-content {
   padding: 48px 0px 32px !important;
 }
 
-div.application--wrap > nav.v-toolbar.v-toolbar--fixed {
+div.application--wrap>nav.v-toolbar.v-toolbar--fixed {
   background-color: #ffffff33 !important;
 }
-
 </style>
