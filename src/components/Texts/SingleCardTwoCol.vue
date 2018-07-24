@@ -53,9 +53,7 @@
       <v-btn flat
              icon
              :to="'/text/' + text.id">
-             <v-tooltip top>
-        <v-icon color="grey" slot="activator">{{userCanEdit ? 'edit' : 'visibility'}}</v-icon>
-        <span>{{userCanEdit ? 'Éditer' : 'Voir'}}</span>
+        <v-icon color="grey" >{{userCanEdit ? 'edit' : 'visibility'}}</v-icon>
         </v-tooltip>
       </v-btn>
       <!-- Avatar -->

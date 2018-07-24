@@ -91,6 +91,7 @@ export default {
   },
   activated() {
     this.$store.dispatch("components/backgroundImage", this.centeredSearch ? "dark" : false)
+    this.$store.dispatch("components/arrowBackVisible", false)
   },
   computed: { ...Vuex.mapGetters({
       tags: "tags/tags",

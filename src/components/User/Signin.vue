@@ -2,14 +2,13 @@
 <v-container>
   <v-layout column>
     <v-flex xs12>
-      <h1>Connection</h1> </v-flex>
-    <v-flex xs12>
       <div id="firebaseui-auth-container"></div>
-      <div id="loader" v-if="loading">Chargement...</div>
-
+      <div id="loader"
+           v-if="loading">Chargement...</div>
     </v-flex>
     <v-flex xs12>
-      <v-alert type="warning" :value="true">FIXME: css import issue.</v-alert>
+      <v-alert type="warning"
+               :value="true">FIXME: css import issue.</v-alert>
     </v-flex>
   </v-layout>
 </v-container>
@@ -21,8 +20,6 @@ import firebaseui from 'firebaseui'
 import { ui } from "@/firebase"
 //FIXME: CSS is not loaded properly??
 require("@/../node_modules/firebaseui/dist/firebaseui.css")
-
-
 export default {
   data() {
     return {
@@ -51,6 +48,8 @@ export default {
     },
   },
   mounted: function () {
+    // Display back arrow
+    this.$store.dispatch("components/arrowBackVisible", true)
     // Firebase UI (auth flow)
     // Initialize the FirebaseUI Widget using Firebase.
     var uiConfig = {

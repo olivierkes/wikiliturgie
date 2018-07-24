@@ -50,6 +50,9 @@ export default {
   components: {
     blogPost
   },
+  mounted() {
+    this.$store.dispatch("components/arrowBackVisible", true)
+  },
   computed: { ...Vuex.mapGetters({
       blogs: "about/blogs",
       userIsAuthenticated: "users/userIsAuthenticated"

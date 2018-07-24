@@ -197,6 +197,9 @@ export default {
   components: {
     users
   },
+  mounted() {
+    this.$store.dispatch("components/arrowBackVisible", true)
+  },
   computed: { ...Vuex.mapGetters({
       authors: "authors/authors",
       user: "users/user",

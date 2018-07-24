@@ -7,6 +7,7 @@ const state = {
   dialog: {},
   loader: false,
   backgroundImage: false,
+  arrowBackVisible: false,
 }
 
 const getters = {
@@ -15,7 +16,8 @@ const getters = {
   dialog_visible: state => state.dialog_visible,
   dialog: state => state.dialog,
   loader: state => state.loader,
-  backgroundImage: state => state.backgroundImage // holds whether we have a background image
+  backgroundImage: state => state.backgroundImage, // holds whether we have a background image
+  arrowBackVisible: state => state.arrowBackVisible
 }
 
 const mutations = {
@@ -41,6 +43,9 @@ const mutations = {
   },
   backgroundImage(state, value) {
     state.backgroundImage = value
+  },
+  arrowBackVisible(state, value) {
+    state.arrowBackVisible = value
   }
 }
 
@@ -59,6 +64,9 @@ const actions = {
     // Mainly the mail navbar.
     // "dark" if the image is dark, and "light" if the image is light.
     commit("backgroundImage", value)
+  },
+  arrowBackVisible({ commit }, value) {
+    commit("arrowBackVisible", value)
   }
 }
 

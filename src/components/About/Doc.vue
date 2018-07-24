@@ -219,6 +219,7 @@ import { snackbar, loader } from "@/utils"
 import draggable from 'vuedraggable'
 var toc = require('markdown-toc')
 export default {
+  name: "Docasdad",
   props: ["id"],
   components: {
     draggable,
@@ -389,6 +390,7 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this.showMenu = !this.breakpoint.xsOnly
+      this.$store.dispatch("components/arrowBackVisible", true)
     })
   }
 }

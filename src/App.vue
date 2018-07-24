@@ -9,6 +9,11 @@
              scroll-toolbar-off-screen
              :scroll-threshold="77"
              :class="backgroundImage ? 'bg' : ''">
+             <v-toolbar-items v-if="arrowBackVisible">
+               <v-btn flat icon @click.native.stop="$router.go(-1)">
+                 <v-icon>arrow_back</v-icon>
+               </v-btn>
+             </v-toolbar-items>
     <v-toolbar-title>
       <router-link to="/"
                    tag="span"
@@ -69,7 +74,8 @@ export default {
       avatar: "users/avatar",
       notificationsForUser: "users/notificationsForUser",
       loader: "components/loader",
-      backgroundImage: "components/backgroundImage"
+      backgroundImage: "components/backgroundImage",
+      arrowBackVisible: "components/arrowBackVisible"
     }),
     dataLoaded() {
       return this.$store.getters.dataLoaded

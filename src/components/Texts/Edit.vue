@@ -160,7 +160,8 @@
                 </v-card>
               </v-tab-item>
               <!-- Aperçu -->
-              <v-tab-item id="tab-2">
+              <v-tab-item id="tab-2"
+                          v-if="userCanEdit">
                 <text-card :text="local_text"></text-card>
               </v-tab-item>
               <!-- Révisions -->
@@ -252,6 +253,7 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this.loadText()
+      this.$store.dispatch("components/arrowBackVisible", true)
     })
   },
   computed: { ...Vuex.mapGetters({
