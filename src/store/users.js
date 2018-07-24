@@ -31,6 +31,14 @@ const getters = {
       r += getters.userCart.length
     }
     return r
+  },
+  userCanEditText: (state, getters, globaLState, globalGetters) => textId => {
+    var text = globalGetters["texts/textById"](textId)
+    if (text) {
+      return getters.user && (text.created_by == getters.user.id || getters.userRole == "modo" || getters.userRole == "admin")
+    } else {
+      return getters.userIsAuthenticated
+    }
   }
 }
 

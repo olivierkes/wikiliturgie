@@ -10,7 +10,7 @@
       <revision :now="rev"
                 :before="sortedRevisions[k+1]"></revision>
     </v-card-text>
-    <v-card-actions>
+    <v-card-actions v-if="userCanEdit(textId)">
       <v-spacer></v-spacer>
       <v-btn icon
              color="green--text"
@@ -43,7 +43,9 @@ export default {
   },
   computed: { ...Vuex.mapGetters({
       users: "users/users",
-      userById: "users/userById"
+      userById: "users/userById",
+      userIsAuthenticated: "users/userIsAuthenticated",
+      userCanEdit: "users/userCanEditText"
     }),
     sortedRevisions() {
       if (this.revisions) {

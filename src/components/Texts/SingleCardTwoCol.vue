@@ -49,11 +49,14 @@
           <v-icon color="amber lighten-3"
                   slot="activator">warning</v-icon> <span>Problèmes: {{problemsByTextId(text.id).join(", ")}}</span> </v-tooltip>
       </v-btn>
-      <!-- Edit -->
+      <!-- Edit / View -->
       <v-btn flat
              icon
              :to="'/text/' + text.id">
-        <v-icon color="grey">edit</v-icon>
+             <v-tooltip top>
+        <v-icon color="grey" slot="activator">{{userCanEdit ? 'edit' : 'visibility'}}</v-icon>
+        <span>{{userCanEdit ? 'Éditer' : 'Voir'}}</span>
+        </v-tooltip>
       </v-btn>
       <!-- Avatar -->
       <v-btn icon
@@ -160,6 +163,7 @@ export default {
   computed: { ...Vuex.mapGetters({
       user: "users/user",
       userIsAuthenticated: "users/userIsAuthenticated",
+      userCanEditText: "users/userCanEditText",
       authors: "authors/authors",
       tags: "tags/tags",
       tagById: "tags/tagById",
@@ -171,6 +175,9 @@ export default {
       starCountById: "texts/starCountById",
       cartCountById: "texts/cartCountById"
     }),
+    userCanEdit() {
+      return this.userCanEditText(this.text.id)
+    },
     style() {
       return {
         maxHeight: (!this.abstract || this.expanded) ? "" : this.abstractHeight + "px",

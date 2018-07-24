@@ -7,26 +7,32 @@
             sm7
             v-if="!metadataOnly">
       <v-layout column>
-        <!-- <v-flex xs12>
-          <h1>{{ this.id ? "Modifier un texte" : "Ajouter un texte"}}</h1> </v-flex> -->
         <v-flex xs12>
-          <v-text-field v-model="local_text.title"
+          <v-text-field v-if="userCanEdit"
+                        v-model="local_text.title"
                         label="Titre"> </v-text-field>
+          <v-toolbar v-if="!userCanEdit"
+                     dense
+                     flat
+                     color="grey lighten-2">
+            <v-toolbar-title class="subheading font-weight-light">{{local_text.title}}</v-toolbar-title>
+          </v-toolbar>
         </v-flex>
         <v-flex xs12>
-          <!-- <v-textarea v-model="local_text.content"
-                      label="Contenu"
-                      required
-                      rows="25"></v-textarea> -->
-          <markdown-editor v-model="local_text.content"
+          <!-- Editing -->
+          <markdown-editor v-if="userCanEdit"
+                           v-model="local_text.content"
                            :configs="simpleMDEConfig"></markdown-editor>
+          <!-- Viewing -->
+          <div v-if="!userCanEdit"
+               v-html="$options.filters.md(local_text.content)"> </div>
         </v-flex>
       </v-layout>
     </v-flex>
     <v-flex xs12
             :sm5="!metadataOnly">
       <v-layout column>
-        <v-flex>
+        <v-flex v-if="userCanEdit">
           <v-btn flat
                  color="primary"
                  :disabled="!local_text.content"
@@ -44,17 +50,19 @@
           <v-card>
             <v-tabs center>
               <v-tab href="#tab-1"> Métadonnées </v-tab>
-              <v-tab href="#tab-2"> Aperçu </v-tab>
+              <v-tab href="#tab-2"
+                     v-if="userCanEdit"> Aperçu </v-tab>
               <v-tab href="#tab-3"> Modifications </v-tab>
               <!-- Métadonnées -->
               <v-tab-item id="tab-1">
                 <v-card flat>
                   <v-card-text>
                     <v-layout column>
+                      <!-- Author -->
                       <v-flex xs12>
                         <h1 class="subheading orange--text">Auteur</h1></v-flex>
                       <v-flex xs12>
-                        <v-switch v-if="user"
+                        <v-switch v-if="userCanEdit"
                                   label="Je suis l'auteur du texte"
                                   v-model="iAmAuthor"></v-switch>
                         <v-combobox v-if="!user || !iAmAuthor"
@@ -64,15 +72,17 @@
                                     :item-text="i => i.name"
                                     :item-value="i => i.id"
                                     return-object
-                                    dense> </v-combobox>
-                        <!-- <v-alert :value="true"
-                                 type="error"><b>Tu dois indiquer un auteur:</b> Toi, un auteur de la liste, ou en créer un nouveau en entrant son nom.<br /><br />Si l'auteur est inconnu, choisis <code>Inconnu / Anonyme</code>.</v-alert> --></v-flex>
+                                    dense
+                                    :disabled="!userCanEdit"> </v-combobox>
+                      </v-flex>
                       <v-flex>
                         <h1 class="subheading orange--text">Tags <v-icon @click="help('tags')" color="blue lighten-4" style="float:right">help</v-icon></h1> </v-flex>
                       <v-flex>
+                        <!-- Tags -->
                         <v-layout column>
                           <v-flex xs12>
-                            <tag-bar v-model="local_text.tags"
+                            <tag-bar v-if="userCanEdit"
+                                     v-model="local_text.tags"
                                      tag-only
                                      show-count
                                      dialog-button
@@ -80,7 +90,8 @@
                                      :texts="texts"></tag-bar>
                           </v-flex>
                           <v-flex>
-                            <chip-bar v-model="local_text.tags"></chip-bar>
+                            <chip-bar v-model="local_text.tags"
+                                      :disabled="!userCanEdit"></chip-bar>
                           </v-flex>
                           <v-flex>
                             <v-alert :value="true"
@@ -100,7 +111,8 @@
                                       label="Texte(s) biblique(s)"
                                       append-icon="help"
                                       @click:append="help('bible')"
-                                      class="help-icon"></v-text-field>
+                                      class="help-icon"
+                                      :disabled="!userCanEdit"></v-text-field>
                       </v-flex>
                       <v-flex>
                         <!-- Commentaires sur le texte -->
@@ -113,7 +125,8 @@
                                     v-model="local_text.comments"
                                     auto-grow
                                     box
-                                    rows="4"></v-textarea>
+                                    rows="4"
+                                    :disabled="!userCanEdit"></v-textarea>
                       </v-flex>
                       <v-flex>
                         <!-- Message aux admins -->
@@ -126,20 +139,18 @@
                                     v-model="local_text.toAdmins"
                                     auto-grow
                                     box
-                                    rows="4"></v-textarea>
+                                    rows="4"
+                                    :disabled="!userCanEdit"></v-textarea>
                       </v-flex>
                       <!-- Licence -->
                       <v-flex>
-                        <h1 class="subheading orange--text">Licence WikiLiturgie <v-icon @click="help('licence')" color="blue lighten-4" style="float:right">help</v-icon></h1></v-flex>
+                        <h1 class="subheading orange--text">Licence<v-icon @click="help('licence')" color="blue lighten-4" style="float:right">help</v-icon></h1></v-flex>
                       <v-flex>
                         <p class="body-1 grey--text">Je certifie que l'auteur du texte accepte la licence suivante:</p>
-                        <v-select :disabled="!userIsAuthenticated"
-                                  solo
+                        <v-select :disabled="!userCanEdit"
+                                  :solo="userCanEdit"
                                   :items="licenceOptions"
                                   v-model="local_text.licence"></v-select>
-                        <v-alert v-if="!userIsAuthenticated"
-                                 type="warning"
-                                 :value="true">Il faut être loggé pour pouvoir choisir une licence.</v-alert>
                         <v-alert v-if="local_text.licence == ''"
                                  type="warning"
                                  :value="true">Dans ce cas, le texte sera enregistré mais signalé aux administrateurs pour vérifier la situation.</v-alert>
@@ -254,9 +265,14 @@ export default {
       authorById: "authors/authorById",
       authorByUid: "authors/authorByUid",
       user: "users/user",
+      userRole: "users/userRole",
+      userCanEditText: "users/userCanEditText",
       userIsAuthenticated: "users/userIsAuthenticated",
       cartCountById: "texts/cartCountById"
     }),
+    userCanEdit() {
+      return this.userCanEditText(this.id)
+    },
     iAmAuthor: {
       get: function () {
         if (!this.user) {

@@ -1,7 +1,7 @@
 <template>
 <v-layout>
   <v-flex xs12>
-    <v-btn v-if="clearable && selected.length"
+    <v-btn v-if="clearable && selected.length && !disabled"
            flat
            icon
            small
@@ -11,7 +11,7 @@
     <v-tooltip v-for="chip in computedChips"
                :key="chip.id"
                bottom>
-      <v-chip close
+      <v-chip :close="!disabled"
               small
               label
               :color="chip.color"
@@ -26,7 +26,8 @@ import Vuex from "vuex"
 export default {
   props: {
     "value": Array,
-    "clearable": Boolean
+    "clearable": Boolean,
+    "disabled": Boolean
   },
   data() {
     return {
