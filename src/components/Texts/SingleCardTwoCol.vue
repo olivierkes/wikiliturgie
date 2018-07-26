@@ -62,7 +62,7 @@
              v-if="text.created_by">
         <v-tooltip top>
           <v-avatar size="24"
-                    slot="activator"> <img :src="avatar(text.created_by)" /> </v-avatar> <span>Crée par {{userById(text.created_by).displayName}} le {{text.created_on | date}}</span> </v-tooltip>
+                    slot="activator"> <img :src="avatar(text.created_by)" /> </v-avatar> <span>Ajouté par {{userById(text.created_by).displayName}} le {{text.created_on | date}}</span> </v-tooltip>
       </v-btn>
     </v-toolbar-items>
   </v-toolbar>

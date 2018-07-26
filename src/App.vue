@@ -49,7 +49,6 @@
     <keep-alive include="Search">
       <router-view v-if="dataLoaded"></router-view>
     </keep-alive>
-    <v-divider></v-divider>
   </v-content>
   <snackbar></snackbar>
   <custom-dialog></custom-dialog>

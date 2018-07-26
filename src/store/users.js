@@ -56,7 +56,7 @@ const actions = {
     if (payload.user) {
       commit("setUser", payload.user)
       // Check if user exists in 'users' collection
-      var user = state.users.find(u => u.uid == payload.user.uid)
+      var user = state.users.find(u => u.id == payload.user.uid)
       if (!user) {
         // user doesn't exists in 'users' collection, let's create it.
         db.collection("users").doc(payload.user.uid).set({
